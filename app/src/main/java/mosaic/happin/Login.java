@@ -21,12 +21,11 @@ public class Login extends AppCompatActivity {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
         boolean validUserAndPassword = true;
-        if (validUserAndPassword){
+        if (validUserAndPassword) {
 
-        }
-        else{
+        } else {
             Toast toast = Toast.makeText(getApplicationContext(),
-                    "Wrong username or password",Toast.LENGTH_SHORT);
+                    "Wrong username or password", Toast.LENGTH_SHORT);
             toast.show();
         }
     }
