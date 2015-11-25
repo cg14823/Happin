@@ -23,7 +23,11 @@ public class Login extends AppCompatActivity {
 
         String emailStr = emailField.getText().toString();
         String  passwordStr = passwordField.getText().toString();
-        
+
+        // some verifaction here Alex and Senthy
+
+        boolean correctLogin = true;
+
     }
     public void forgotPwd (View view){
 
