@@ -36,7 +36,8 @@
         android:text="Sign Up"
         android:id="@+id/button"
         android:layout_alignTop="@+id/button2"
-        android:layout_alignStart="@+id/password" />
+        android:layout_alignStart="@+id/password"
+        android:onClick ="signUp"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -45,7 +46,8 @@
         android:id="@+id/button2"
         android:layout_below="@+id/password"
         android:layout_alignEnd="@+id/password"
-        android:layout_marginTop="35dp" />
+        android:layout_marginTop="35dp"
+        android:onClick ="login"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -67,5 +69,6 @@
         android:id="@+id/forgot"
         android:layout_below="@+id/password"
         android:layout_alignEnd="@id/password"
-        android:textColor="#a40000ff" />
+        android:textColor="#a40000ff"
+        android:onClick = "forgotPwd" />
 </RelativeLayout>
