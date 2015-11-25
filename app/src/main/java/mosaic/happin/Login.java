@@ -3,6 +3,7 @@ package mosaic.happin;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class Login extends AppCompatActivity {
@@ -14,7 +15,10 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View view) {
-        TextView email = (TextView) findViewById(R.id.email);
+        EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.email);
+        String email = emailField.getText().toString();
+        String password = passwordField.getText().toString();
     }
 
     public void signUp(View view) {
