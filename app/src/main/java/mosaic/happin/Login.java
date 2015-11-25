@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
 
@@ -16,9 +17,18 @@ public class Login extends AppCompatActivity {
 
     public void login(View view) {
         EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
+        boolean validUserAndPassword = true;
+        if (validUserAndPassword){
+
+        }
+        else{
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Wrong username or password",Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     public void signUp(View view) {
