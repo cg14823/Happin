@@ -68,10 +68,10 @@
         android:id="@+id/forgot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/password"
+        android:layout_below="@+id/password"
         android:onClick="forgotPwd"
         android:text="Forgot password?"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="#a40000ff"
-        android:layout_below="@+id/password"
-        android:layout_alignEnd="@+id/password" />
+        android:textColor="#a40000ff" />
 </RelativeLayout>

@@ -19,13 +19,12 @@ public class Login extends AppCompatActivity {
     public void login(View view) {
 
         boolean validUserAndPassword = validLogIn(view);
-        if (validUserAndPassword){
+        if (validUserAndPassword) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-        }
-        else{
+        } else {
             Toast toast = Toast.makeText(getApplicationContext(),
-                    "Wrong username or password",Toast.LENGTH_SHORT);
+                    "Wrong username or password", Toast.LENGTH_SHORT);
             toast.show();
         }
     }
@@ -38,7 +37,7 @@ public class Login extends AppCompatActivity {
 
     }
 
-    private boolean validLogIn (View view){
+    private boolean validLogIn(View view) {
         EditText emailField = (EditText) findViewById(R.id.email);
         EditText passwordField = (EditText) findViewById(R.id.password);
         String email = emailField.getText().toString();
