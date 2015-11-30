@@ -17,11 +17,8 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View view) {
-        EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.password);
-        String email = emailField.getText().toString();
-        String password = passwordField.getText().toString();
-        boolean validUserAndPassword = true;
+
+        boolean validUserAndPassword = validLogIn(view);
         if (validUserAndPassword){
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -39,6 +36,15 @@ public class Login extends AppCompatActivity {
 
     public void forgotPwd(View view) {
 
+    }
+
+    private boolean validLogIn (View view){
+        EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
+        String email = emailField.getText().toString();
+        String password = passwordField.getText().toString();
+        if (email.equals("dev@dev.com") && password.equals("dev")) return true;
+        else return false;
     }
 
 }

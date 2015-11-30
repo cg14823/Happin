@@ -12,22 +12,16 @@ import android.widget.TextView;
 
 public class FragmentMain extends Fragment {
 
-    public static final String ARG_PAGE = "ARG_PAGE";
+    public FragmentMain(){}
 
-    private int mPage;
-
-    public static  FragmentMain newInstance (int page) {
-        Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
+    public static  FragmentMain newInstance () {
         FragmentMain fragment = new FragmentMain();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPage = getArguments().getInt(ARG_PAGE);
     }
 
     @Override
@@ -36,6 +30,7 @@ public class FragmentMain extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         return view;
     }
+
 
 
 }

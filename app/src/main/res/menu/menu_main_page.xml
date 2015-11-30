@@ -5,6 +5,20 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title=""
+        android:title="@string/mainMenuSettings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/signOut"
+        android:orderInCategory="100"
+        android:title="@string/signOut"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/search"
+        android:title="@string/search"
+        android:icon ="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+
 </menu>
