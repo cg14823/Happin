@@ -24,8 +24,6 @@ captures
 .idea/runConfigurations.xml
 .idea/misc.xml
 .idea/vcs.xml
-app/build.gradle
-build.gradle
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
