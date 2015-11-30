@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,13 +17,11 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View view) {
-        EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.password);
-        String email = emailField.getText().toString();
-        String password = passwordField.getText().toString();
-        boolean validUserAndPassword = true;
-        if (validUserAndPassword) {
 
+        boolean validUserAndPassword = validLogIn(view);
+        if (validUserAndPassword) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
             Toast toast = Toast.makeText(getApplicationContext(),
                     "Wrong username or password", Toast.LENGTH_SHORT);
@@ -36,6 +35,15 @@ public class Login extends AppCompatActivity {
 
     public void forgotPwd(View view) {
 
+    }
+
+    private boolean validLogIn(View view) {
+        EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
+        String email = emailField.getText().toString();
+        String password = passwordField.getText().toString();
+        if (email.equals("dev@dev.com") && password.equals("dev")) return true;
+        else return false;
     }
 
 }
