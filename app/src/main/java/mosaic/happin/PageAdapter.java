@@ -6,12 +6,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 
-public class PageAdapter extends FragmentPagerAdapter{
+public class PageAdapter extends FragmentPagerAdapter {
     final int PAGE_COUNT = 4;
-    private String tabTitles[] = new String[] { "Main", "Profile", "Ranking","Game" };
+    private String tabTitles[] = new String[]{"Main", "Profile", "Ranking", "Game"};
     private Context context;
 
-    public PageAdapter (FragmentManager fm, Context context) {
+    public PageAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
     }
@@ -23,7 +23,7 @@ public class PageAdapter extends FragmentPagerAdapter{
 
     @Override
     public Fragment getItem(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 return new FragmentMain();
             case 1:

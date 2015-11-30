@@ -12,9 +12,10 @@ import android.widget.TextView;
 
 public class FragmentMain extends Fragment {
 
-    public FragmentMain(){}
+    public FragmentMain() {
+    }
 
-    public static  FragmentMain newInstance () {
+    public static FragmentMain newInstance() {
         FragmentMain fragment = new FragmentMain();
         return fragment;
     }
@@ -30,7 +31,6 @@ public class FragmentMain extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         return view;
     }
-
 
 
 }
