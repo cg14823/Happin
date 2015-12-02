@@ -18,7 +18,7 @@
         android:layout_marginTop="180dp"
         android:ems="10"
         android:inputType="textEmailAddress"
-        android:text="email"
+        android:hint="email"
         android:textColor="#dfd7d7" />
 
     <EditText
@@ -30,7 +30,7 @@
         android:layout_marginTop="15dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:text="password"
+        android:hint="password"
         android:textColor="#e5e1e1" />
 
     <Button

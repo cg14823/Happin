@@ -25,7 +25,7 @@ public class PageAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new FragmentMain();
+                return new MapsActivity();
             case 1:
                 return new Profile();
             case 2:
