@@ -13,7 +13,8 @@ import android.view.View;
 
 /*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
 * Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
-* Log 2: La ira me inunda he probado 4 combinaciones han pasado 4 horas. A ver si esta funciona*/
+* Log 2: La ira me inunda he probado 4 combinaciones han pasado 3 horas. A ver si esta funciona
+* Log 3: Utilizando MapView y FragmentTabHost parece funcionar!*/
 
 public class MainActivity extends AppCompatActivity {
     private FragmentTabHost mTabHost;
@@ -21,14 +22,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Intent intent = getIntent();
+
+        //add toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Happin");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        // create tabhost
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
+        // add 4 tabs
         mTabHost.addTab(
                 mTabHost.newTabSpec("Map").setIndicator("Map", null),
                 Map.class, null);
