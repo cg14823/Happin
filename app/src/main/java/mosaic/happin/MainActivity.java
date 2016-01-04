@@ -3,6 +3,7 @@ package mosaic.happin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,8 +11,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+/*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
+* Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
+* Log 2: La ira me inunda he probado 4 combinaciones han pasado 4 horas. A ver si esta funciona*/
 
+public class MainActivity extends AppCompatActivity {
+    private FragmentTabHost mTabHost;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,15 +26,21 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("Happin");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new PageAdapter(getSupportFragmentManager(),
-                MainActivity.this));
-
-        // Give the TabLayout the ViewPager
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("Map").setIndicator("Map", null),
+                Map.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("Ranking").setIndicator("Ranking", null),
+                Ranking.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("Game").setIndicator("Game", null),
+                Game.class, null);
+        mTabHost.addTab(
+                mTabHost.newTabSpec("Profile").setIndicator("Profile", null),
+                Profile.class, null);
     }
 
     @Override
