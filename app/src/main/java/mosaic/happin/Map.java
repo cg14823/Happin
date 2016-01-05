@@ -50,6 +50,7 @@ public class Map extends Fragment {
         mMap = mapView.getMap();
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setTiltGesturesEnabled(false);
 
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
@@ -63,42 +64,10 @@ public class Map extends Fragment {
         mMap.addMarker(new MarkerOptions().position(Bristol).title("Bristol"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Bristol, 13));
 
-        //add location button click listener
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                // Acquire a reference to the system Location Manager
-                LocationManager manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-                if(!manager.isProviderEnabled( LocationManager.GPS_PROVIDER )){
-                    // If Location disable create a alert dialog
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-                    alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
-                            // Have to respond to this message not cancelable
-                            .setCancelable(false)
-                            // If yes open setting page to enable location
-                            .setPositiveButton("Yes",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            // intent calls the android activity of location settings
-                                            Intent callGPSSettingIntent = new Intent(
-                                                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                            startActivity(callGPSSettingIntent);
-                                        }
-                                    });
-                    //if no close the dialog
-                    alertDialogBuilder.setNegativeButton("Maybe Later",
-                            new DialogInterface.OnClickListener(){
-                                public void onClick(DialogInterface dialog, int id){
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert = alertDialogBuilder.create();
-                    alert.show();
-                }
-
-                return false;
-            }
-        });
+        /* serLocationCheck creates a location button listener, if someone clicks it will check if
+        * the location serive is enabled, if it is not it ask you if you want to activate it
+        * otherwise it will just zoom to your current location (High-precision not best choice?)*/
+        setLocationCheck();
 
         return view;
     }
@@ -128,5 +97,42 @@ public class Map extends Fragment {
         toast.show();
     }
 
+    private void setLocationCheck(){
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                // Acquire a reference to the system Location Manager
+                LocationManager manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                if(!manager.isProviderEnabled( LocationManager.GPS_PROVIDER )){
+                    // If Location disable create a alert dialog
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+                    alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
+                            // Have to respond to this message not cancelable
+                            .setCancelable(false)
+                                    // If yes open setting page to enable location
+                            .setPositiveButton("Yes",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // intent calls the android activity of location settings
+                                            Intent callGPSSettingIntent = new Intent(
+                                                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                            startActivity(callGPSSettingIntent);
+                                        }
+                                    });
+                    //if no close the dialog
+                    alertDialogBuilder.setNegativeButton("Maybe Later",
+                            new DialogInterface.OnClickListener(){
+                                public void onClick(DialogInterface dialog, int id){
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alertDialogBuilder.create();
+                    alert.show();
+                }
+
+                return false;
+            }
+        });
+    }
 
 }
