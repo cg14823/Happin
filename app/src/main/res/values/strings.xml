@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">Happin</string>
+    <string name="logo_text">HAPPIN</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="mainMenuSettings">Settings</string>
     <string name="signOut">Sign Out</string>
     <string name="search">Search</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="google_maps_key">AIzaSyBv1SrY0OrTLmNZ1Wd5Noe1x9HRZzPf8bo</string>
 
 </resources>
