@@ -1,9 +1,11 @@
 package mosaic.happin;
 
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SignUp extends AppCompatActivity {
@@ -12,6 +14,9 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup);
+        TextView logo = (TextView) findViewById(R.id.logo);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/EvelethDotBold.otf");
+        logo.setTypeface(custom_font);
     }
     public void signUp(View view){
         EditText nameField = (EditText) findViewById(R.id.nameField);

@@ -58,18 +58,18 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="90dp"
         android:onClick="signUp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Happin"
-        android:id="@+id/Logo"
-        android:layout_marginTop="48dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="44dp"
-        android:typeface="sans"
+        android:text="@string/logo_text"
+        android:id="@+id/logo"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:textColor="#e6007e"
+        android:textSize="60dp" />
+
 </RelativeLayout>

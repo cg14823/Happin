@@ -53,18 +53,6 @@
         android:text="LogIn" />
 
     <TextView
-        android:id="@+id/LOGO"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="47dp"
-        android:text="Happin"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="44dp"
-        android:typeface="sans" />
-
-    <TextView
         android:id="@+id/forgot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,4 +62,16 @@
         android:text="Forgot password?"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#a40000ff" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/logo_text"
+        android:id="@+id/logo"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="55dp"
+        android:textColor="#e6007e"
+        android:textSize="60dp" />
+
 </RelativeLayout>

@@ -1,15 +1,14 @@
 package mosaic.happin;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
+import android.widget.TextView;
 
 /*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
 * Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
@@ -27,7 +26,12 @@ public class MainActivity extends AppCompatActivity {
 
         //add toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Happin");
+        toolbar.setTitle("");
+        TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        // title of toolbar in verdana bold as required by happycity
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/verdanab.ttf");
+        title.setTypeface(custom_font);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 

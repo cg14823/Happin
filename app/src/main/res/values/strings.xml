@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Happin</string>
+    <string name="logo_text">HAPPIN</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="mainMenuSettings">Settings</string>
     <string name="signOut">Sign Out</string>
