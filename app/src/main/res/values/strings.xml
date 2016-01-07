@@ -5,6 +5,7 @@
     <string name="mainMenuSettings">Settings</string>
     <string name="signOut">Sign Out</string>
     <string name="search">Search</string>
+    <string name="add">Add</string>
     <string name="google_maps_key">AIzaSyBv1SrY0OrTLmNZ1Wd5Noe1x9HRZzPf8bo</string>
 
 </resources>
