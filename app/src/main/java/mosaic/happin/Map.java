@@ -1,6 +1,5 @@
 package mosaic.happin;
 
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,9 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.location.*;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -21,6 +17,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -60,18 +58,84 @@ public class Map extends Fragment {
             e.printStackTrace();
         }
 
-        LatLng Bristol = new LatLng(51.465411, -2.585911);
-        mMap.addMarker(new MarkerOptions().position(Bristol).title("Bristol"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Bristol, 13));
+        setMarkersOnMap();
 
-        /* serLocationCheck creates a location button listener, if someone clicks it will check if
-        * the location serive is enabled, if it is not it ask you if you want to activate it
+        /* setLocationCheck creates a location button listener, if someone clicks it will check if
+        * the location service is enabled, if it is not it ask you if you want to activate it
         * otherwise it will just zoom to your current location (High-precision not best choice?)*/
         setLocationCheck();
 
         return view;
     }
 
+    private void setLocationCheck(){
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                // Acquire a reference to the system Location Manager
+                LocationManager manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    // If Location disable create a alert dialog
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+                    alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
+                            // Have to respond to this message not cancelable
+                            .setCancelable(false)
+                                    // If yes open setting page to enable location
+                            .setPositiveButton("Yes",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // intent calls the android activity of location settings
+                                            Intent callGPSSettingIntent = new Intent(
+                                                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                            startActivity(callGPSSettingIntent);
+                                        }
+                                    });
+                    //if no close the dialog
+                    alertDialogBuilder.setNegativeButton("Maybe Later",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = alertDialogBuilder.create();
+                    alert.show();
+                }
+
+                return false;
+            }
+        });
+    }
+
+
+    private void setMarkersOnMap(){
+        /*Should get data form servers and transform it to a array of places*/
+        ArrayList<Place> places = getPlaces();
+        for (Place p : places){
+            mMap.addMarker(new MarkerOptions().position(p.getLatlng()).title(p.getName())
+                    .snippet(p.getDescription()));
+        }
+        LatLng bristol = new LatLng(51.465411, -2.585911);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
+    }
+
+    /* This function should ge the top rated places from the server*/
+    private ArrayList<Place> getPlaces(){
+        // SERVER STUFF HERE!
+        ArrayList<Place> places = new ArrayList<Place>();
+        // FAKE PLACES
+        LatLng bristol = new LatLng(51.465411, -2.585911);
+        Place bristolP = new Place(bristol, "Bristol", "Center of bristol");
+        LatLng l1 = new LatLng(51.452328, -2.600723);
+        Place colGreen = new Place(l1, "College Green", "College green park in front of cathedral");
+        LatLng l2 = new LatLng(51.456032, -2.627092);
+        Place susbridge = new Place(l2, "Suspension Bridge", "Great views of suspension bridge" +
+                " and nice park");
+        places.add(bristolP);
+        places.add(colGreen);
+        places.add(susbridge);
+
+        return places;
+    }
 
     @Override
     public void onResume() {
@@ -95,44 +159,6 @@ public class Map extends Fragment {
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
-    }
-
-    private void setLocationCheck(){
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                // Acquire a reference to the system Location Manager
-                LocationManager manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-                if(!manager.isProviderEnabled( LocationManager.GPS_PROVIDER )){
-                    // If Location disable create a alert dialog
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-                    alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
-                            // Have to respond to this message not cancelable
-                            .setCancelable(false)
-                                    // If yes open setting page to enable location
-                            .setPositiveButton("Yes",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            // intent calls the android activity of location settings
-                                            Intent callGPSSettingIntent = new Intent(
-                                                    android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                            startActivity(callGPSSettingIntent);
-                                        }
-                                    });
-                    //if no close the dialog
-                    alertDialogBuilder.setNegativeButton("Maybe Later",
-                            new DialogInterface.OnClickListener(){
-                                public void onClick(DialogInterface dialog, int id){
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert = alertDialogBuilder.create();
-                    alert.show();
-                }
-
-                return false;
-            }
-        });
     }
 
 }
