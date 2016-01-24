@@ -120,7 +120,7 @@ public class Map extends Fragment {
 
     /* This function should ge the top rated places from the server*/
     private ArrayList<Place> getPlaces(){
-        // SERVER STUFF HERE!
+        // SERVER STUFF HERE! <---------------------------------------------------------------------
         ArrayList<Place> places = new ArrayList<Place>();
         // FAKE PLACES
         LatLng bristol = new LatLng(51.465411, -2.585911);

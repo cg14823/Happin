@@ -35,6 +35,7 @@ public class Profile extends Fragment {
     }
 
     private void setProfile(View view){
+        // SERVER STUFF HERE! <---------------------------------------------------------------------
         // get image name and age and put it in profile.
     }
 
@@ -60,12 +61,14 @@ public class Profile extends Fragment {
     }
     // Goes to the server and gets the Places you´ve liked
     private ArrayList<Place> getLP(){
+        // SERVER STUFF HERE! <---------------------------------------------------------------------
         ArrayList<Place> places = new ArrayList<Place>();
         return places;
     }
 
     // Goes to the server and gets the Places you´ve added
     private ArrayList<Place> getYP(){
+        // SERVER STUFF HERE! <---------------------------------------------------------------------
         ArrayList<Place> places = new ArrayList<Place>();
         return places;
     }
