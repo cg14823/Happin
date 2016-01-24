@@ -5,6 +5,15 @@
     <!--
         ADD AN IMAGE OPTION
     -->
+    <ImageView
+        android:id="@+id/placeImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:longClickable="true"
+        android:src="@mipmap/emptyplace"
+        android:onClick="addImage"/>
+
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
@@ -15,7 +24,7 @@
         android:layout_marginBottom="4dp"
         android:hint="name" />
     <EditText
-        android:id="@+id/Location"
+        android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -25,7 +34,7 @@
         android:fontFamily="sans-serif"
         android:hint="location"/>
     <EditText
-        android:id="@+id/Description"
+        android:id="@+id/description"
         android:inputType="textLongMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

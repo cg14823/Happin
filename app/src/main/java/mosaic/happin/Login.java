@@ -51,14 +51,12 @@ public class Login extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         // message for password recovery
         AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-        recPassDialog.setTitle("Password Recovery");
-        recPassDialog.setMessage("Please enter your email");
         recPassDialog.setView(inflater.inflate(R.layout.dialog_recpswrd, null));
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 EditText email = (EditText)findViewById(R.id.email);
                 if (verifyEmail(email.getText().toString()))
-                    showToast("New password send to youir email");
+                    showToast("New password sent to your email");
                 else
                     showToast("Invalid email");
             }
