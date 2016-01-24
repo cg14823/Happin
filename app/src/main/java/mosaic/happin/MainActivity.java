@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.signOut:
                 break;
+            case R.id.addbutton:
+                
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
