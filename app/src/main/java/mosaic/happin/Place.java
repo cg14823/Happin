@@ -17,6 +17,7 @@ public class Place {
         this.name = name;
         this. description = description;
     }
+    public Place(){}
 
     //Create an image setter and getter
 
