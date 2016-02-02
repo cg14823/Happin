@@ -6,7 +6,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import java.util.ArrayList;
 
 
@@ -18,6 +26,8 @@ public class Profile extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
 
     private int mPage;
+    Firebase myFirebaseRef;
+    private User user;
 
     public Profile() {
         // Required empty public constructor
@@ -26,17 +36,42 @@ public class Profile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Firebase.setAndroidContext(getContext());
+        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        setProfile(view);
         addLP(view);
         addYP(view);
+
         return view;
 
     }
 
     private void setProfile(View view){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
-        // get image name and age and put it in profile.
+        String userId = MainActivity.userId;
+        final TextView nameField = (TextView) view.findViewById(R.id.details);
+        final TextView points = (TextView) view.findViewById(R.id.points);
+        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/");
+        myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if(snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    nameField.setText(user.getName());
+                    points.setText("Points:" +user.getPoints());
+                }
+                else
+                    showToast("ERROR!");
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
+
     }
 
     private void addLP(View view){
@@ -73,4 +108,13 @@ public class Profile extends Fragment {
         return places;
     }
 
+    private void setUser(User user){
+        this.user = new User(user);
+    }
+
+    private void showToast(String message){
+        Toast toast = Toast.makeText(getContext(),
+                message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
 }
