@@ -1,9 +1,12 @@
 package mosaic.happin;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,6 +24,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.location.LocationListener;
+import com.google.android.gms.maps.model.LatLng;
+
 /*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
 * Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
 * Log 2: La ira me inunda he probado 4 combinaciones han pasado 3 horas. A ver si esta funciona
@@ -34,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
+    private Location location;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,24 +101,110 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean addPlace(){
-        LayoutInflater inflater = getLayoutInflater();
-        // message for password recovery
-        AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-        recPassDialog.setView(inflater.inflate(R.layout.dialog_add_place, null));
 
-        recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //STUFF
+        final LatLng newplace;
+        double longitude = 0; double latitude = 0;
+        final LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
+        final LocationListener locationListener = new LocationListener() {
+
+            public void onLocationChanged(Location location) {
+                changeLocation(location);
             }
-        });
-        recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            // If Location disable create a alert dialog
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to" +
+                    " enable it? It is required to add a place.")
+                    // Have to respond to this message not cancelable
+                    .setCancelable(false)
+                            // If yes open setting page to enable location
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // intent calls the android activity of location settings
+                                    Intent callGPSSettingIntent = new Intent(
+                                            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(callGPSSettingIntent);
+                                }
+                            });
+            //if no close the dialog
+            alertDialogBuilder.setNegativeButton("Maybe Later",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = alertDialogBuilder.create();
+            alert.show();
+        }
+        else {
+            try {
+                Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location != null) {
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
+                else{
+                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+                }
             }
-        });
-        AlertDialog alert = recPassDialog.create();
-        alert.show();
+            catch (SecurityException e){
+                e.printStackTrace();
+            }
+
+            LayoutInflater inflater = getLayoutInflater();
+            if (latitude == 0 && longitude == 0){
+                if (location != null)
+                    newplace = new LatLng(location.getLatitude(), location.getLongitude());
+                else {
+                    showToast("YOUR MOM IS A BISH");
+                    newplace = new LatLng(0, 0);
+                }
+            }
+            else{newplace = new LatLng(latitude,longitude);}
+
+            // message for password recovery
+            final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
+            recPassDialog.setView(inflater.inflate(R.layout.dialog_add_place, null));
+
+            recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    EditText locfield = (EditText)findViewById(R.id.location);
+                    locfield.setText("("+newplace.latitude+", "+newplace.longitude+")");
+                    try{
+                        manager.removeUpdates(locationListener);
+                    }
+                    catch(SecurityException e){}
+
+                    //Build a place object and send to server to be stored
+
+                }
+            });
+            recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alert = recPassDialog.create();
+            alert.show();
+            return true;
+
+        }
+        return false;
+    }
+
+    private boolean placeDetails(){
+
+
         return false;
     }
 
@@ -135,5 +230,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void changeLocation(Location loc){
+        location = loc;
+    }
+
 }
 

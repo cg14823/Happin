@@ -15,30 +15,54 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
 
 public class Login extends AppCompatActivity {
+
+    Firebase myFirebaseRef;
+    String userId;
+    String userToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
+        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
+
         setContentView(R.layout.activity_login);
         // logo using Eveleth Dot Bold as required by happy city
         TextView logo = (TextView) findViewById(R.id.logo);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/EvelethDotBold.otf");
         logo.setTypeface(custom_font);
+
     }
 
     public void login(View view) {
-
-        boolean validUserAndPassword = validLogIn(view);
         EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
         String email = emailField.getText().toString();
-        if (validUserAndPassword) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } else {
-            showToast("Wrong username or password");
-        }
+        String pass = passwordField.getText().toString();
+        myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                showToast("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+                userId = authData.getUid();
+                userToken = authData.getToken();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                // there was an error
+                showToast("Wrong username or password");
+            }
+        });
+
     }
 
     public void signUp(View view) {
@@ -70,15 +94,6 @@ public class Login extends AppCompatActivity {
         alert.show();
     }
 
-    private boolean validLogIn(View view) {
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
-        EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.password);
-        String email = emailField.getText().toString();
-        String password = passwordField.getText().toString();
-        if (email.equals("dev@dev.com") && password.equals("dev")) return true;
-        else return true;
-    }
     private boolean verifyEmail (String email){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         return false;
@@ -89,4 +104,5 @@ public class Login extends AppCompatActivity {
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
+
 }
