@@ -11,7 +11,6 @@ public class User {
     private int points;
     private String provider;
     private boolean verified;
-    private Bitmap profilePic;
     public User(){
 
     }
@@ -27,7 +26,6 @@ public class User {
         email =user.getEmail();
         points = user.getPoints();
         verified = user.getVerified();
-        profilePic = user.getProfilePic();
         provider = user.getProvider();
 
     }
@@ -35,9 +33,9 @@ public class User {
     public String getName(){return name;}
     public String getEmail(){return email;}
     public int getPoints(){return points;}
-    public boolean getVerified(){return verified;}
     public String getProvider(){return provider;}
-    public Bitmap getProfilePic(){return profilePic;}
+    public boolean getVerified(){return verified;}
+
 
     public void changeName(String name){this.name = name;}
     public void incrementPoints(int points){this.points += points;}

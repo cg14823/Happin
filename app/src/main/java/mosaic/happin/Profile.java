@@ -51,7 +51,6 @@ public class Profile extends Fragment {
     private void setProfile(View view){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         String userId = MainActivity.userId;
-        showToast(userId);
         final TextView nameField = (TextView) view.findViewById(R.id.details);
         final TextView points = (TextView) view.findViewById(R.id.points);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/");
@@ -59,10 +58,9 @@ public class Profile extends Fragment {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    showToast("User retrived");
                     User user = snapshot.getValue(User.class);
                     nameField.setText(user.getName());
-                    points.setText(user.getPoints());
+                    points.setText("Points:" +user.getPoints());
                 }
                 else
                     showToast("ERROR!");
