@@ -23,7 +23,6 @@ import com.firebase.client.FirebaseError;
 public class Login extends AppCompatActivity {
 
     Firebase myFirebaseRef;
-    String userId;
     String userToken;
 
     @Override
@@ -48,10 +47,9 @@ public class Login extends AppCompatActivity {
         myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
-                showToast("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
-                userId = authData.getUid();
                 userToken = authData.getToken();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("USER_ID", authData.getUid());
                 startActivity(intent);
 
             }
@@ -59,7 +57,7 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 // there was an error
-                showToast("Wrong username or password");
+                showToast(firebaseError.getMessage());
             }
         });
 

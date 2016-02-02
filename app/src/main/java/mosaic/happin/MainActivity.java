@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
     private Location location;
+    public static String userId;
 
 
     @Override
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
+        userId = intent.getStringExtra("USER_ID");
 
         //add toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.HashMap;
 import java.util.Map;
 
 import com.firebase.client.Firebase;
@@ -35,14 +37,17 @@ public class SignUp extends AppCompatActivity {
         EditText passwordField = (EditText) findViewById(R.id.passwordField);
         EditText emailField = (EditText) findViewById(R.id.emailField);
         if (passwordMatch(view)){
-            String name = nameField.getText().toString();
+            final String name = nameField.getText().toString();
             String password = passwordField.getText().toString();
-            String email = emailField.getText().toString();
+            final String email = emailField.getText().toString();
 
             myFirebaseRef.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
                 @Override
                 public void onSuccess(Map<String, Object> result) {
-                    showToast("Successfully created user account with uid: " + result.get("uid"));
+                    showToast("Successfully created new user");
+                    User newUser = new User(name,email,"password");
+
+                    myFirebaseRef.child("users").child(result.get("uid").toString()).setValue(newUser);
                 }
                 @Override
                 public void onError(FirebaseError firebaseError) {
@@ -69,9 +74,4 @@ public class SignUp extends AppCompatActivity {
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-}
-
-class User {
-    String name;
-    String email;
 }
