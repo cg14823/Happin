@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -14,6 +16,7 @@ import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import android.location.LocationListener;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.ByteArrayOutputStream;
 
 /*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
 * Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
@@ -42,11 +52,15 @@ public class MainActivity extends AppCompatActivity {
     private View dialogView;
     private Location location;
     public static String userId;
+    Firebase myFirebaseRef;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
+        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
@@ -104,22 +118,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean addPlace(){
 
-        final LatLng newplace;
-        double longitude = 0; double latitude = 0;
         final LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        final LocationListener locationListener = new LocationListener() {
-
-            public void onLocationChanged(Location location) {
-                changeLocation(location);
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-            public void onProviderEnabled(String provider) {}
-
-            public void onProviderDisabled(String provider) {}
-        };
 
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             // If Location disable create a alert dialog
@@ -149,52 +149,79 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         }
         else {
+            double longitude = 0;
+            double latitude =0;
+            boolean locationNull = true;
             try {
                 Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location != null) {
                     longitude = location.getLongitude();
                     latitude = location.getLatitude();
-                }
-                else{
-                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+                    locationNull = false;
                 }
             }
             catch (SecurityException e){
                 e.printStackTrace();
             }
-
+            LatLng newplace = new LatLng(0, 0);;
             LayoutInflater inflater = getLayoutInflater();
             if (latitude == 0 && longitude == 0){
                 if (location != null)
                     newplace = new LatLng(location.getLatitude(), location.getLongitude());
                 else {
                     showToast("YOUR MOM IS A BISH");
-                    newplace = new LatLng(0, 0);
+
                 }
             }
             else{newplace = new LatLng(latitude,longitude);}
 
             // message for password recovery
             final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-            recPassDialog.setView(inflater.inflate(R.layout.dialog_add_place, null));
+            final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
+            recPassDialog.setView(dialogView);
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    EditText locfield = (EditText)findViewById(R.id.location);
-                    locfield.setText("("+newplace.latitude+", "+newplace.longitude+")");
-                    try{
-                        manager.removeUpdates(locationListener);
-                    }
-                    catch(SecurityException e){}
+                    EditText locfield = (EditText)dialogView.findViewById(R.id.location);
+                    EditText nameField = (EditText)dialogView.findViewById(R.id.name);
+                    EditText description = (EditText)dialogView.findViewById(R.id.description);
+                    ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
+                    locfield.setText("0,0");
+                    Bitmap bmp =  ((BitmapDrawable)image.getDrawable()).getBitmap();
+                    ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
+                    bmp.recycle();
+                    byte[] byteArray = bYtE.toByteArray();
+                    String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    final Place place = new Place(new LatLng(0,0),nameField.getText().toString(),
+                            description.getText().toString(),imageFile);
+
+                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                showToast("Place already exists");
+                            } else{
+                                myFirebaseRef.push().setValue(place);
+                                showToast("Place already exists");
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
+                    });
 
                     //Build a place object and send to server to be stored
 
-                }
-            });
-            recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
-                }
+            }
             });
             AlertDialog alert = recPassDialog.create();
             alert.show();

@@ -9,13 +9,22 @@ public class Place {
     private LatLng location;
     private String name;
     private String description;
-    private Bitmap img;
+    private String img;
+    private int likes;
     //add image
 
     public Place(LatLng location, String name, String description){
         this.location = location;
         this.name = name;
         this. description = description;
+        likes = 0;
+    }
+    public Place(LatLng location, String name, String description, String img){
+        this.location = location;
+        this.name = name;
+        this. description = description;
+        this.img =img;
+        likes = 0;
     }
     public Place(){}
 
@@ -31,9 +40,9 @@ public class Place {
     public String getDescription(){
         return description;
     }
+    public String getImage(){return img;}
+    public int getLikes(){return likes;}
 
-    public Bitmap getImg(){
-        return img;
-    }
+    public void addLike (){likes +=1;}
 
 }
