@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import android.location.LocationListener;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("");
         TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
         // title of toolbar in verdana bold as required by Happy City
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/verdanab.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
         title.setTypeface(custom_font);
 
         setSupportActionBar(toolbar);
@@ -102,10 +103,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean addPlace(){
+    private boolean addPlace() {
 
         final LatLng newplace;
-        double longitude = 0; double latitude = 0;
+        double longitude = 0;
+        double latitude = 0;
         final LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         final LocationListener locationListener = new LocationListener() {
@@ -114,11 +116,14 @@ public class MainActivity extends AppCompatActivity {
                 changeLocation(location);
             }
 
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
 
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(String provider) {
+            }
 
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(String provider) {
+            }
         };
 
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -147,32 +152,30 @@ public class MainActivity extends AppCompatActivity {
                     });
             AlertDialog alert = alertDialogBuilder.create();
             alert.show();
-        }
-        else {
+        } else {
             try {
                 Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location != null) {
                     longitude = location.getLongitude();
                     latitude = location.getLatitude();
+                } else {
+                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                 }
-                else{
-                    manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-                }
-            }
-            catch (SecurityException e){
+            } catch (SecurityException e) {
                 e.printStackTrace();
             }
 
             LayoutInflater inflater = getLayoutInflater();
-            if (latitude == 0 && longitude == 0){
+            if (latitude == 0 && longitude == 0) {
                 if (location != null)
                     newplace = new LatLng(location.getLatitude(), location.getLongitude());
                 else {
                     showToast("YOUR MOM IS A BISH");
                     newplace = new LatLng(0, 0);
                 }
+            } else {
+                newplace = new LatLng(latitude, longitude);
             }
-            else{newplace = new LatLng(latitude,longitude);}
 
             // message for password recovery
             final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
@@ -180,12 +183,12 @@ public class MainActivity extends AppCompatActivity {
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    EditText locfield = (EditText)findViewById(R.id.location);
-                    locfield.setText("("+newplace.latitude+", "+newplace.longitude+")");
-                    try{
+                    EditText locfield = (EditText) findViewById(R.id.location);
+                    locfield.setText("(" + newplace.latitude + ", " + newplace.longitude + ")");
+                    try {
                         manager.removeUpdates(locationListener);
+                    } catch (SecurityException e) {
                     }
-                    catch(SecurityException e){}
 
                     //Build a place object and send to server to be stored
 
@@ -204,19 +207,19 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private boolean placeDetails(){
+    private boolean placeDetails() {
 
 
         return false;
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    public void addImage(View view){
+    public void addImage(View view) {
         dialogView = view;
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
@@ -224,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+            ImageView imageView = (ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -233,9 +236,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void changeLocation(Location loc){
+    private void changeLocation(Location loc) {
         location = loc;
     }
 
 }
-
