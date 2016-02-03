@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,13 +39,16 @@ import java.util.ArrayList;
 public class Map extends Fragment {
     private GoogleMap mMap;
     private MapView mapView;
+    Firebase ref;
+    ArrayList<Place> places;
     public Map (){}
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Firebase.setAndroidContext(getContext());
+        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         // Gets the MapView from the XML layout and creates it
@@ -121,7 +132,25 @@ public class Map extends Fragment {
     /* This function should ge the top rated places from the server*/
     private ArrayList<Place> getPlaces(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
-        ArrayList<Place> places = new ArrayList<Place>();
+        places = new ArrayList<Place>();
+        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
+        Query likeQuery = ref.orderByChild("likes").limitToLast(10);
+        likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot querySnapshot) {
+                ArrayList<Place> placesInquerry = new ArrayList<Place>();
+                Place place = querySnapshot.getValue(Place.class);
+                placesInquerry.add(place);
+                addPlacesassist(placesInquerry);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
+
+
         // FAKE PLACES
         LatLng bristol = new LatLng(51.465411, -2.585911);
         Place bristolP = new Place(bristol, "Bristol", "Center of bristol");
@@ -135,6 +164,10 @@ public class Map extends Fragment {
         places.add(susbridge);
 
         return places;
+    }
+    private void addPlacesassist(ArrayList<Place> places){
+        this.places.addAll(places);
+
     }
 
     @Override
