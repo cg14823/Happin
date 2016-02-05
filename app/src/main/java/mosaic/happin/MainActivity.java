@@ -37,14 +37,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 
-/*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
-* Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
-* Log 2: La ira me inunda he probado 4 combinaciones han pasado 3 horas. A ver si esta funciona
-* Log 3: Utilizando MapView y FragmentTabHost parece funcionar!
-* Log 4: Empezando a implementear la opcion para add lugares.
-* Log 5: Created most fields for the place entry. Starting work on image adding
-* Log 6: Failure to replace preset image for new image.
-* Log 7 : Image now replaces the preset image but it gets a weird size ratio.*/
+/*TYhings that need to be worked in next iteration;
+ Firstly need to make sure to places are not submited twice.
+ Work on getting a better respond time. (Maybe inverting order of calls).*/
 
 public class MainActivity extends AppCompatActivity {
     private FragmentTabHost mTabHost;
@@ -52,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private View dialogView;
     private Location location;
     public static String userId;
+    LocationListener locationListener;
     LocationManager manager;
     Firebase myFirebaseRef;
 
@@ -110,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.signOut:
                 break;
             case R.id.addbutton:
+                showToast("Getting your location");
                 getLocation();
                 break;
         }
@@ -146,12 +143,16 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         }
         else{
-            LocationListener locationListener = new LocationListener() {
+            locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
                     // Called when a new location is found by the network location provider.
                     if(!addPlace(location)){
                         showToast("Place could not be submitted");
                     }
+                    try {
+                       manager.removeUpdates(locationListener);
+                    }
+                    catch (SecurityException e){}
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -167,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean addPlace(final Location location){
+
         final LatLng placeloc = new LatLng(location.getLatitude(),location.getLongitude());
         LayoutInflater inflater = this.getLayoutInflater();
         final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
@@ -179,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
                 EditText nameField = (EditText)dialogView.findViewById(R.id.name);
                 EditText description = (EditText)dialogView.findViewById(R.id.description);
                 ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
-                locfield.setText(placeloc.toString());
                 Bitmap bmp =  ((BitmapDrawable)image.getDrawable()).getBitmap();
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
@@ -193,12 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            showToast("Place already exists");
-                        } else{
                             myFirebaseRef.push().setValue(place);
-                            showToast("Place already exists");
-                        }
+                            showToast("Place added");
                     }
 
                     @Override
@@ -209,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     });
+
     recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -219,12 +217,6 @@ public class MainActivity extends AppCompatActivity {
         alert.show();
         return true;
 
-    }
-
-    private boolean placeDetails(){
-
-
-        return false;
     }
 
     private void showToast(String message){
@@ -250,9 +242,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void changeLocation(Location loc){
-        location = loc;
-    }
 
 }
 

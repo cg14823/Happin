@@ -138,10 +138,7 @@ public class Map extends Fragment {
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
-                ArrayList<Place> placesInquerry = new ArrayList<Place>();
-                Place place = querySnapshot.getValue(Place.class);
-                placesInquerry.add(place);
-                addPlacesassist(placesInquerry);
+                showToast(querySnapshot.getValue(String.class));
             }
 
             @Override
