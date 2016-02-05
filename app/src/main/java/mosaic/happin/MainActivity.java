@@ -37,15 +37,22 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 
-/*TYhings that need to be worked in next iteration;
- Firstly need to make sure to places are not submited twice.
- Work on getting a better respond time. (Maybe inverting order of calls).*/
+/*Things that need to be worked in next iteration 2:
+ *Firstly need to make sure to places are not submitted twice.
+ *Work on getting a better respond time on location retrival. (Maybe inverting order of calls).
+ *Better way of storing the images in the server
+ *Converting a string into an image
+ *Displaying added places in the profile*/
+/*For iteration 3:
+* Add liking system
+* Add ranking system
+* Display liked places in the profile.
+* */
 
 public class MainActivity extends AppCompatActivity {
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
-    private Location location;
     public static String userId;
     LocationListener locationListener;
     LocationManager manager;
@@ -188,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 byte[] byteArray = bYtE.toByteArray();
                 String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 final Place place = new Place(placeloc,nameField.getText().toString(),
-                        description.getText().toString(),imageFile);
+                        description.getText().toString(),imageFile,userId);
 
                 myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
                 myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {

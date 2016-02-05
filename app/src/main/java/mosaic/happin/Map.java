@@ -138,7 +138,10 @@ public class Map extends Fragment {
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
-                showToast(querySnapshot.getValue(String.class));
+                for(DataSnapshot d : querySnapshot.getChildren()){
+                    showToast(d.getKey());
+                }
+                showToast(querySnapshot.getValue().toString());
             }
 
             @Override
@@ -149,16 +152,6 @@ public class Map extends Fragment {
 
 
         // FAKE PLACES
-        LatLng bristol = new LatLng(51.465411, -2.585911);
-        Place bristolP = new Place(bristol, "Bristol", "Center of bristol");
-        LatLng l1 = new LatLng(51.452328, -2.600723);
-        Place colGreen = new Place(l1, "College Green", "College green park in front of cathedral");
-        LatLng l2 = new LatLng(51.456032, -2.627092);
-        Place susbridge = new Place(l2, "Suspension Bridge", "Great views of suspension bridge" +
-                " and nice park");
-        places.add(bristolP);
-        places.add(colGreen);
-        places.add(susbridge);
 
         return places;
     }

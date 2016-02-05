@@ -11,20 +11,23 @@ public class Place {
     private String description;
     private String img;
     private int likes;
+    private String user;
     //add image
 
-    public Place(LatLng location, String name, String description){
+    public Place(LatLng location, String name, String description,String user){
         this.location = location;
         this.name = name;
         this. description = description;
         likes = 0;
+        this.user=user;
     }
-    public Place(LatLng location, String name, String description, String img){
+    public Place(LatLng location, String name, String description, String img,String user){
         this.location = location;
         this.name = name;
         this. description = description;
         this.img =img;
         likes = 0;
+        this.user = user;
     }
     public Place(){}
 
@@ -42,6 +45,7 @@ public class Place {
     }
     public String getImage(){return img;}
     public int getLikes(){return likes;}
+    public String getUser(){return user;}
 
     public void addLike (){likes +=1;}
 
