@@ -69,7 +69,7 @@ public class Map extends Fragment {
             e.printStackTrace();
         }
 
-        setMarkersOnMap();
+        getPlaces();
 
         /* setLocationCheck creates a location button listener, if someone clicks it will check if
         * the location service is enabled, if it is not it ask you if you want to activate it
@@ -118,46 +118,41 @@ public class Map extends Fragment {
     }
 
 
-    private void setMarkersOnMap(){
-        /*Should get data form servers and transform it to a array of places*/
-        ArrayList<Place> places = getPlaces();
-        for (Place p : places){
-            mMap.addMarker(new MarkerOptions().position(p.getLatlng()).title(p.getName())
-                    .snippet(p.getDescription()));
-        }
-        LatLng bristol = new LatLng(51.465411, -2.585911);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
-    }
-
     /* This function should ge the top rated places from the server*/
-    private ArrayList<Place> getPlaces(){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
+    private void getPlaces(){
         places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
-                for(DataSnapshot d : querySnapshot.getChildren()){
+                for (DataSnapshot d : querySnapshot.getChildren()) {
                     showToast(d.getKey());
-                }
-                showToast(querySnapshot.getValue().toString());
-            }
+                    ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                Place p  = dataSnapshot.getValue(Place.class);
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(),p.getLon()))
+                                        .title(p.getName()).snippet(p.getDescription()));
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                }
+            }
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
         });
 
-
-        // FAKE PLACES
-
-        return places;
-    }
-    private void addPlacesassist(ArrayList<Place> places){
-        this.places.addAll(places);
-
+        LatLng bristol = new LatLng(51.465411, -2.585911);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
     }
 
     @Override

@@ -33,23 +33,39 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 
 /*Things that need to be worked in next iteration 2:
+ *Password recovery email
  *Firstly need to make sure to places are not submitted twice.
- *Work on getting a better respond time on location retrival. (Maybe inverting order of calls).
+ *Work on getting a better respond time on location retrival. (Maybe inverting order of calls or using another API).
+ *Created a location calss to migrate all location stuff there.
  *Better way of storing the images in the server
  *Converting a string into an image
- *Displaying added places in the profile*/
+ *Displaying added places in the profile
+ * Create user-places table to find places added/liked by users fast*/
+
 /*For iteration 3:
 * Add liking system
 * Add ranking system
 * Display liked places in the profile.
 * */
 
-public class MainActivity extends AppCompatActivity {
+/*For iteration 4:
+* Commenting system
+* Verification email
+* Minimum password requirements
+* */
+
+/*For iteration 5:
+* Different screen compatibility
+* */
+
+public class MainActivity extends AppCompatActivity{
+
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
@@ -113,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.signOut:
                 break;
             case R.id.addbutton:
+                //gets Location first.
                 showToast("Getting your location");
                 getLocation();
                 break;
@@ -121,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getLocation(){
+        // Check if GPS active
         manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             // If Location disable create a alert dialog
@@ -150,9 +168,11 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         }
         else{
+            //Use location listener to get location
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
-                    // Called when a new location is found by the network location provider.
+                    /* Called when a new location is found by the network location provider.
+                    * Creates the dialog to get the rest of the details*/
                     if(!addPlace(location)){
                         showToast("Place could not be submitted");
                     }
@@ -175,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean addPlace(final Location location){
-
+        //Creates dialog to input place detail
         final LatLng placeloc = new LatLng(location.getLatitude(),location.getLongitude());
         LayoutInflater inflater = this.getLayoutInflater();
         final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
@@ -194,9 +214,10 @@ public class MainActivity extends AppCompatActivity {
                 bmp.recycle();
                 byte[] byteArray = bYtE.toByteArray();
                 String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                final Place place = new Place(placeloc,nameField.getText().toString(),
+                final Place place = new Place(placeloc.latitude, placeloc.longitude,
+                        nameField.getText().toString(),
                         description.getText().toString(),imageFile,userId);
-
+                //pushes to database with new unique id
                 myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
                 myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -248,7 +269,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
 }
 
