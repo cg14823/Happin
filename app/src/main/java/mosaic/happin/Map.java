@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,13 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,13 +39,16 @@ import java.util.ArrayList;
 public class Map extends Fragment {
     private GoogleMap mMap;
     private MapView mapView;
+    Firebase ref;
+    ArrayList<Place> places;
     public Map (){}
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Firebase.setAndroidContext(getContext());
+        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         // Gets the MapView from the XML layout and creates it
@@ -58,7 +69,7 @@ public class Map extends Fragment {
             e.printStackTrace();
         }
 
-        setMarkersOnMap();
+        getPlaces();
 
         /* setLocationCheck creates a location button listener, if someone clicks it will check if
         * the location service is enabled, if it is not it ask you if you want to activate it
@@ -107,34 +118,41 @@ public class Map extends Fragment {
     }
 
 
-    private void setMarkersOnMap(){
-        /*Should get data form servers and transform it to a array of places*/
-        ArrayList<Place> places = getPlaces();
-        for (Place p : places){
-            mMap.addMarker(new MarkerOptions().position(p.getLatlng()).title(p.getName())
-                    .snippet(p.getDescription()));
-        }
+    /* This function should ge the top rated places from the server*/
+    private void getPlaces(){
+        places = new ArrayList<Place>();
+        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
+        Query likeQuery = ref.orderByChild("likes").limitToLast(10);
+        likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot querySnapshot) {
+                for (DataSnapshot d : querySnapshot.getChildren()) {
+                    showToast(d.getKey());
+                    ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                Place p  = dataSnapshot.getValue(Place.class);
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(),p.getLon()))
+                                        .title(p.getName()).snippet(p.getDescription()));
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
+
         LatLng bristol = new LatLng(51.465411, -2.585911);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
-    }
-
-    /* This function should ge the top rated places from the server*/
-    private ArrayList<Place> getPlaces(){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
-        ArrayList<Place> places = new ArrayList<Place>();
-        // FAKE PLACES
-        LatLng bristol = new LatLng(51.465411, -2.585911);
-        Place bristolP = new Place(bristol, "Bristol", "Center of bristol");
-        LatLng l1 = new LatLng(51.452328, -2.600723);
-        Place colGreen = new Place(l1, "College Green", "College green park in front of cathedral");
-        LatLng l2 = new LatLng(51.456032, -2.627092);
-        Place susbridge = new Place(l2, "Suspension Bridge", "Great views of suspension bridge" +
-                " and nice park");
-        places.add(bristolP);
-        places.add(colGreen);
-        places.add(susbridge);
-
-        return places;
     }
 
     @Override

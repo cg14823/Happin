@@ -49,7 +49,7 @@ public class Profile extends Fragment {
     }
 
     private void setProfile(View view){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
+        // Retrive Name from database
         String userId = MainActivity.userId;
         final TextView nameField = (TextView) view.findViewById(R.id.details);
         final TextView points = (TextView) view.findViewById(R.id.points);

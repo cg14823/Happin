@@ -33,25 +33,45 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 
-/*Aproach 2.0 Use FragmentTabHost instead of view pager and view adapter.
-* Log 1: Espero que el mapa funcione por que sino voy a quemar mi jodida casa en un ataque de ira.
-* Log 2: La ira me inunda he probado 4 combinaciones han pasado 3 horas. A ver si esta funciona
-* Log 3: Utilizando MapView y FragmentTabHost parece funcionar!
-* Log 4: Empezando a implementear la opcion para add lugares.
-* Log 5: Created most fields for the place entry. Starting work on image adding
-* Log 6: Failure to replace preset image for new image.
-* Log 7 : Image now replaces the preset image but it gets a weird size ratio.*/
+/*Things that need to be worked in next iteration 2:
+ *Password recovery email
+ *Firstly need to make sure to places are not submitted twice.
+ *Work on getting a better respond time on location retrival. (Maybe inverting order of calls or using another API).
+ *Created a location calss to migrate all location stuff there.
+ *Better way of storing the images in the server
+ *Converting a string into an image
+ *Displaying added places in the profile
+ * Create user-places table to find places added/liked by users fast*/
 
-public class MainActivity extends AppCompatActivity {
+/*For iteration 3:
+* Add liking system
+* Add ranking system
+* Display liked places in the profile.
+* */
+
+/*For iteration 4:
+* Commenting system
+* Verification email
+* Minimum password requirements
+* */
+
+/*For iteration 5:
+* Different screen compatibility
+* */
+
+public class MainActivity extends AppCompatActivity{
+
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
-    private Location location;
     public static String userId;
+    LocationListener locationListener;
+    LocationManager manager;
     Firebase myFirebaseRef;
 
 
@@ -109,18 +129,17 @@ public class MainActivity extends AppCompatActivity {
             case R.id.signOut:
                 break;
             case R.id.addbutton:
-                if (!addPlace())
-                    showToast("Could not add place");
+                //gets Location first.
+                showToast("Getting your location");
+                getLocation();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean addPlace(){
-
-        final LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-
+    private void getLocation(){
+        // Check if GPS active
+        manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             // If Location disable create a alert dialog
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -148,93 +167,84 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = alertDialogBuilder.create();
             alert.show();
         }
-        else {
-            double longitude = 0;
-            double latitude =0;
-            boolean locationNull = true;
-            try {
-                Location location = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (location != null) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                    locationNull = false;
+        else{
+            //Use location listener to get location
+            locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    /* Called when a new location is found by the network location provider.
+                    * Creates the dialog to get the rest of the details*/
+                    if(!addPlace(location)){
+                        showToast("Place could not be submitted");
+                    }
+                    try {
+                       manager.removeUpdates(locationListener);
+                    }
+                    catch (SecurityException e){}
                 }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                public void onProviderEnabled(String provider) {}
+
+                public void onProviderDisabled(String provider) {}
+            };
+            try{
+                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
-            catch (SecurityException e){
-                e.printStackTrace();
-            }
-            LatLng newplace = new LatLng(0, 0);;
-            LayoutInflater inflater = getLayoutInflater();
-            if (latitude == 0 && longitude == 0){
-                if (location != null)
-                    newplace = new LatLng(location.getLatitude(), location.getLongitude());
-                else {
-                    showToast("YOUR MOM IS A BISH");
-
-                }
-            }
-            else{newplace = new LatLng(latitude,longitude);}
-
-            // message for password recovery
-            final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-            final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
-            recPassDialog.setView(dialogView);
-
-            recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-                    EditText nameField = (EditText)dialogView.findViewById(R.id.name);
-                    EditText description = (EditText)dialogView.findViewById(R.id.description);
-                    ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
-                    locfield.setText("0,0");
-                    Bitmap bmp =  ((BitmapDrawable)image.getDrawable()).getBitmap();
-                    ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                    bmp.recycle();
-                    byte[] byteArray = bYtE.toByteArray();
-                    String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    final Place place = new Place(new LatLng(0,0),nameField.getText().toString(),
-                            description.getText().toString(),imageFile);
-
-                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
-                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                showToast("Place already exists");
-                            } else{
-                                myFirebaseRef.push().setValue(place);
-                                showToast("Place already exists");
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                            System.out.println("The read failed: " + firebaseError.getMessage());
-                        }
-                    });
-
-                    //Build a place object and send to server to be stored
-
-            }
-        });
-        recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-            }
-            });
-            AlertDialog alert = recPassDialog.create();
-            alert.show();
-            return true;
-
-        }
-        return false;
+            catch (SecurityException e){}}
     }
 
-    private boolean placeDetails(){
+    private boolean addPlace(final Location location){
+        //Creates dialog to input place detail
+        final LatLng placeloc = new LatLng(location.getLatitude(),location.getLongitude());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
+        final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
+        recPassDialog.setView(dialogView);
 
+        recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                EditText locfield = (EditText)dialogView.findViewById(R.id.location);
+                EditText nameField = (EditText)dialogView.findViewById(R.id.name);
+                EditText description = (EditText)dialogView.findViewById(R.id.description);
+                ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
+                Bitmap bmp =  ((BitmapDrawable)image.getDrawable()).getBitmap();
+                ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
+                bmp.recycle();
+                byte[] byteArray = bYtE.toByteArray();
+                String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                final Place place = new Place(placeloc.latitude, placeloc.longitude,
+                        nameField.getText().toString(),
+                        description.getText().toString(),imageFile,userId);
+                //pushes to database with new unique id
+                myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                            myFirebaseRef.push().setValue(place);
+                            showToast("Place added");
+                    }
 
-        return false;
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
+                });
+
+        }
+    });
+
+    recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+        }
+        });
+
+        AlertDialog alert = recPassDialog.create();
+        alert.show();
+        return true;
+
     }
 
     private void showToast(String message){
@@ -258,10 +268,6 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageBitmap(photo);
             }
         }
-    }
-
-    private void changeLocation(Location loc){
-        location = loc;
     }
 
 }
