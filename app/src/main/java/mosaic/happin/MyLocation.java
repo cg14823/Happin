@@ -9,11 +9,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-/**
- * Created by Carlos on 05/02/2016.
- */
 public class MyLocation implements
         ConnectionCallbacks, OnConnectionFailedListener {
     Location location;
@@ -42,11 +40,6 @@ public class MyLocation implements
             if (location != null) {
                 locationUpdated = true;
             }
-            else{
-                showToast("FUUUUUUCK!");
-            }
-
-
         }
         catch (SecurityException e){}
     }
@@ -77,6 +70,13 @@ public class MyLocation implements
     }
     public void onStop(){
         mGoogleApiClient.disconnect();
+    }
+
+    protected void createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
 }
