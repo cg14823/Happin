@@ -127,7 +127,6 @@ public class Map extends Fragment {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 for (DataSnapshot d : querySnapshot.getChildren()) {
-                    showToast(d.getKey());
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

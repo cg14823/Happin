@@ -64,21 +64,26 @@ import java.io.ByteArrayOutputStream;
 * Different screen compatibility
 * */
 
+
+/* NEW APPROACH FOR LOCATION*/
+
 public class MainActivity extends AppCompatActivity{
 
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private View dialogView;
     public static String userId;
-    LocationListener locationListener;
     LocationManager manager;
     Firebase myFirebaseRef;
-
+    MyLocation locationClass;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationClass = new MyLocation(this);
+        locationClass.onStart();
+
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
         setContentView(R.layout.activity_main);
@@ -116,12 +121,6 @@ public class MainActivity extends AppCompatActivity{
                 Profile.class, null);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main_page, menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -130,7 +129,6 @@ public class MainActivity extends AppCompatActivity{
                 break;
             case R.id.addbutton:
                 //gets Location first.
-                showToast("Getting your location");
                 getLocation();
                 break;
         }
@@ -167,44 +165,24 @@ public class MainActivity extends AppCompatActivity{
             AlertDialog alert = alertDialogBuilder.create();
             alert.show();
         }
-        else{
-            //Use location listener to get location
-            locationListener = new LocationListener() {
-                public void onLocationChanged(Location location) {
-                    /* Called when a new location is found by the network location provider.
-                    * Creates the dialog to get the rest of the details*/
-                    if(!addPlace(location)){
-                        showToast("Place could not be submitted");
-                    }
-                    try {
-                       manager.removeUpdates(locationListener);
-                    }
-                    catch (SecurityException e){}
-                }
-
-                public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-                public void onProviderEnabled(String provider) {}
-
-                public void onProviderDisabled(String provider) {}
-            };
-            try{
-                manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-            catch (SecurityException e){}}
+        else addPlace();
     }
 
-    private boolean addPlace(final Location location){
+    private boolean addPlace(){
         //Creates dialog to input place detail
-        final LatLng placeloc = new LatLng(location.getLatitude(),location.getLongitude());
+
+        final LatLng placeloc = new LatLng(locationClass.location.getLatitude(),locationClass.location.getLongitude());
         LayoutInflater inflater = this.getLayoutInflater();
         final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
         recPassDialog.setView(dialogView);
+        EditText locfield = (EditText)dialogView.findViewById(R.id.location);
+        locfield.setText("Location:"+locationClass.location.getLatitude()+","
+                        +locationClass.location.getLongitude()
+        );
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                EditText locfield = (EditText)dialogView.findViewById(R.id.location);
                 EditText nameField = (EditText)dialogView.findViewById(R.id.name);
                 EditText description = (EditText)dialogView.findViewById(R.id.description);
                 ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
@@ -269,6 +247,17 @@ public class MainActivity extends AppCompatActivity{
             }
         }
     }
+    @Override
+    public void onStop(){
+        if (locationClass != null) locationClass.onStop();
+        super.onStop();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main_page, menu);
+        return true;
+    }
 }
 
