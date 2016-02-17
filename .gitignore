@@ -24,6 +24,7 @@ captures
 .idea/runConfigurations.xml
 .idea/misc.xml
 .idea/vcs.xml
+.idea/inspectionProfiles/
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
