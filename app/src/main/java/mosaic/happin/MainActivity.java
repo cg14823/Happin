@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity{
         toolbar.setTitle("");
         TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
         // title of toolbar in verdana bold as required by Happy City
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/verdanab.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
         title.setTypeface(custom_font);
 
         setSupportActionBar(toolbar);
@@ -222,16 +222,15 @@ public class MainActivity extends AppCompatActivity{
         AlertDialog alert = recPassDialog.create();
         alert.show();
         return true;
-
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    public void addImage(View view){
+    public void addImage(View view) {
         dialogView = view;
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
@@ -239,7 +238,7 @@ public class MainActivity extends AppCompatActivity{
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+            ImageView imageView = (ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -260,4 +259,3 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 }
-
