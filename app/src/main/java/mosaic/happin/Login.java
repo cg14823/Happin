@@ -6,12 +6,9 @@ import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,16 +48,12 @@ public class Login extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtra("USER_ID", authData.getUid());
                 startActivity(intent);
-
             }
-
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                // there was an error
                 showToast(firebaseError.getMessage());
             }
         });
-
     }
 
     public void signUp(View view) {
@@ -69,7 +62,6 @@ public class Login extends AppCompatActivity {
     }
 
     public void forgotPwd(View view) {
-
         LayoutInflater inflater = getLayoutInflater();
         // message for password recovery
         AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
@@ -77,10 +69,8 @@ public class Login extends AppCompatActivity {
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 EditText email = (EditText)findViewById(R.id.email);
-                if (verifyEmail(email.getText().toString()))
-                    showToast("New password sent to your email");
-                else
-                    showToast("Invalid email");
+                showToast("Not implemented");
+
             }
         });
         recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -90,11 +80,6 @@ public class Login extends AppCompatActivity {
         });
         AlertDialog alert = recPassDialog.create();
         alert.show();
-    }
-
-    private boolean verifyEmail (String email){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
-        return false;
     }
 
     private void showToast(String message){

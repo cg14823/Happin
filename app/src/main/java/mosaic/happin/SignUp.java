@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.firebase.client.Firebase;
@@ -19,24 +18,23 @@ public class SignUp extends AppCompatActivity {
 
     Firebase myFirebaseRef;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
-
+        // Set up font
         setContentView(R.layout.signup);
         TextView logo = (TextView) findViewById(R.id.logo);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/EvelethDotBold.otf");
         logo.setTypeface(custom_font);
-
     }
+
     public void signUp(View view){
         EditText nameField = (EditText) findViewById(R.id.nameField);
         EditText passwordField = (EditText) findViewById(R.id.passwordField);
         EditText emailField = (EditText) findViewById(R.id.emailField);
-        if (passwordMatch(view)){
+        if (passwordMatch()){
             final String name = nameField.getText().toString();
             String password = passwordField.getText().toString();
             final String email = emailField.getText().toString();
@@ -51,18 +49,16 @@ public class SignUp extends AppCompatActivity {
                 }
                 @Override
                 public void onError(FirebaseError firebaseError) {
-                    // there was an error
                     showToast(firebaseError.getMessage());
                 }
             });
         }
         else{
             showToast("Passwords do not match");
-
         }
     }
 
-    private boolean passwordMatch(View view){
+    private boolean passwordMatch(){
         EditText pswdFd = (EditText) findViewById(R.id.passwordField);
         EditText pswdFd2 = (EditText) findViewById(R.id.rptpassword);
         if (pswdFd.getText().toString().equals(pswdFd2.getText().toString())) return true;
