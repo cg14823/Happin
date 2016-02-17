@@ -142,7 +142,7 @@ public class Map extends Fragment {
             Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
-            location = address.getSubAdminArea();
+            location = address.getThoroughfare();
             return location;
         } catch (IOException e) {
             return "";
@@ -159,7 +159,6 @@ public class Map extends Fragment {
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText)dialogView.findViewById(R.id.location);
         String s = reverseGeo(location.latitude,location.longitude);
-        showToast(s);
         locfield.setText(s);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
