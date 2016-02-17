@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity{
 
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_IMAGE = 2;
     private View dialogView;
     public static String userId;
     LocationManager manager;
@@ -237,8 +238,8 @@ public class MainActivity extends AppCompatActivity{
 
     public void addImage(View view){
         dialogView = view;
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+        selectImage();
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -250,7 +251,39 @@ public class MainActivity extends AppCompatActivity{
                 imageView.setImageBitmap(photo);
             }
         }
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+            if (imageView == null) showToast("problem with null pointers in imageView");
+            else{
+                imageView.setImageURI(data.getData());
+            }
+
+        }
     }
+    private void selectImage() {
+        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+                } else if (items[item].equals("Choose from Library")) {
+                    startActivityForResult(
+                            Intent.createChooser(
+                                    new Intent(Intent.ACTION_GET_CONTENT)
+                                            .setType("image/*"), "Choose an image"),
+                            SELECT_IMAGE);
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void onStop(){
         if (locationClass != null) locationClass.onStop();
