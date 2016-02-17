@@ -136,22 +136,16 @@ public class Map extends Fragment {
         });
     }
 
-    public List<String> reverseGeo(double lat, double lng) {
+    private String reverseGeo(double lat, double lng) {
         try {
-            List<String> location = new ArrayList<String>();
-            //String location = "";
-            //String num = "";
+            String location = "";
             Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
-            location.add(0,address.getThoroughfare());
-            location.add(1,address.getSubThoroughfare());
+            location = address.getThoroughfare();
             return location;
         } catch (IOException e) {
-            List<String> location = new ArrayList<String>();
-            location.add(0, "Can't");
-            location.add(1, "find location");
-            return location;
+            return "";
         }
     }
 
@@ -164,8 +158,8 @@ public class Map extends Fragment {
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-        List<String> s = reverseGeo(location.latitude,location.longitude);
-        locfield.setText(s.get(1)+ " " + s.get(0));
+        String s = reverseGeo(location.latitude,location.longitude);
+        locfield.setText(s);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
