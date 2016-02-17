@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity{
         toolbar.setTitle("");
         TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
         // title of toolbar in verdana bold as required by Happy City
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/verdanab.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
         title.setTypeface(custom_font);
 
         setSupportActionBar(toolbar);
