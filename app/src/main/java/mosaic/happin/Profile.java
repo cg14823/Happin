@@ -13,7 +13,10 @@ import android.widget.Toast;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
@@ -83,6 +86,7 @@ public class Profile extends Fragment {
             empty.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             parent.addView(empty);
         }
+        else showToast("You have places MATE!");
     }
     private void addYP(View view){
         ArrayList<Place> places = getYP();
@@ -98,13 +102,48 @@ public class Profile extends Fragment {
     private ArrayList<Place> getLP(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         ArrayList<Place> places = new ArrayList<Place>();
+
         return places;
     }
 
     // Goes to the server and gets the Places you´ve added
     private ArrayList<Place> getYP(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
-        ArrayList<Place> places = new ArrayList<Place>();
+        final ArrayList<Place> places = new ArrayList<Place>();
+        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
+        Query addedPQ = myFirebaseRef.orderByChild("user").equalTo(MainActivity.userId);
+        showToast(MainActivity.userId);
+
+        addedPQ.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot querySnapshot) {
+                showToast("Hey1");
+                for (DataSnapshot d : querySnapshot.getChildren()) {
+                    showToast("Hey2");
+                    myFirebaseRef.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                showToast("Hey3");
+                                Place p = dataSnapshot.getValue(Place.class);
+                                places.add(p);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
+        showToast(String.valueOf(places.size()));
         return places;
     }
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -32,7 +33,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.List;
+import android.location.Geocoder;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -64,7 +69,9 @@ public class Map extends Fragment {
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.setMyLocationEnabled(true);
+        try{mMap.setMyLocationEnabled(true);}
+        catch (SecurityException e){}
+
         mMap.getUiSettings().setTiltGesturesEnabled(false);
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -128,6 +135,20 @@ public class Map extends Fragment {
             }
         });
     }
+
+    private String reverseGeo(double lat, double lng) {
+        try {
+            String location = "";
+            Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(lat, lng, 1);
+            Address address = addresses.get(0);
+            location = address.getSubAdminArea();
+            return location;
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
     private void addPlace(LatLng location){
         //Creates dialog to input place detail
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
@@ -137,8 +158,9 @@ public class Map extends Fragment {
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-        locfield.setText("Location:"+location.latitude+ ","
-                        +location.longitude);
+        String s = reverseGeo(location.latitude,location.longitude);
+        showToast(s);
+        locfield.setText(s);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity{
 
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_IMAGE = 2;
     private View dialogView;
     public static String userId;
     LocationManager manager;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity{
         toolbar.setTitle("");
         TextView title = (TextView) toolbar.findViewById(R.id.toolbar_title);
         // title of toolbar in verdana bold as required by Happy City
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/verdanab.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
         title.setTypeface(custom_font);
 
         setSupportActionBar(toolbar);
@@ -191,58 +192,62 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean addPlace(){
         //Creates dialog to input place detail
+        Location location = locationClass.getLocation();
+        if (location != null) {
 
-        final LatLng placeloc = new LatLng(locationClass.location.getLatitude(),locationClass.location.getLongitude());
-        LayoutInflater inflater = this.getLayoutInflater();
-        final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-        final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
-        recPassDialog.setView(dialogView);
-        EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-        locfield.setText("Location:"+locationClass.location.getLatitude()+","
-                        +locationClass.location.getLongitude()
-        );
+            final LatLng placeloc = new LatLng (location.getLatitude(),location.getLongitude());
+            LayoutInflater inflater = this.getLayoutInflater();
+            final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
+            final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
+            recPassDialog.setView(dialogView);
+            EditText locfield = (EditText) dialogView.findViewById(R.id.location);
+            locfield.setText("Location:" + location.getLatitude() + ","
+                            + location.getLongitude()
+            );
 
-        recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                EditText nameField = (EditText)dialogView.findViewById(R.id.name);
-                EditText description = (EditText)dialogView.findViewById(R.id.description);
-                ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
-                Bitmap bmp =  ((BitmapDrawable)image.getDrawable()).getBitmap();
-                ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                bmp.recycle();
-                byte[] byteArray = bYtE.toByteArray();
-                String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                final Place place = new Place(placeloc.latitude, placeloc.longitude,
-                        nameField.getText().toString(),
-                        description.getText().toString(),imageFile,userId);
-                //pushes to database with new unique id
-                myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
-                myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+            recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    EditText nameField = (EditText) dialogView.findViewById(R.id.name);
+                    EditText description = (EditText) dialogView.findViewById(R.id.description);
+                    ImageView image = (ImageView) dialogView.findViewById(R.id.placeImg);
+                    Bitmap bmp = ((BitmapDrawable) image.getDrawable()).getBitmap();
+                    ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
+                    bmp.recycle();
+                    byte[] byteArray = bYtE.toByteArray();
+                    String imageFile = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                    final Place place = new Place(placeloc.latitude, placeloc.longitude,
+                            nameField.getText().toString(),
+                            description.getText().toString(), imageFile, userId);
+                    //pushes to database with new unique id
+                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
                             myFirebaseRef.push().setValue(place);
                             showToast("Place added");
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        System.out.println("The read failed: " + firebaseError.getMessage());
-                    }
-                });
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
+                    });
 
+                }
+            });
+
+            recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alert = recPassDialog.create();
+            alert.show();
+            return true;
         }
-    });
-
-    recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-        }
-        });
-
-        AlertDialog alert = recPassDialog.create();
-        alert.show();
-        return true;
+        return false;
 
     }
 
@@ -254,8 +259,8 @@ public class MainActivity extends AppCompatActivity{
 
     public void addImage(View view){
         dialogView = view;
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+        selectImage();
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -267,7 +272,39 @@ public class MainActivity extends AppCompatActivity{
                 imageView.setImageBitmap(photo);
             }
         }
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+            if (imageView == null) showToast("problem with null pointers in imageView");
+            else{
+                imageView.setImageURI(data.getData());
+            }
+
+        }
     }
+    private void selectImage() {
+        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+                } else if (items[item].equals("Choose from Library")) {
+                    startActivityForResult(
+                            Intent.createChooser(
+                                    new Intent(Intent.ACTION_GET_CONTENT)
+                                            .setType("image/*"), "Choose an image"),
+                            SELECT_IMAGE);
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public void onStop(){
         if (locationClass != null) locationClass.onStop();

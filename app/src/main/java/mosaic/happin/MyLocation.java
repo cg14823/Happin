@@ -14,7 +14,7 @@ import com.google.android.gms.location.LocationServices;
 
 public class MyLocation implements
         ConnectionCallbacks, OnConnectionFailedListener {
-    Location location;
+    private Location location;
     boolean gpsEnabled = false;
     boolean networkEnabled = false;
     boolean locationUpdated = false;
@@ -72,6 +72,7 @@ public class MyLocation implements
         mGoogleApiClient.disconnect();
     }
 
+
     protected void createLocationRequest() {
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
@@ -79,4 +80,9 @@ public class MyLocation implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    public Location getLocation(){
+        if (location != null) return location;
+        showToast("Problem getting location try again.");
+        return null;
+    }
 }
