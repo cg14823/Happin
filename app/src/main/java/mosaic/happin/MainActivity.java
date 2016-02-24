@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean addPlace(){
         //Creates dialog to input place detail
-        Location location = locationClass.getLocation();
+        final Location location = locationClass.getLocation();
         if (location != null) {
 
             final LatLng placeloc = new LatLng (location.getLatitude(),location.getLongitude());
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity{
                     myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            myFirebaseRef.push().setValue(place);
+                            myFirebaseRef.child(latLng2Id(placeloc)).setValue(place);
                             showToast("Place added");
                         }
 
@@ -295,6 +295,21 @@ public class MainActivity extends AppCompatActivity{
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main_page, menu);
         return true;
+    }
+
+    private String latLng2Id(LatLng location){
+        String lat = String.valueOf(location.latitude);
+        String lon = String.valueOf(location.longitude);
+        String strLoc = (lat+"L"+lon).replace(".", "p");
+        return strLoc;
+    }
+
+    private LatLng id2LatLng (String location){
+        String decodeLoc = location.replace("p",".");
+        String [] parts = location.split("");
+        double lat = Double.parseDouble(parts[0]);
+        double lon = Double.parseDouble(parts[1]);
+        return new LatLng(lat,lon);
     }
 }
 

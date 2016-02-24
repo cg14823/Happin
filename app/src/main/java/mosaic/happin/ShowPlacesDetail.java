@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,10 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
 
 public class ShowPlacesDetail extends AppCompatActivity {
-    MapView mapView;
+    private MapView mapView;
+    private GoogleMap mMap;
+    private Place p;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +33,13 @@ public class ShowPlacesDetail extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
+        Intent i = getIntent();
+        p = i.getExtras().getParcelable("place");
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
+        mMap = mapView.getMap();
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(), p.getLon()), 10));
     }
 
     public void liked (View view){

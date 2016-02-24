@@ -46,8 +46,8 @@ import java.util.ArrayList;
 public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
+    private Place tempPlace;
     Firebase ref;
-    ArrayList<Place> places;
     public Map (){}
 
 
@@ -141,8 +141,8 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-        locfield.setText("Location:"+location.latitude+ ","
-                        +location.longitude);
+        locfield.setText("Location:" + location.latitude + ","
+                + location.longitude);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -162,7 +162,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        ref.push().setValue(place);
+                        ref.child(latLng2Id(placeloc)).setValue(place);
                         showToast("Place added");
                     }
                     @Override
@@ -188,7 +188,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     /* This function should ge the top rated places from the server*/
     private void getPlaces(){
-        places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -225,7 +224,22 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
+        LatLng latlng = marker.getPosition();
+        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"+latLng2Id(latlng));
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Place p = dataSnapshot.getValue(Place.class);
+                tempPlace = p;
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
         Intent detailShow = new Intent(getActivity(),ShowPlacesDetail.class);
+        detailShow.putExtra("place",tempPlace);
         startActivity(detailShow);
         return true;
     }
@@ -252,6 +266,21 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    private String latLng2Id(LatLng location){
+        String lat = String.valueOf(location.latitude);
+        String lon = String.valueOf(location.longitude);
+        String strLoc = (lat+"L"+lon).replace(".", "p");
+        return strLoc;
+    }
+
+    private LatLng id2LatLng (String location){
+        String decodeLoc = location.replace("p", ".");
+        String [] parts = location.split("");
+        double lat = Double.parseDouble(parts[0]);
+        double lon = Double.parseDouble(parts[1]);
+        return new LatLng(lat,lon);
     }
 
 }
