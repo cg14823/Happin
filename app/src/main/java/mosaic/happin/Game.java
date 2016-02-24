@@ -89,7 +89,10 @@ public class Game extends Fragment implements
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
-        mMap.setMyLocationEnabled(true);
+        try{
+            mMap.setMyLocationEnabled(true);
+        }
+        catch(SecurityException e){}
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
