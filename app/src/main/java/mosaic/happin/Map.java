@@ -47,9 +47,6 @@ import java.util.ArrayList;
 public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int SELECT_IMAGE = 2;
-    private View dialogView;
     Firebase ref;
     public Map (){}
 

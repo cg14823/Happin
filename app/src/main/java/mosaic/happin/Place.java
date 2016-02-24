@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Place implements Parcelable{
+public class Place{
 
 
     private double lat;
@@ -47,28 +47,6 @@ public class Place implements Parcelable{
         this.user = p.getUser();
     }
 
-
-    protected Place(Parcel in) {
-        lat = in.readDouble();
-        lon = in.readDouble();
-        name = in.readString();
-        description = in.readString();
-        img = in.readString();
-        likes = in.readInt();
-        user = in.readString();
-    }
-
-    public static final Creator<Place> CREATOR = new Creator<Place>() {
-        @Override
-        public Place createFromParcel(Parcel in) {
-            return new Place(in);
-        }
-
-        @Override
-        public Place[] newArray(int size) {
-            return new Place[size];
-        }
-    };
 
     //getters
     public double getLat(){
@@ -120,19 +98,4 @@ public class Place implements Parcelable{
         return name+ " "+ lat+","+lon+" "+description;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeDouble(lat);
-        parcel.writeDouble(lon);
-        parcel.writeString(name);
-        parcel.writeString(description);
-        parcel.writeString(img);
-        parcel.writeInt(likes);
-        parcel.writeString(user);
-    }
 }
