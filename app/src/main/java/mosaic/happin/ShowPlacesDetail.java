@@ -1,11 +1,15 @@
 package mosaic.happin;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
@@ -41,9 +46,17 @@ public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCal
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+        addDetails();
 
     }
-
+    private void addDetails(){
+        TextView text = (TextView)findViewById(R.id.placeText);
+        ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
+        text.setText(p.getName()+"\n"+p.getDescription()+"\nLikes:"+p.getLikes());
+        byte[] decodedString = Base64.decode(p.getImg(), Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        imgView.setImageBitmap(decodedByte);
+    }
     public void liked (View view){
 
     }
@@ -68,7 +81,9 @@ public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(),p.getLon()), 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(),p.getLon()), 11));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
+                .title(p.getName()).snippet(p.getDescription()));
     }
 
     private void showToast(String message){
