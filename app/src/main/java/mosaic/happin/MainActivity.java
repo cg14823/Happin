@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -89,19 +88,11 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!canAccessLocation()) {
-                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-            }
-            else {
-                locationClass = new MyLocation(this);
-                locationClass.onStart();
-            }
+        if (!canAccessLocation()) {
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         }
-        else {
-            locationClass = new MyLocation(this);
-            locationClass.onStart();
-        }
+        locationClass = new MyLocation(this);
+        locationClass.onStart();
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
@@ -142,18 +133,14 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
+        switch(requestCode) {
             case LOCATION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    locationClass = new MyLocation(this);
-                    locationClass.onStart();
+                if (canAccessLocation()) {
                 }
                 else {
-                    Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
                 }
+                break;
         }
-
     }
 
     @Override
@@ -340,10 +327,7 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
     private boolean hasPermission(String perm) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
-        }
-        else return false;
+        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
     }
     private boolean canAccessLocation() {
         return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
