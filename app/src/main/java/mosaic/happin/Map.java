@@ -69,6 +69,7 @@ public class Map extends Fragment {
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         try{mMap.setMyLocationEnabled(true);}
         catch (SecurityException e){}
 
