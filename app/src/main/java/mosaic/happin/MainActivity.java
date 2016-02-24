@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -31,12 +33,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.content.pm.PackageManager;
+import android.location.LocationListener;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
@@ -50,7 +53,6 @@ import java.util.Locale;
  *Firstly need to make sure to places are not submitted twice.
  *Work on getting a better respond time on location retrival. (Maybe inverting order of calls or using another API).
  *Displaying added places in the profile
-*/
 
 /*For iteration 3:
 * Add liking system
@@ -91,11 +93,19 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (!canAccessLocation()) {
-            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-        }*/
-        locationClass = new MyLocation(this);
-        locationClass.onStart();
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!canAccessLocation()) {
+                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+            }
+            else {
+                locationClass = new MyLocation(this);
+                locationClass.onStart();
+            }
+        }
+        else {
+            locationClass = new MyLocation(this);
+            locationClass.onStart();
+        }
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
@@ -132,6 +142,21 @@ public class MainActivity extends AppCompatActivity{
         mTabHost.addTab(
                 mTabHost.newTabSpec("Profile").setIndicator("Profile", null),
                 Profile.class, null);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case LOCATION_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationClass = new MyLocation(this);
+                    locationClass.onStart();
+                }
+                else {
+                    Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
+                }
+        }
     }
 
     @Override
@@ -324,6 +349,17 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
+    private boolean hasPermission(String perm) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        }
+        else return false;
+    }
+
+    private boolean canAccessLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+    }
+
     public List<String> reverseGeo(double lat, double lng) {
         try {
             List<String> location = new ArrayList<String>();
@@ -342,28 +378,5 @@ public class MainActivity extends AppCompatActivity{
             return location;
         }
     }
-
-    /*
-    private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
-    }
-    private boolean canAccessLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
-    }
-    */
-
-    /*
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
-            case LOCATION_REQUEST:
-                if (canAccessLocation()) {
-                }
-                else {
-                }
-                break;
-        }
-    }
-    */
 }
 
