@@ -16,7 +16,7 @@
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
+            android:layout_gravity="start"
             android:text="@string/app_name"
             android:textColor="@color/tabTitleColor"
             android:textSize="20sp" />
@@ -32,22 +32,22 @@
         <ImageView android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_alignBottom="@+id/placeText"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="62dp"
-            android:id="@+id/placeImgview"></ImageView>
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id="@+id/placeImgview"/>
         <TextView  android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:text="TEST"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@+id/placeImgview"
             android:layout_marginTop="47dp"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
             android:id="@+id/placeText" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="like" android:onClick= "liked"
-            android:layout_below="@+id/imageView"
+            android:text="Like"
+            android:onClick= "liked"
+            android:layout_below="@+id/placeText"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="132dp" />
     </RelativeLayout>

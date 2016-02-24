@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -29,26 +31,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.location.LocationListener;
+import android.content.pm.PackageManager;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
  *Firstly need to make sure to places are not submitted twice.
  *Work on getting a better respond time on location retrival. (Maybe inverting order of calls or using another API).
- *Created a location calss to migrate all location stuff there.
- *Better way of storing the images in the server
- *Converting a string into an image
  *Displaying added places in the profile
- * Create user-places table to find places added/liked by users fast*/
+*/
 
 /*For iteration 3:
 * Add liking system
@@ -70,6 +72,7 @@ import java.io.ByteArrayOutputStream;
 /* NEW APPROACH FOR LOCATION*/
 
 public class MainActivity extends AppCompatActivity{
+
     private static final String[] LOCATION_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION,
     };
@@ -88,9 +91,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!canAccessLocation()) {
+        /*if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-        }
+        }*/
         locationClass = new MyLocation(this);
         locationClass.onStart();
 
@@ -129,18 +132,6 @@ public class MainActivity extends AppCompatActivity{
         mTabHost.addTab(
                 mTabHost.newTabSpec("Profile").setIndicator("Profile", null),
                 Profile.class, null);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
-            case LOCATION_REQUEST:
-                if (canAccessLocation()) {
-                }
-                else {
-                }
-                break;
-        }
     }
 
     @Override
@@ -200,9 +191,8 @@ public class MainActivity extends AppCompatActivity{
             final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
             recPassDialog.setView(dialogView);
             EditText locfield = (EditText) dialogView.findViewById(R.id.location);
-            locfield.setText("Location:" + location.getLatitude() + ","
-                            + location.getLongitude()
-            );
+            List<String> s = reverseGeo(location.getLatitude(),location.getLongitude());
+            locfield.setText(s.get(1)+ " "+ s.get(0));
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -219,12 +209,19 @@ public class MainActivity extends AppCompatActivity{
                             nameField.getText().toString(),
                             description.getText().toString(), imageFile, userId);
                     //pushes to database with new unique id
-                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/" +
+                            place.latLng2Id(placeloc));
                     myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            myFirebaseRef.child(place.latLng2Id(placeloc)).setValue(place);
-                            showToast("Place added");
+                            if (!snapshot.exists()) {
+                                Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                                ref1.child(place.latLng2Id(placeloc)).setValue(place);
+                                showToast("Place added");
+                            } else {
+                                showToast("Place already exists");
+                            }
+
                         }
 
                         @Override
@@ -326,11 +323,47 @@ public class MainActivity extends AppCompatActivity{
         inflater.inflate(R.menu.menu_main_page, menu);
         return true;
     }
+
+    public List<String> reverseGeo(double lat, double lng) {
+        try {
+            List<String> location = new ArrayList<String>();
+            //String location = "";
+            //String num = "";
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(lat, lng, 1);
+            Address address = addresses.get(0);
+            location.add(0,address.getThoroughfare());
+            location.add(1,address.getSubThoroughfare());
+            return location;
+        } catch (IOException e) {
+            List<String> location = new ArrayList<String>();
+            location.add(0, "Can't");
+            location.add(1, "find location");
+            return location;
+        }
+    }
+
+    /*
     private boolean hasPermission(String perm) {
         return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
     }
     private boolean canAccessLocation() {
         return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
     }
+    */
+
+    /*
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case LOCATION_REQUEST:
+                if (canAccessLocation()) {
+                }
+                else {
+                }
+                break;
+        }
+    }
+    */
 }
 
