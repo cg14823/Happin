@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -12,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -88,11 +90,19 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!canAccessLocation()) {
-            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!canAccessLocation()) {
+                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+            }
+            else {
+                locationClass = new MyLocation(this);
+                locationClass.onStart();
+            }
         }
-        locationClass = new MyLocation(this);
-        locationClass.onStart();
+        else {
+            locationClass = new MyLocation(this);
+            locationClass.onStart();
+        }
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
@@ -133,14 +143,18 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
             case LOCATION_REQUEST:
-                if (canAccessLocation()) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationClass = new MyLocation(this);
+                    locationClass.onStart();
                 }
                 else {
+                    Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
                 }
-                break;
         }
+
     }
 
     @Override
@@ -152,7 +166,6 @@ public class MainActivity extends AppCompatActivity{
                 //gets Location first.
                 getLocation();
                 break;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -192,7 +205,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean addPlace(){
         //Creates dialog to input place detail
-        Location location = locationClass.getLocation();
+        final Location location = locationClass.getLocation();
         if (location != null) {
 
             final LatLng placeloc = new LatLng (location.getLatitude(),location.getLongitude());
@@ -224,7 +237,7 @@ public class MainActivity extends AppCompatActivity{
                     myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            myFirebaseRef.push().setValue(place);
+                            myFirebaseRef.child(place.latLng2Id(placeloc)).setValue(place);
                             showToast("Place added");
                         }
 
@@ -272,15 +285,25 @@ public class MainActivity extends AppCompatActivity{
                 imageView.setImageBitmap(photo);
             }
         }
-        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null){
             ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else{
-                imageView.setImageURI(data.getData());
-            }
+                Uri pickedImage = data.getData();
+                // Let's read picked image path using content resolver
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
+                cursor.moveToFirst();
+                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                imageView.setImageBitmap(bitmap);
+            }
         }
     }
+
     private void selectImage() {
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -318,7 +341,10 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
     private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        if (Build.VERSION.SDK_INT >= 23) {
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        }
+        else return false;
     }
     private boolean canAccessLocation() {
         return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
