@@ -3,6 +3,7 @@ package mosaic.happin;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity{
                     myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            myFirebaseRef.child(latLng2Id(placeloc)).setValue(place);
+                            myFirebaseRef.child(place.latLng2Id(placeloc)).setValue(place);
                             showToast("Place added");
                         }
 
@@ -251,11 +252,22 @@ public class MainActivity extends AppCompatActivity{
                 imageView.setImageBitmap(photo);
             }
         }
-        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null){
             ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else{
-                imageView.setImageURI(data.getData());
+                Uri pickedImage = data.getData();
+                // Let's read picked image path using content resolver
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
+                cursor.moveToFirst();
+                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                imageView.setImageBitmap(bitmap);
+
             }
 
         }
@@ -297,19 +309,6 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
 
-    private String latLng2Id(LatLng location){
-        String lat = String.valueOf(location.latitude);
-        String lon = String.valueOf(location.longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
-        return strLoc;
-    }
 
-    private LatLng id2LatLng (String location){
-        String decodeLoc = location.replace("p",".");
-        String [] parts = location.split("");
-        double lat = Double.parseDouble(parts[0]);
-        double lon = Double.parseDouble(parts[1]);
-        return new LatLng(lat,lon);
-    }
 }
 

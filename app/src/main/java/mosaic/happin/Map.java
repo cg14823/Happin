@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,7 +47,9 @@ import java.util.ArrayList;
 public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
-    private Place tempPlace;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_IMAGE = 2;
+    private View dialogView;
     Firebase ref;
     public Map (){}
 
@@ -162,7 +165,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        ref.child(latLng2Id(placeloc)).setValue(place);
+                        ref.child(place.latLng2Id(placeloc)).setValue(place);
                         showToast("Place added");
                     }
                     @Override
@@ -225,21 +228,11 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     @Override
     public boolean onMarkerClick(final Marker marker) {
         LatLng latlng = marker.getPosition();
-        ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"+latLng2Id(latlng));
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Place p = dataSnapshot.getValue(Place.class);
-                Intent detailShow = new Intent(getActivity(),ShowPlacesDetail.class);
-                detailShow.putExtra("place", p);
-                startActivity(detailShow);
-            }
+        Intent detailShow = new Intent(getActivity(), ShowPlacesDetail.class);
+        detailShow.putExtra("ref","https://flickering-torch-2192.firebaseio.com/places/"+latLng2Id(latlng));
+        detailShow.putExtra("USER_ID",MainActivity.userId);
+        startActivity(detailShow);
 
-            @Override
-            public void onCancelled(FirebaseError error) {
-                showToast(error.getMessage());
-            }
-        });
 
         return true;
     }
@@ -275,12 +268,5 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         return strLoc;
     }
 
-    private LatLng id2LatLng (String location){
-        String decodeLoc = location.replace("p", ".");
-        String [] parts = location.split("");
-        double lat = Double.parseDouble(parts[0]);
-        double lon = Double.parseDouble(parts[1]);
-        return new LatLng(lat,lon);
-    }
 
 }

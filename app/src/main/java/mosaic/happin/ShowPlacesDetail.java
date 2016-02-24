@@ -13,6 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,11 +26,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCallback {
+import java.util.*;
+
+public class ShowPlacesDetail extends AppCompatActivity {
     private MapView mapView;
     private GoogleMap mMap;
-    private Place p;
-
+    private Place place;
+    private String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,22 +49,76 @@ public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCal
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Intent i = getIntent();
-        p = (i.getExtras().getParcelable("place"));
+        String url = i.getStringExtra("ref");
+        userId = i.getStringExtra("USER_ID");
+        Firebase.setAndroidContext(this);
+        Firebase ref = new Firebase(url);
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-        addDetails();
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                place = dataSnapshot.getValue(Place.class);
+                if ((place != null)){
+                    addDetails();
+                    mapView.getMapAsync(new OnMapReadyCallback() {
+                        @Override
+                        public void onMapReady(GoogleMap googleMap) {
+                            mMap = googleMap;
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(place.getLat(), place.getLon()), 12));
+                            mMap.addMarker(new MarkerOptions().position(new LatLng(place.getLat(), place.getLon()))
+                                    .title(place.getName()).snippet(place.getDescription()));
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
+
+
+
 
     }
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        text.setText(p.getName()+"\n"+p.getDescription()+"\nLikes:"+p.getLikes());
-        byte[] decodedString = Base64.decode(p.getImg(), Base64.DEFAULT);
+        text.setText(place.getName()+"\n"+place.getDescription()+"\nLikes:"+place.getLikes());
+        byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
     }
     public void liked (View view){
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes");
+        Query query = ref.orderByChild("name").equalTo(place.latLng2Id(place.getLat(), place.getLon()));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) showToast(" You already have liked this place");
+                else {
+                    place.addLike();
+                    TextView text = (TextView) findViewById(R.id.placeText);
+                    text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
+                    Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"
+                            + userId + "/likes");
+                    fref.child("name").setValue((place.latLng2Id(place.getLat(), place.getLon())));
+                    fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
+                            +place.latLng2Id(place.getLat(), place.getLon()));
+                    java.util.Map<String,Object> likes =new HashMap<>();
+                    likes.put("likes", place.getLikes());
+                    fref.updateChildren(likes);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
     }
     @Override
@@ -78,18 +139,13 @@ public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCal
         mapView.onLowMemory();
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(),p.getLon()), 11));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
-                .title(p.getName()).snippet(p.getDescription()));
-    }
 
     private void showToast(String message){
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
+
+
 
 }
