@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.support.v4.app.Fragment;
 import android.widget.EditText;
@@ -42,7 +43,7 @@ import java.util.ArrayList;
  * Use the {@link Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Map extends Fragment {
+public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
     Firebase ref;
@@ -63,6 +64,7 @@ public class Map extends Fragment {
 
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
+        mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         try{mMap.setMyLocationEnabled(true);}
         catch (SecurityException e){}
@@ -196,9 +198,9 @@ public class Map extends Fragment {
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                Place p  = dataSnapshot.getValue(Place.class);
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(),p.getLon()))
+                            if (dataSnapshot.exists()) {
+                                Place p = dataSnapshot.getValue(Place.class);
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
                                         .title(p.getName()).snippet(p.getDescription()));
                             }
                         }
@@ -210,6 +212,7 @@ public class Map extends Fragment {
                     });
                 }
             }
+
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
@@ -218,6 +221,13 @@ public class Map extends Fragment {
 
         LatLng bristol = new LatLng(51.465411, -2.585911);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        Intent detailShow = new Intent(getActivity(),ShowPlacesDetail.class);
+        startActivity(detailShow);
+        return true;
     }
 
     @Override
