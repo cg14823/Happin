@@ -1,5 +1,6 @@
 package mosaic.happin;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -69,6 +70,10 @@ import java.io.ByteArrayOutputStream;
 /* NEW APPROACH FOR LOCATION*/
 
 public class MainActivity extends AppCompatActivity{
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+    };
+    private static final int LOCATION_REQUEST=1337;
 
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -83,6 +88,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!canAccessLocation()) {
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        }
         locationClass = new MyLocation(this);
         locationClass.onStart();
 
@@ -123,6 +131,17 @@ public class MainActivity extends AppCompatActivity{
                 Profile.class, null);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case LOCATION_REQUEST:
+                if (canAccessLocation()) {
+                }
+                else {
+                }
+                break;
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -267,11 +286,10 @@ public class MainActivity extends AppCompatActivity{
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
                 imageView.setImageBitmap(bitmap);
-
             }
-
         }
     }
+
     private void selectImage() {
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -308,7 +326,11 @@ public class MainActivity extends AppCompatActivity{
         inflater.inflate(R.menu.menu_main_page, menu);
         return true;
     }
-
-
+    private boolean hasPermission(String perm) {
+        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+    }
+    private boolean canAccessLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+    }
 }
 
