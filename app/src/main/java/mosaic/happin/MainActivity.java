@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -88,11 +90,19 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!canAccessLocation()) {
-            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!canAccessLocation()) {
+                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+            }
+            else {
+                locationClass = new MyLocation(this);
+                locationClass.onStart();
+            }
         }
-        locationClass = new MyLocation(this);
-        locationClass.onStart();
+        else {
+            locationClass = new MyLocation(this);
+            locationClass.onStart();
+        }
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
@@ -133,14 +143,18 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
             case LOCATION_REQUEST:
-                if (canAccessLocation()) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationClass = new MyLocation(this);
+                    locationClass.onStart();
                 }
                 else {
+                    Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
                 }
-                break;
         }
+
     }
 
     @Override
@@ -327,7 +341,10 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
     private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        if (Build.VERSION.SDK_INT >= 23) {
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        }
+        else return false;
     }
     private boolean canAccessLocation() {
         return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
