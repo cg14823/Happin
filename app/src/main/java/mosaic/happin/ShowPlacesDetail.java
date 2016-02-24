@@ -74,17 +74,13 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     });
                 }
             }
-
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
         });
-
-
-
-
     }
+
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
@@ -93,6 +89,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
     }
+
     public void liked (View view){
         Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes/"
                 +place.latLng2Id(place.getLat(), place.getLon()));
@@ -121,8 +118,8 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
             }
         });
-
     }
+
     @Override
     public void onResume() {
         mapView.onResume();
