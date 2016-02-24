@@ -230,7 +230,9 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Place p = dataSnapshot.getValue(Place.class);
-                tempPlace = p;
+                Intent detailShow = new Intent(getActivity(),ShowPlacesDetail.class);
+                detailShow.putExtra("place", p);
+                startActivity(detailShow);
             }
 
             @Override
@@ -238,9 +240,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 showToast(error.getMessage());
             }
         });
-        Intent detailShow = new Intent(getActivity(),ShowPlacesDetail.class);
-        detailShow.putExtra("place",tempPlace);
-        startActivity(detailShow);
+
         return true;
     }
 

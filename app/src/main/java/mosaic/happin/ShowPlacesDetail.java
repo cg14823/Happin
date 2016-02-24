@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
-public class ShowPlacesDetail extends AppCompatActivity {
+public class ShowPlacesDetail extends AppCompatActivity implements OnMapReadyCallback {
     private MapView mapView;
     private GoogleMap mMap;
     private Place p;
@@ -34,12 +37,11 @@ public class ShowPlacesDetail extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Intent i = getIntent();
-        p = i.getExtras().getParcelable("place");
-        mapView = (MapView) findViewById(R.id.mapview);
+        p = (i.getExtras().getParcelable("place"));
+        mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
-        mMap = mapView.getMap();
+        mapView.getMapAsync(this);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(), p.getLon()), 10));
     }
 
     public void liked (View view){
@@ -62,4 +64,17 @@ public class ShowPlacesDetail extends AppCompatActivity {
         super.onLowMemory();
         mapView.onLowMemory();
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(p.getLat(),p.getLon()), 10));
+    }
+
+    private void showToast(String message){
+        Toast toast = Toast.makeText(this,
+                message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
 }
