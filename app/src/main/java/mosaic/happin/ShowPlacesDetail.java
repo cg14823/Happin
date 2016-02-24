@@ -17,6 +17,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -93,24 +94,25 @@ public class ShowPlacesDetail extends AppCompatActivity {
         imgView.setImageBitmap(decodedByte);
     }
     public void liked (View view){
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes");
-        Query query = ref.orderByChild("name").equalTo(place.latLng2Id(place.getLat(), place.getLon()));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes/"
+                +place.latLng2Id(place.getLat(), place.getLon()));
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) showToast(" You already have liked this place");
-                else {
+                if (!dataSnapshot.exists()){
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
                     text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"
                             + userId + "/likes");
-                    fref.child("name").setValue((place.latLng2Id(place.getLat(), place.getLon())));
+                    fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
                             +place.latLng2Id(place.getLat(), place.getLon()));
                     java.util.Map<String,Object> likes =new HashMap<>();
                     likes.put("likes", place.getLikes());
                     fref.updateChildren(likes);
+                } else {
+                    showToast("Chill you've already liked this place");
                 }
             }
 
