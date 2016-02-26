@@ -1,15 +1,21 @@
 package mosaic.happin;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -37,17 +43,20 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
+<<<<<<< HEAD
 import java.util.List;
+=======
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+>>>>>>> master
 
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
  *Firstly need to make sure to places are not submitted twice.
  *Work on getting a better respond time on location retrival. (Maybe inverting order of calls or using another API).
- *Created a location calss to migrate all location stuff there.
- *Better way of storing the images in the server
- *Converting a string into an image
  *Displaying added places in the profile
- * Create user-places table to find places added/liked by users fast*/
 
 /*For iteration 3:
 * Add liking system
@@ -70,6 +79,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
 
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+    };
+    private static final int LOCATION_REQUEST=1337;
+
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_IMAGE = 2;
@@ -83,8 +97,19 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationClass = new MyLocation(this);
-        locationClass.onStart();
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!canAccessLocation()) {
+                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+            }
+            else {
+                locationClass = new MyLocation(this);
+                locationClass.onStart();
+            }
+        }
+        else {
+            locationClass = new MyLocation(this);
+            locationClass.onStart();
+        }
 
         Firebase.setAndroidContext(this);
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/");
@@ -123,6 +148,20 @@ public class MainActivity extends AppCompatActivity{
                 Profile.class, null);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case LOCATION_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationClass = new MyLocation(this);
+                    locationClass.onStart();
+                }
+                else {
+                    Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
+                }
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -172,7 +211,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean addPlace(){
         //Creates dialog to input place detail
-        Location location = locationClass.getLocation();
+        final Location location = locationClass.getLocation();
         if (location != null) {
 
             final LatLng placeloc = new LatLng (location.getLatitude(),location.getLongitude());
@@ -181,8 +220,12 @@ public class MainActivity extends AppCompatActivity{
             final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
             recPassDialog.setView(dialogView);
             EditText locfield = (EditText) dialogView.findViewById(R.id.location);
+<<<<<<< HEAD
             Map b =new Map();
             List<String> s = b.reverseGeo(location.getLatitude(),location.getLongitude());
+=======
+            List<String> s = reverseGeo(location.getLatitude(),location.getLongitude());
+>>>>>>> master
             locfield.setText(s.get(1)+ " "+ s.get(0));
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -200,12 +243,19 @@ public class MainActivity extends AppCompatActivity{
                             nameField.getText().toString(),
                             description.getText().toString(), imageFile, userId);
                     //pushes to database with new unique id
-                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/" +
+                            place.latLng2Id(placeloc));
                     myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot snapshot) {
-                            myFirebaseRef.push().setValue(place);
-                            showToast("Place added");
+                            if (!snapshot.exists()) {
+                                Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                                ref1.child(place.latLng2Id(placeloc)).setValue(place);
+                                showToast("Place added");
+                            } else {
+                                showToast("Place already exists");
+                            }
+
                         }
 
                         @Override
@@ -252,15 +302,25 @@ public class MainActivity extends AppCompatActivity{
                 imageView.setImageBitmap(photo);
             }
         }
-        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK){
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null){
             ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else{
-                imageView.setImageURI(data.getData());
-            }
+                Uri pickedImage = data.getData();
+                // Let's read picked image path using content resolver
+                String[] filePath = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
+                cursor.moveToFirst();
+                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
 
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                imageView.setImageBitmap(bitmap);
+            }
         }
     }
+
     private void selectImage() {
         final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -296,6 +356,36 @@ public class MainActivity extends AppCompatActivity{
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main_page, menu);
         return true;
+    }
+
+    private boolean hasPermission(String perm) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        }
+        else return false;
+    }
+
+    private boolean canAccessLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+    }
+
+    public List<String> reverseGeo(double lat, double lng) {
+        try {
+            List<String> location = new ArrayList<String>();
+            //String location = "";
+            //String num = "";
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(lat, lng, 1);
+            Address address = addresses.get(0);
+            location.add(0,address.getThoroughfare());
+            location.add(1,address.getSubThoroughfare());
+            return location;
+        } catch (IOException e) {
+            List<String> location = new ArrayList<String>();
+            location.add(0, "Can't");
+            location.add(1, "find location");
+            return location;
+        }
     }
 }
 
