@@ -1,12 +1,10 @@
 package mosaic.happin;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Place{
+public class Place {
 
 
     private double lat;
@@ -37,16 +35,6 @@ public class Place{
     }
     public Place(){}
 
-    public Place(Place p){
-        this.lat = p.getLat();
-        this.lon =p.getLon();
-        this.name = p.getName();
-        this. description = p.getDescription();
-        this.img =p.getImg();
-        this.likes = p.getLikes();
-        this.user = p.getUser();
-    }
-
 
     //getters
     public double getLat(){
@@ -64,32 +52,6 @@ public class Place{
     public String getImg(){return img;}
     public int getLikes(){return likes;}
     public String getUser(){return user;}
-    public void setImage(String userimg){
-        if (userimg.equals("0")) img = null;
-        else img = userimg;
-    }
-
-    public String latLng2Id(LatLng location){
-        String lat = String.valueOf(location.latitude);
-        String lon = String.valueOf(location.longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
-        return strLoc;
-    }
-
-    public String latLng2Id(double latitude, double longitude){
-        String lat = String.valueOf(latitude);
-        String lon = String.valueOf(longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
-        return strLoc;
-    }
-
-    public LatLng id2LatLng (String location){
-        String decodeLoc = location.replace("p", ".");
-        String [] parts = location.split("");
-        double lat = Double.parseDouble(parts[0]);
-        double lon = Double.parseDouble(parts[1]);
-        return new LatLng(lat,lon);
-    }
 
     public void addLike (){likes +=1;}
 

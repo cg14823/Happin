@@ -111,9 +111,10 @@ public class Profile extends Fragment {
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         final ArrayList<Place> places = new ArrayList<Place>();
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
-        Query addedPQ = myFirebaseRef.equalTo(MainActivity.userId,"user");
+        Query addedPQ = myFirebaseRef.orderByChild("user").equalTo(MainActivity.userId);
         showToast(MainActivity.userId);
-        myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        addedPQ.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 showToast("Hey1");

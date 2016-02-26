@@ -1,6 +1,6 @@
 package mosaic.happin;
 
-
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -24,12 +26,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import android.support.v4.app.Fragment;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,10 +47,11 @@ import android.location.Geocoder;
  * Use the {@link Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
+public class Map extends Fragment {
     private GoogleMap mMap;
     private MapView mapView;
     Firebase ref;
+    ArrayList<Place> places;
     public Map (){}
 
 
@@ -65,7 +68,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
-        mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         try{mMap.setMyLocationEnabled(true);}
         catch (SecurityException e){}
@@ -136,11 +138,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     public List<String> reverseGeo(double lat, double lng) {
         try {
-<<<<<<< HEAD
             List<String> location = new ArrayList<String>();
-=======
-            List<String> location = new ArrayList<>();
->>>>>>> master
             //String location = "";
             //String num = "";
             Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
@@ -156,6 +154,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             return location;
         }
     }
+
     private void addPlace(LatLng location){
         //Creates dialog to input place detail
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
@@ -186,7 +185,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 ref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        ref.child(place.latLng2Id(placeloc)).setValue(place);
+                        ref.push().setValue(place);
                         showToast("Place added");
                     }
                     @Override
@@ -212,6 +211,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     /* This function should ge the top rated places from the server*/
     private void getPlaces(){
+        places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -246,18 +246,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     }
 
     @Override
-    public boolean onMarkerClick(final Marker marker) {
-        LatLng latlng = marker.getPosition();
-        Intent detailShow = new Intent(getActivity(), ShowPlacesDetail.class);
-        detailShow.putExtra("ref","https://flickering-torch-2192.firebaseio.com/places/"+latLng2Id(latlng));
-        detailShow.putExtra("USER_ID",MainActivity.userId);
-        startActivity(detailShow);
-
-
-        return true;
-    }
-
-    @Override
     public void onResume() {
         mapView.onResume();
         super.onResume();
@@ -280,13 +268,5 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-    private String latLng2Id(LatLng location){
-        String lat = String.valueOf(location.latitude);
-        String lon = String.valueOf(location.longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
-        return strLoc;
-    }
-
 
 }
