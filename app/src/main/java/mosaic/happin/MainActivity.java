@@ -168,6 +168,7 @@ public class MainActivity extends AppCompatActivity{
                 myFirebaseRef.unauth();
                 Intent i=new Intent(MainActivity.this, Login.class);
                 startActivity(i);
+                finish();
                 break;
             case R.id.addbutton:
                 //gets Location first.

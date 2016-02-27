@@ -33,6 +33,20 @@ public class Login extends AppCompatActivity {
         TextView logo = (TextView) findViewById(R.id.logo);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/EvelethDotBold.otf");
         logo.setTypeface(custom_font);
+        myFirebaseRef.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    userToken = authData.getToken();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("USER_ID", authData.getUid());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    // user is not logged in
+                }
+            }
+        });
 
     }
 
