@@ -165,10 +165,11 @@ public class MainActivity extends AppCompatActivity{
                 //gets Location first.
                 getLocation();
                 break;
-            case R.id.settings:
+            case R.id.action_settings:
                 Intent settings = new Intent(this, Settings.class);
                 settings.putExtra("USER_ID",userId);
                 startActivity(settings);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

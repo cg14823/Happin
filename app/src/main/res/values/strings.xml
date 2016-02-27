@@ -4,6 +4,8 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="mainMenuSettings">Settings</string>
     <string name="signOut">Sign Out</string>
+    <string name="signUp">Sign Up</string>
+    <string name="log_in">Log In</string>
     <string name="search">Search</string>
     <string name="add">Add</string>
     <string name="google_maps_key">AIzaSyCeVdCjWfVHF6q-wdthxTBjcjwzbn9FSsE</string>
@@ -19,4 +21,11 @@
     <string name="likeNotify">Like</string>
     <string name="commentNotify">Comment</string>
     <string name="gameNotify">Game proximity alert</string>
+    <string name= "email">Email</string>
+    <string name= "psw">Password</string>
+    <string name= "newpsw">New password</string>
+    <string name= "newpswcon">Repeat new password</string>
+    <string name= "oldpsw">Old password</string>
+    <string name="fgtPswd">Forgot password?</string>
+    <string name ="pswdChange">Password change</string>
 </resources>

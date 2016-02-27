@@ -6,8 +6,17 @@
     android:fillViewport="true">
 
     <LinearLayout android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        </android.support.v7.widget.Toolbar>
         <TextView android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:text="@string/account"
@@ -26,6 +35,8 @@
             android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:id ="@+id/settings_change_name"
+            android:clickable="true"
+            android:onClick="nameChange"
             />
         <View
             android:layout_width="fill_parent"
@@ -40,6 +51,8 @@
             android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:id ="@+id/settings_change_pic"
+            android:clickable="true"
+            android:onClick="profileChange"
             />
         <View
             android:layout_width="fill_parent"
@@ -55,6 +68,8 @@
             android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:id ="@+id/settings_change_psw"
+            android:clickable="true"
+            android:onClick="passwordChange"
             />
         <View
             android:layout_width="fill_parent"
@@ -89,7 +104,7 @@
         <CheckBox
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likeNotify"
@@ -106,7 +121,7 @@
         <CheckBox
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/commentNotify"
@@ -122,7 +137,7 @@
             android:layout_marginBottom="@dimen/activity_vertical_margin"/>
         <CheckBox
             android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:layout_width="match_parent"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_height="wrap_content"
