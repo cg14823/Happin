@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/app_name"
+            android:textColor="@color/tabTitleColor"
+            android:textSize="20sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.google.android.gms.maps.MapView android:id="@+id/placeMapView"
+        android:layout_weight= "2.5"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+    <RelativeLayout android:layout_height="match_parent"
+        android:layout_width="match_parent" android:layout_weight="1">
+        <ImageView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignBottom="@+id/placeText"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id="@+id/placeImgview"/>
+        <TextView  android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/placeImgview"
+            android:layout_marginTop="47dp"
+            android:layout_marginStart="@dimen/activity_vertical_margin"
+            android:id="@+id/placeText" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Like"
+            android:onClick= "liked"
+            android:layout_below="@+id/placeText"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="132dp" />
+    </RelativeLayout>
+</LinearLayout>
