@@ -59,10 +59,6 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticated(AuthData authData) {
                 userToken = authData.getToken();
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("USER_ID", authData.getUid());
-                startActivity(intent);
-                finish();
             }
 
             @Override
