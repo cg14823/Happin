@@ -1,15 +1,21 @@
 package mosaic.happin;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -143,7 +149,7 @@ public class MainActivity extends AppCompatActivity{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case LOCATION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
                     locationClass = new MyLocation(this);
                     locationClass.onStart();
                 }
@@ -345,7 +351,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean hasPermission(String perm) {
         if (Build.VERSION.SDK_INT >= 23) {
-            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+            return (PERMISSION_GRANTED == checkSelfPermission(perm));
         }
         else return false;
     }
