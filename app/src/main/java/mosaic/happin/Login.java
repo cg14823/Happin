@@ -33,6 +33,20 @@ public class Login extends AppCompatActivity {
         TextView logo = (TextView) findViewById(R.id.logo);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/EvelethDotBold.otf");
         logo.setTypeface(custom_font);
+        myFirebaseRef.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    userToken = authData.getToken();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("USER_ID", authData.getUid());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    // user is not logged in
+                }
+            }
+        });
 
     }
 
@@ -48,6 +62,7 @@ public class Login extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtra("USER_ID", authData.getUid());
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -71,18 +86,20 @@ public class Login extends AppCompatActivity {
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 EditText text = (EditText) dialogView.findViewById(R.id.fgtemail);
-                String email = text.getText().toString();
+                final String email = text.getText().toString();
                 myFirebaseRef.resetPassword(email, new Firebase.ResultHandler() {
                     @Override
                     public void onSuccess() {
                         // password reset email sent
+                        showToast("Sent to " + email);
                     }
                     @Override
                     public void onError(FirebaseError firebaseError) {
                         // error encountered
+                        showToast(email + "is an invalid email");
                     }
                 });
-                showToast("Sent to " + email);
+
 
             }
         });

@@ -1,15 +1,21 @@
 package mosaic.happin;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentTabHost;
@@ -41,6 +47,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import static android.content.pm.PackageManager.*;
 
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
@@ -143,7 +151,7 @@ public class MainActivity extends AppCompatActivity{
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case LOCATION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
                     locationClass = new MyLocation(this);
                     locationClass.onStart();
                 }
@@ -157,6 +165,10 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.signOut:
+                myFirebaseRef.unauth();
+                Intent i=new Intent(MainActivity.this, Login.class);
+                startActivity(i);
+                finish();
                 break;
             case R.id.addbutton:
                 //gets Location first.
@@ -345,7 +357,7 @@ public class MainActivity extends AppCompatActivity{
 
     private boolean hasPermission(String perm) {
         if (Build.VERSION.SDK_INT >= 23) {
-            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+            return (PERMISSION_GRANTED == checkSelfPermission(perm));
         }
         else return false;
     }
@@ -357,8 +369,6 @@ public class MainActivity extends AppCompatActivity{
     public List<String> reverseGeo(double lat, double lng) {
         try {
             List<String> location = new ArrayList<String>();
-            //String location = "";
-            //String num = "";
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
@@ -373,4 +383,3 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 }
-
