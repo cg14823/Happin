@@ -43,14 +43,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
-<<<<<<< HEAD
-import java.util.List;
-=======
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
->>>>>>> master
 
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
@@ -220,12 +216,7 @@ public class MainActivity extends AppCompatActivity{
             final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
             recPassDialog.setView(dialogView);
             EditText locfield = (EditText) dialogView.findViewById(R.id.location);
-<<<<<<< HEAD
-            Map b =new Map();
-            List<String> s = b.reverseGeo(location.getLatitude(),location.getLongitude());
-=======
             List<String> s = reverseGeo(location.getLatitude(),location.getLongitude());
->>>>>>> master
             locfield.setText(s.get(1)+ " "+ s.get(0));
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -388,4 +379,3 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 }
-

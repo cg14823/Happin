@@ -136,11 +136,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     public List<String> reverseGeo(double lat, double lng) {
         try {
-<<<<<<< HEAD
-            List<String> location = new ArrayList<String>();
-=======
             List<String> location = new ArrayList<>();
->>>>>>> master
             //String location = "";
             //String num = "";
             Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
