@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static android.content.pm.PackageManager.*;
+
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
  *Firstly need to make sure to places are not submitted twice.
