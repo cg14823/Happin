@@ -1,6 +1,6 @@
 package mosaic.happin;
 
-
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -152,6 +153,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             return location;
         }
     }
+
     private void addPlace(LatLng location){
         //Creates dialog to input place detail
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
