@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="@string/account"
+            android:textColor="@color/colorAccent"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:textStyle="bold"
+            android:id ="@+id/settings_Ac_title"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/nameChange"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_change_name"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/changePic"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_change_pic"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pswrRst"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_change_psw"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/deleteAc"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_delete_ac"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:text="@string/notification"
+            android:textColor="@color/colorAccent"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:textStyle="bold"
+            android:id ="@+id/settings_notification_title"
+            />
+        <CheckBox
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:button="@null"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/likeNotify"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_like"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        <CheckBox
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:button="@null"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/commentNotify"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_comment"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+        <CheckBox
+            android:button="@null"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:layout_width="match_parent"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content"
+            android:text="@string/gameNotify"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textColor="@color/tabTitleColor"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:id ="@+id/settings_game"
+            />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+    </LinearLayout>
+</ScrollView>
