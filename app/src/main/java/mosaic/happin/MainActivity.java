@@ -165,6 +165,9 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.signOut:
+                myFirebaseRef.unauth();
+                Intent i=new Intent(MainActivity.this, Login.class);
+                startActivity(i);
                 break;
             case R.id.addbutton:
                 //gets Location first.
@@ -365,8 +368,6 @@ public class MainActivity extends AppCompatActivity{
     public List<String> reverseGeo(double lat, double lng) {
         try {
             List<String> location = new ArrayList<String>();
-            //String location = "";
-            //String num = "";
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
