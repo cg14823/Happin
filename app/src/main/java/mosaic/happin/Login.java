@@ -49,6 +49,7 @@ public class Login extends AppCompatActivity {
                 intent.putExtra("USER_ID", authData.getUid());
                 startActivity(intent);
             }
+
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 showToast(firebaseError.getMessage());
@@ -64,12 +65,24 @@ public class Login extends AppCompatActivity {
     public void forgotPwd(View view) {
         LayoutInflater inflater = getLayoutInflater();
         // message for password recovery
-        AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-        recPassDialog.setView(inflater.inflate(R.layout.dialog_recpswrd, null));
+        final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
+        final View dialogView = (inflater.inflate(R.layout.dialog_recpswrd, null));
+        recPassDialog.setView(dialogView);
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                EditText email = (EditText)findViewById(R.id.email);
-                showToast("Not implemented");
+                EditText text = (EditText) dialogView.findViewById(R.id.fgtemail);
+                String email = text.getText().toString();
+                myFirebaseRef.resetPassword(email, new Firebase.ResultHandler() {
+                    @Override
+                    public void onSuccess() {
+                        // password reset email sent
+                    }
+                    @Override
+                    public void onError(FirebaseError firebaseError) {
+                        // error encountered
+                    }
+                });
+                showToast("Sent to " + email);
 
             }
         });
