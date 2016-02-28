@@ -42,12 +42,9 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("USER_ID", authData.getUid());
                     startActivity(intent);
                     finish();
-                } else {
-                    // user is not logged in
                 }
             }
         });
-
     }
 
     public void login(View view) {
@@ -67,7 +64,7 @@ public class Login extends AppCompatActivity {
                     case FirebaseError.INVALID_EMAIL:
                         new AlertDialog.Builder(Login.this)
                                 .setTitle("Create an account")
-                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                .setMessage("There is no account associated with this email. Please sign up")
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent intent = new Intent(getApplicationContext(), SignUp.class);
@@ -88,7 +85,7 @@ public class Login extends AppCompatActivity {
                     default:
                         new AlertDialog.Builder(Login.this)
                                 .setTitle("Create an account")
-                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                .setMessage("There is no account associated with this email. Please sign up")
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent intent = new Intent(getApplicationContext(), SignUp.class);
@@ -133,11 +130,9 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onError(FirebaseError firebaseError) {
                         // error encountered
-                        showToast(email + "is an invalid email");
+                        showToast(firebaseError.getMessage());
                     }
                 });
-
-
             }
         });
         recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

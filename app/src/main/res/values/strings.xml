@@ -30,4 +30,5 @@
     <string name="fgtPswd">Forgot password?</string>
     <string name ="pswdChange">Password change</string>
     <string name ="nameChangeconfmsg">Are you sure you want to change your profile name?</string>
+    <string name ="deleteTitle">Account deletion</string>
 </resources>
