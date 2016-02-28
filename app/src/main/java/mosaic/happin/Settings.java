@@ -48,7 +48,8 @@ public class Settings extends AppCompatActivity {
                 EditText nameField = (EditText) dialogView.findViewById(R.id.nameChangField);
                 String name = nameField.getText().toString();
                 if (name.length() > 2){
-
+                    Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid+"/name");
+                    ref.setValue(name);
                 }
                 else showToast("Name must contain at least 3 characters");
 
