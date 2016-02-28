@@ -91,7 +91,8 @@ public class ShowPlacesDetail extends AppCompatActivity {
     }
 
     public void liked (View view){
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes/"
+        showToast("Im here");
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
                 +place.latLng2Id(place.getLat(), place.getLon()));
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -100,8 +101,8 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
                     text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
-                    Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"
-                            + userId + "/likes");
+                    Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
+                            + userId);
                     fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
                             +place.latLng2Id(place.getLat(), place.getLon()));
