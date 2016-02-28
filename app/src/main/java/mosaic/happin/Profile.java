@@ -110,39 +110,6 @@ public class Profile extends Fragment {
     private ArrayList<Place> getYP(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         final ArrayList<Place> places = new ArrayList<Place>();
-        myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
-        Query addedPQ = myFirebaseRef.equalTo(MainActivity.userId,"user");
-        showToast(MainActivity.userId);
-        myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot querySnapshot) {
-                showToast("Hey1");
-                for (DataSnapshot d : querySnapshot.getChildren()) {
-                    showToast("Hey2");
-                    myFirebaseRef.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                showToast("Hey3");
-                                Place p = dataSnapshot.getValue(Place.class);
-                                places.add(p);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError error) {
-                showToast(error.getMessage());
-            }
-        });
-        showToast(String.valueOf(places.size()));
         return places;
     }
 

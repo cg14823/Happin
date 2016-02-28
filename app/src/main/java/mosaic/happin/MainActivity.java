@@ -33,13 +33,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.location.LocationListener;
-
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
@@ -173,6 +170,11 @@ public class MainActivity extends AppCompatActivity{
             case R.id.addbutton:
                 //gets Location first.
                 getLocation();
+                break;
+            case R.id.action_settings:
+                Intent settings = new Intent(this, Settings.class);
+                settings.putExtra("USER_ID",userId);
+                startActivity(settings);
                 break;
         }
         return super.onOptionsItemSelected(item);
