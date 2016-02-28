@@ -59,15 +59,51 @@ public class Login extends AppCompatActivity {
             @Override
             public void onAuthenticated(AuthData authData) {
                 userToken = authData.getToken();
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("USER_ID", authData.getUid());
-                startActivity(intent);
-                finish();
             }
 
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
-                showToast(firebaseError.getMessage());
+                switch (firebaseError.getCode()) {
+                    case FirebaseError.INVALID_EMAIL:
+                        new AlertDialog.Builder(Login.this)
+                                .setTitle("Create an account")
+                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        break;
+                    case FirebaseError.INVALID_PASSWORD:
+                        showToast("Incorrect password, try again");
+                        break;
+                    default:
+                        new AlertDialog.Builder(Login.this)
+                                .setTitle("Create an account")
+                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                        break;
+                }
             }
         });
     }
@@ -93,6 +129,7 @@ public class Login extends AppCompatActivity {
                         // password reset email sent
                         showToast("Sent to " + email);
                     }
+
                     @Override
                     public void onError(FirebaseError firebaseError) {
                         // error encountered
@@ -112,10 +149,9 @@ public class Login extends AppCompatActivity {
         alert.show();
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
 }
