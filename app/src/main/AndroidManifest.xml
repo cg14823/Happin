@@ -56,6 +56,14 @@
                 android:value="mosaic.happin.MainActivity" />
         </activity>
         <activity
+            android:name=".GameInfoWindow"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mosaic.happin.MainActivity" />
+        </activity>
+        <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"

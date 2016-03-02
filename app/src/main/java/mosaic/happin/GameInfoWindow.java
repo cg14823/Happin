@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class GameInfoWindow extends AppCompatActivity {
     private GoogleMap mMap;
     private Place place;
     private String userId;
+    private Boolean visitable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,10 +56,18 @@ public class GameInfoWindow extends AppCompatActivity {
         Intent i = getIntent();
         String url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
+        visitable = i.getBooleanExtra("canVisit",false);
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
+        Button button = (Button) findViewById(R.id.visitButton);
+        if (visitable){
+            button.setEnabled(true);
+        }
+        else {
+            button.setEnabled(false);
+        }
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -69,6 +79,7 @@ public class GameInfoWindow extends AppCompatActivity {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
                             mMap = googleMap;
+                            mMap.getUiSettings().setAllGesturesEnabled(false);
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(place.getLat(), place.getLon()), 17));
                             mMap.addMarker(new MarkerOptions().position(new LatLng(place.getLat(), place.getLon()))
                                     .title(place.getName()).snippet(place.getDescription()));
@@ -89,7 +100,11 @@ public class GameInfoWindow extends AppCompatActivity {
     }
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
-        text.setText("Git Gud");
+        text.setText(place.getName()+"\nGit Gud");
+    }
+
+    public void visited(View view){
+        showToast("Praise The Sun");
     }
 
     @Override
