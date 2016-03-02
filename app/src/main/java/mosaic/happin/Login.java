@@ -6,12 +6,9 @@ import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,51 +33,116 @@ public class Login extends AppCompatActivity {
         TextView logo = (TextView) findViewById(R.id.logo);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/EvelethDotBold.otf");
         logo.setTypeface(custom_font);
-
+        myFirebaseRef.addAuthStateListener(new Firebase.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(AuthData authData) {
+                if (authData != null) {
+                    userToken = authData.getToken();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("USER_ID", authData.getUid());
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
     }
 
     public void login(View view) {
-        EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.password);
-        String email = emailField.getText().toString();
+        final EditText emailField = (EditText) findViewById(R.id.email);
+        final EditText passwordField = (EditText) findViewById(R.id.password);
+        final String email = emailField.getText().toString();
         String pass = passwordField.getText().toString();
-        myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                userToken = authData.getToken();
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("USER_ID", authData.getUid());
-                startActivity(intent);
+        if (isValidEmail(email)) {
+            myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    userToken = authData.getToken();
+                }
 
-            }
+                @Override
+                public void onAuthenticationError(FirebaseError firebaseError) {
+                    switch (firebaseError.getCode()) {
+                        case FirebaseError.INVALID_EMAIL:
+                            new AlertDialog.Builder(Login.this)
+                                    .setTitle("Create an account")
+                                    .setMessage("There are no account associated with this email. Please sign up")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            passwordField.setText("");
+                                            Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                            intent.putExtra("email", email);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
 
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                // there was an error
-                showToast(firebaseError.getMessage());
-            }
-        });
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                            break;
+                        case FirebaseError.INVALID_PASSWORD:
+                            showToast("Incorrect password, try again");
+                            break;
+                        default:
+                            new AlertDialog.Builder(Login.this)
+                                    .setTitle("Create an account")
+                                    .setMessage("There are no account associated with this email. Please sign up")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            passwordField.setText("");
+                                            Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                            intent.putExtra("email", email);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
 
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                            break;
+                    }
+                }
+            });
+        } else showToast("Enter a valid email");
     }
 
     public void signUp(View view) {
+        final EditText emailField = (EditText) findViewById(R.id.email);
+        final EditText passwordField = (EditText) findViewById(R.id.password);
+        emailField.setText("");
+        passwordField.setText("");
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);
     }
 
     public void forgotPwd(View view) {
-
         LayoutInflater inflater = getLayoutInflater();
         // message for password recovery
-        AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
-        recPassDialog.setView(inflater.inflate(R.layout.dialog_recpswrd, null));
+        final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
+        final View dialogView = (inflater.inflate(R.layout.dialog_recpswrd, null));
+        recPassDialog.setView(dialogView);
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                EditText email = (EditText)findViewById(R.id.email);
-                if (verifyEmail(email.getText().toString()))
-                    showToast("New password sent to your email");
-                else
-                    showToast("Invalid email");
+                EditText text = (EditText) dialogView.findViewById(R.id.fgtemail);
+                final String email = text.getText().toString();
+                myFirebaseRef.resetPassword(email, new Firebase.ResultHandler() {
+                    @Override
+                    public void onSuccess() {
+                        // password reset email sent
+                        showToast("Sent to " + email);
+                    }
+
+                    @Override
+                    public void onError(FirebaseError firebaseError) {
+                        // error encountered
+                        showToast(firebaseError.getMessage());
+                    }
+                });
             }
         });
         recPassDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -92,15 +154,17 @@ public class Login extends AppCompatActivity {
         alert.show();
     }
 
-    private boolean verifyEmail (String email){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
-        return false;
+    public static boolean isValidEmail(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
 }

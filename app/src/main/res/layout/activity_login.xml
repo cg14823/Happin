@@ -19,7 +19,7 @@
         android:ems="10"
         android:inputType="textEmailAddress"
         android:textColor="#000000"
-        android:hint="email" />
+        android:hint="@string/email" />
 
     <EditText
         android:id="@+id/password"
@@ -31,7 +31,7 @@
         android:ems="10"
         android:inputType="textPassword"
         android:textColor="#000000"
-        android:hint="password" />
+        android:hint="@string/psw" />
 
     <Button
         android:id="@+id/button"
@@ -40,7 +40,7 @@
         android:layout_alignStart="@+id/password"
         android:layout_alignTop="@+id/button2"
         android:onClick="signUp"
-        android:text="Sign Up" />
+        android:text="@string/signUp" />
 
     <Button
         android:id="@+id/button2"
@@ -50,7 +50,7 @@
         android:layout_below="@+id/password"
         android:layout_marginTop="35dp"
         android:onClick="login"
-        android:text="LogIn" />
+        android:text="@string/log_in" />
 
     <TextView
         android:id="@+id/forgot"
@@ -59,7 +59,7 @@
         android:layout_alignEnd="@+id/password"
         android:layout_below="@+id/password"
         android:onClick="forgotPwd"
-        android:text="Forgot password?"
+        android:text="@string/fgtPswd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#a40000ff" />
 
@@ -72,6 +72,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="55dp"
         android:textColor="#e6007e"
-        android:textSize="60dp" />
+        android:textSize="60sp" />
 
 </RelativeLayout>

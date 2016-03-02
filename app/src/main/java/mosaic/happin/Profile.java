@@ -13,7 +13,10 @@ import android.widget.Toast;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
@@ -49,7 +52,7 @@ public class Profile extends Fragment {
     }
 
     private void setProfile(View view){
-        // SERVER STUFF HERE! <---------------------------------------------------------------------
+        // Retrive Name from database
         String userId = MainActivity.userId;
         final TextView nameField = (TextView) view.findViewById(R.id.details);
         final TextView points = (TextView) view.findViewById(R.id.points);
@@ -83,6 +86,7 @@ public class Profile extends Fragment {
             empty.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             parent.addView(empty);
         }
+        else showToast("You have places MATE!");
     }
     private void addYP(View view){
         ArrayList<Place> places = getYP();
@@ -98,13 +102,14 @@ public class Profile extends Fragment {
     private ArrayList<Place> getLP(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
         ArrayList<Place> places = new ArrayList<Place>();
+
         return places;
     }
 
     // Goes to the server and gets the Places you´ve added
     private ArrayList<Place> getYP(){
         // SERVER STUFF HERE! <---------------------------------------------------------------------
-        ArrayList<Place> places = new ArrayList<Place>();
+        final ArrayList<Place> places = new ArrayList<Place>();
         return places;
     }
 
