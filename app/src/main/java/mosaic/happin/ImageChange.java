@@ -40,7 +40,7 @@ public class ImageChange extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
+
         setProfile();
         Intent i = getIntent();
         uid = i.getStringExtra("USER_ID");
