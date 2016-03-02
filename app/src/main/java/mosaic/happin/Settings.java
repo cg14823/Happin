@@ -64,7 +64,11 @@ public class Settings extends AppCompatActivity {
         alert.show();
         
     }
-    public void profileChange (View view){}
+    public void profileChange (View view){
+        Intent changeImage = new Intent(this, ImageChange.class);
+        changeImage.putExtra("USER_ID",uid);
+        startActivity(changeImage);
+    }
 
 
     private void serverPasswordChange(final String orPswd, final String newPswd){
@@ -191,8 +195,6 @@ public class Settings extends AppCompatActivity {
                     });
                 }
                 else showToast("This email is not associated with the current account");
-
-
             }
 
             @Override

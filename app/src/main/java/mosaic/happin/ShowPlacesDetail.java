@@ -70,6 +70,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(place.getLat(), place.getLon()), 12));
                             mMap.addMarker(new MarkerOptions().position(new LatLng(place.getLat(), place.getLon()))
                                     .title(place.getName()).snippet(place.getDescription()));
+                            mMap.getUiSettings().setAllGesturesEnabled(false);
                         }
                     });
                 }
@@ -91,7 +92,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
     }
 
     public void liked (View view){
-        showToast("Im here");
         Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
                 +place.latLng2Id(place.getLat(), place.getLon()));
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
