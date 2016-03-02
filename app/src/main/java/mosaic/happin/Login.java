@@ -42,73 +42,80 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("USER_ID", authData.getUid());
                     startActivity(intent);
                     finish();
-                } else {
-                    // user is not logged in
                 }
             }
         });
-
     }
 
     public void login(View view) {
-        EditText emailField = (EditText) findViewById(R.id.email);
-        EditText passwordField = (EditText) findViewById(R.id.password);
-        String email = emailField.getText().toString();
+        final EditText emailField = (EditText) findViewById(R.id.email);
+        final EditText passwordField = (EditText) findViewById(R.id.password);
+        final String email = emailField.getText().toString();
         String pass = passwordField.getText().toString();
-        myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                userToken = authData.getToken();
-            }
-
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                switch (firebaseError.getCode()) {
-                    case FirebaseError.INVALID_EMAIL:
-                        new AlertDialog.Builder(Login.this)
-                                .setTitle("Create an account")
-                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                                        startActivity(intent);
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                        break;
-                    case FirebaseError.INVALID_PASSWORD:
-                        showToast("Incorrect password, try again");
-                        break;
-                    default:
-                        new AlertDialog.Builder(Login.this)
-                                .setTitle("Create an account")
-                                .setMessage("There are no account associated with this email. Please sign up before to start the app")
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                                        startActivity(intent);
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                })
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                        break;
+        if (isValidEmail(email)) {
+            myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
+                @Override
+                public void onAuthenticated(AuthData authData) {
+                    userToken = authData.getToken();
                 }
-            }
-        });
+
+                @Override
+                public void onAuthenticationError(FirebaseError firebaseError) {
+                    switch (firebaseError.getCode()) {
+                        case FirebaseError.INVALID_EMAIL:
+                            new AlertDialog.Builder(Login.this)
+                                    .setTitle("Create an account")
+                                    .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            passwordField.setText("");
+                                            Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                            intent.putExtra("email", email);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                            break;
+                        case FirebaseError.INVALID_PASSWORD:
+                            showToast("Incorrect password, try again");
+                            break;
+                        default:
+                            new AlertDialog.Builder(Login.this)
+                                    .setTitle("Create an account")
+                                    .setMessage("There are no account associated with this email. Please sign up before to start the app")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            passwordField.setText("");
+                                            Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                                            intent.putExtra("email", email);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
+                            break;
+                    }
+                }
+            });
+        } else showToast("Enter a valid email");
     }
 
     public void signUp(View view) {
+        final EditText emailField = (EditText) findViewById(R.id.email);
+        final EditText passwordField = (EditText) findViewById(R.id.password);
+        emailField.setText("");
+        passwordField.setText("");
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);
     }
@@ -147,6 +154,14 @@ public class Login extends AppCompatActivity {
         });
         AlertDialog alert = recPassDialog.create();
         alert.show();
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 
     private void showToast(String message) {
