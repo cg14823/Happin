@@ -33,10 +33,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
+            android:launchMode="singleInstance"
             android:parentActivityName=".Login"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleInstance">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mosaic.happin.Login" />
@@ -63,6 +63,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mosaic.happin.MainActivity" />
+        </activity>
+        <activity android:name=".ImageChange"
+            android:label="@string/title_activity_changeImage"
+            android:parentActivityName=".Settings"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mosaic.happin.Settings" />
         </activity>
     </application>
 
