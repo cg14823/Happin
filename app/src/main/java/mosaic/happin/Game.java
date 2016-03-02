@@ -36,6 +36,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
@@ -89,11 +90,22 @@ public class Game extends Fragment implements
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
-        mMap.setMyLocationEnabled(true);
+        try {
+            mMap.setMyLocationEnabled(true);
+        }
+        catch (SecurityException e) {}
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
+            }
+        });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
+                startActivity(detailShow);
+                return true;
             }
         });
 
@@ -192,6 +204,7 @@ public class Game extends Fragment implements
         LatLng bristol = new LatLng(51.465411, -2.585911);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 17));
     }
+
 
     @Override
     public void onResume() {
