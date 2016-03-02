@@ -87,6 +87,8 @@
             android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:id ="@+id/settings_delete_ac"
+            android:clickable="true"
+            android:onClick="deleteAccount"
             />
         <View
             android:layout_width="fill_parent"
