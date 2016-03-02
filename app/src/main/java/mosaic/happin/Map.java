@@ -1,6 +1,5 @@
 package mosaic.happin;
 
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,7 +14,6 @@ import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -33,7 +31,6 @@ import android.support.v4.app.Fragment;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,7 +68,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         mMap = mapView.getMap();
         mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
         try{mMap.setMyLocationEnabled(true);}
         catch (SecurityException e){}
 
@@ -139,16 +135,20 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         });
     }
 
-    private String reverseGeo(double lat, double lng) {
+    public List<String> reverseGeo(double lat, double lng) {
         try {
-            String location = "";
+            List<String> location = new ArrayList<>();
             Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
-            location = address.getSubAdminArea();
+            location.add(0,address.getThoroughfare());
+            location.add(1,address.getSubThoroughfare());
             return location;
         } catch (IOException e) {
-            return "";
+            List<String> location = new ArrayList<String>();
+            location.add(0, "Can't");
+            location.add(1, "find location");
+            return location;
         }
     }
 
@@ -161,8 +161,8 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place,null));
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText)dialogView.findViewById(R.id.location);
-        String s = reverseGeo(location.latitude,location.longitude);
-        locfield.setText(s);
+        List<String> s = reverseGeo(location.latitude,location.longitude);
+        locfield.setText(s.get(1)+ " " + s.get(0));
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

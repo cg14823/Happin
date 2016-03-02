@@ -17,6 +17,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -73,17 +74,13 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     });
                 }
             }
-
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
         });
-
-
-
-
     }
+
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
@@ -92,25 +89,28 @@ public class ShowPlacesDetail extends AppCompatActivity {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
     }
+
     public void liked (View view){
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/likes");
-        Query query = ref.orderByChild("name").equalTo(place.latLng2Id(place.getLat(), place.getLon()));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        showToast("Im here");
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
+                +place.latLng2Id(place.getLat(), place.getLon()));
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) showToast(" You already have liked this place");
-                else {
+                if (!dataSnapshot.exists()){
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
                     text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
-                    Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"
-                            + userId + "/likes");
-                    fref.child("name").setValue((place.latLng2Id(place.getLat(), place.getLon())));
+                    Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
+                            + userId);
+                    fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
                             +place.latLng2Id(place.getLat(), place.getLon()));
                     java.util.Map<String,Object> likes =new HashMap<>();
                     likes.put("likes", place.getLikes());
                     fref.updateChildren(likes);
+                } else {
+                    showToast("Chill you've already liked this place");
                 }
             }
 
@@ -119,8 +119,8 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
             }
         });
-
     }
+
     @Override
     public void onResume() {
         mapView.onResume();
