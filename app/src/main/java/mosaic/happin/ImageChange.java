@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
@@ -35,6 +36,11 @@ public class ImageChange extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_change);
         Firebase.setAndroidContext(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        
         setProfile();
         Intent i = getIntent();
         uid = i.getStringExtra("USER_ID");
@@ -109,7 +115,6 @@ public class ImageChange extends AppCompatActivity {
 
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                photo.recycle();
                 byte[] byteArray = bYtE.toByteArray();
                 image = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 succesful = true;
@@ -133,7 +138,6 @@ public class ImageChange extends AppCompatActivity {
 
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                bitmap.recycle();
                 byte[] byteArray = bYtE.toByteArray();
                 image = Base64.encodeToString(byteArray, Base64.DEFAULT);
                 succesful = true;
