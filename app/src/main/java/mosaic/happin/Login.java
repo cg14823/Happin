@@ -86,24 +86,7 @@ public class Login extends AppCompatActivity {
                             showToast("Incorrect password, try again");
                             break;
                         default:
-                            new AlertDialog.Builder(Login.this)
-                                    .setTitle("Create an account")
-                                    .setMessage("There are no account associated with this email. Please sign up")
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            passwordField.setText("");
-                                            Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                                            intent.putExtra("email", email);
-                                            startActivity(intent);
-                                        }
-                                    })
-                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    })
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
+                            showToast(firebaseError.getMessage());
                             break;
                     }
                 }

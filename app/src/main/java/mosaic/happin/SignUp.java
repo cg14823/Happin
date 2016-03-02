@@ -50,7 +50,7 @@ public class SignUp extends AppCompatActivity {
                 @Override
                 public void onSuccess(Map<String, Object> result) {
                     showToast("Successfully created new user");
-                    User newUser = new User(name, email, "password");
+                    User newUser = new User(name, email, "password","null Image");
                     myFirebaseRef.child("users").child(result.get("uid").toString()).setValue(newUser);
                     finish();
                 }
