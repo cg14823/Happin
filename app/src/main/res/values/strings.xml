@@ -31,4 +31,5 @@
     <string name ="pswdChange">Password change</string>
     <string name ="nameChangeconfmsg">Are you sure you want to change your profile name?</string>
     <string name ="deleteTitle">Account deletion</string>
+    <string name ="search_hint">Search a Happy Place</string>
 </resources>
