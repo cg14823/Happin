@@ -20,7 +20,6 @@
          <ImageView
              android:layout_width="100dp"
              android:layout_height="100dp"
-             android:src="@mipmap/ic_launcher"
              android:id="@+id/profilePic"
              android:layout_marginTop="20dp"
              android:layout_marginLeft="20dp"/>

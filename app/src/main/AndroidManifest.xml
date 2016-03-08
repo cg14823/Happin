@@ -37,10 +37,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
+            android:launchMode="singleInstance"
             android:parentActivityName=".Login"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            android:launchMode="singleInstance">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mosaic.happin.Login" />
@@ -76,11 +76,17 @@
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"
+        <activity android:name=".ImageChange"
+            android:label="@string/title_activity_changeImage"
+            android:parentActivityName=".Settings"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mosaic.happin.Settings" />
+        </activity>
     </application>
 
 </manifest>
