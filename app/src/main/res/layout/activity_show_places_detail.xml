@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageButton"
-                android:src="@drawable/item_like"
+                android:src="@drawable/ic_thumb_up_black_36dp"
                 android:onClick= "liked"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
