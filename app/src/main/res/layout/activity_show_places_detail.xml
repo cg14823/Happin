@@ -33,9 +33,10 @@
                 <ImageView android:layout_height="270dp"
                     android:layout_width="match_parent"
                     android:background="@color/lightGrey"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
-                    android:id="@+id/placeImgview" />
+                    android:id="@+id/placeImgview"
+                    android:onClick="viewimage"/>
 
                 <TextView  android:layout_height="wrap_content"
                     android:layout_width="wrap_content"

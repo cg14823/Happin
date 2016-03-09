@@ -440,4 +440,35 @@ public class MainActivity extends AppCompatActivity {
         );
         AppIndex.AppIndexApi.start(client, viewAction);
     }
+
+    public void viewProfPic(View view){
+        String ref = "https://flickering-torch-2192.firebaseio.com/users/"+
+                userId+"/profileImage";
+        Firebase reference = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+
+                userId+"/name");
+
+        final Intent showImagebig = new Intent(this, showImage.class);
+        showImagebig.putExtra("REF",ref);
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.getValue(String.class);
+                showImagebig.putExtra("TITLE", name);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                showToast(firebaseError.getMessage());
+            }
+        });
+
+        startActivity(showImagebig);
+    }
+
+    public void showDetails(View view) {
+        TextView placeid = (TextView) view.findViewById(R.id.previewId);
+        String placeidStr = placeid.getText().toString();
+
+    }
 }

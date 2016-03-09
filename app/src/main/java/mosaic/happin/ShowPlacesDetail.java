@@ -72,7 +72,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        text.setText(place.getName()+" Likes:"+place.getLikes()+"\n"+place.getDescription());
+        text.setText(place.getName() + " Likes:" + place.getLikes() + "\n" + place.getDescription());
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
@@ -112,6 +112,16 @@ public class ShowPlacesDetail extends AppCompatActivity {
         });
     }
 
+    public void viewimage(View view){
+        String ref = "https://flickering-torch-2192.firebaseio.com/places/"
+                +place.latLng2Id(place.getLat(), place.getLon())+"/img";
+        Intent showImagebig = new Intent(this, showImage.class);
+        showImagebig.putExtra("REF",ref);
+        showImagebig.putExtra("TITLE",place.getName());
+        startActivity(showImagebig);
+
+
+    }
 
     private void showToast(String message){
         Toast toast = Toast.makeText(this,
