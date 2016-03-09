@@ -46,7 +46,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent i = getIntent();
         String url = i.getStringExtra("ref");
