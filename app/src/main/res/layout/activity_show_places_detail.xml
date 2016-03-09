@@ -22,46 +22,54 @@
             android:textSize="20sp" />
 
     </android.support.v7.widget.Toolbar>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:layout_weight="1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout android:layout_height="match_parent"
+                android:layout_width="match_parent">
+                <ImageView android:layout_height="270dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/lightGrey"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/placeImgview" />
 
-    <com.google.android.gms.maps.MapView android:id="@+id/placeMapView"
-        android:layout_weight= "2.5"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
-    <RelativeLayout android:layout_height="match_parent"
-        android:layout_width="match_parent" android:layout_weight="1">
-        <ImageView android:layout_height="300dp"
-            android:layout_width="200dp"
-            android:background="@color/lightGrey"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id="@+id/placeImgview"/>
-        <TextView  android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/placeImgview"
-            android:layout_marginTop="47dp"
-            android:layout_marginStart="@dimen/activity_vertical_margin"
-            android:id="@+id/placeText" />
+                <TextView  android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_below="@+id/placeImgview"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginStart="@dimen/activity_vertical_margin"
+                    android:id="@+id/placeText" />
 
-        <ImageButton
-            android:id="@+id/showdetailslike"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_thumb_up_black_36dp"
-            android:onClick= "liked"
-            android:layout_below="@+id/placeText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_alignStart="@id/placeText"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_comment_black_36dp"
-            android:onClick= "comment"
-            android:layout_toRightOf="@id/showdetailslike"
-            android:layout_below="@id/placeText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
-    </RelativeLayout>
+                <TextView  android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_toRightOf="@id/placeText"
+                    android:layout_below="@+id/placeImgview"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginStart="@dimen/activity_vertical_margin"
+                    android:id="@+id/likesPlaces" />
+
+                <ImageButton
+                    android:id="@+id/showdetailslike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_thumb_up_black_36dp"
+                    android:onClick= "liked"
+                    android:layout_alignEnd="@id/placeImgview"
+                    android:layout_alignBottom="@id/placeImgview"
+                    android:layout_marginEnd="5dp" />
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_comment_black_36dp"
+                    android:onClick= "comment"
+                    android:layout_toLeftOf="@id/showdetailslike"
+                    android:layout_alignBottom="@id/placeImgview"
+                    android:layout_marginTop="@dimen/activity_vertical_margin" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
