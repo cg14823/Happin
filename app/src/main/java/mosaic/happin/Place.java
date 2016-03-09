@@ -98,4 +98,14 @@ public class Place{
         return name+ " "+ lat+","+lon+" "+description;
     }
 
+    // This method should somehow compute the score(number of stars to display)
+    public int comupteScore() {
+        if (likes>50) return 5;
+        else return likes/10;
+    }
+
+    public Place setLikes(int likes) {
+        this.likes = likes;
+        return this;
+    }
 }
