@@ -121,7 +121,7 @@ public class Game extends Fragment implements
         circle = mMap.addCircle(new CircleOptions()
                 .center(new LatLng(0, 0))
                 .visible(false)
-                .strokeWidth(5)
+                .strokeWidth(2)
                 .radius(50));
 
 
@@ -250,7 +250,7 @@ public class Game extends Fragment implements
             mLocation.setLatitude(51.465411);
             mLocation.setLongitude(-2.585911);
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
     }
 
     @Override
