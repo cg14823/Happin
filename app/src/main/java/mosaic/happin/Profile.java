@@ -2,6 +2,7 @@ package mosaic.happin;
 
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.widget.AdapterView.OnItemClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +23,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +63,7 @@ public class Profile extends Fragment {
         profileView = inflater.inflate(R.layout.fragment_profile, container, false);
         userId = MainActivity.userId;
         setProfile(profileView);
+        setButtons();
         getLiked();
         return profileView;
 
@@ -83,7 +87,7 @@ public class Profile extends Fragment {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Place p = dataSnapshot.getValue(Place.class);
                                 places.add(p);
-                                if(places.size() == num)setGrid();
+                                if (places.size() == num) setGrid();
                             }
 
                             @Override
@@ -102,6 +106,55 @@ public class Profile extends Fragment {
         });
     }
 
+    private void setButtons(){
+        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
+        ypButton.setTextColor(getResources().getColor(R.color.grey));
+        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
+        lpButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
+        lpButton.setTypeface(null, Typeface.BOLD);
+        lpButton.setChecked(true);
+        RadioGroup group = (RadioGroup) profileView.findViewById(R.id.radialGroup);
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            public void onCheckedChanged(RadioGroup rGroup, int checkedId)
+            {
+                // This will get the radiobutton that has changed in its check state
+                RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(checkedId);
+                // This puts the value (true/false) into the variable
+                boolean isChecked = checkedRadioButton.isChecked();
+                // If the radiobutton that has changed in check state is now checked...
+                if (isChecked)
+                {
+                    checkedRadioButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
+                    checkedRadioButton.setTypeface(null, Typeface.BOLD);
+                    if (R.id.lpButton == checkedId){
+                        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
+                        ypButton.setTextColor(getResources().getColor(R.color.grey));
+                        ypButton.setTypeface(null, Typeface.NORMAL);
+                    }
+                    else{
+                        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
+                        lpButton.setTextColor(getResources().getColor(R.color.grey));
+                        lpButton.setTypeface(null, Typeface.NORMAL);
+                    }
+                }
+                else{
+                    checkedRadioButton.setTextColor(getResources().getColor(R.color.grey));
+                    checkedRadioButton.setTypeface(null, Typeface.NORMAL);
+                    if (R.id.lpButton == checkedId){
+                        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
+                        ypButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
+                        ypButton.setTypeface(null, Typeface.BOLD);
+                    }
+                    else{
+                        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
+                        lpButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
+                        lpButton.setTypeface(null, Typeface.BOLD);
+                    }
+                }
+            }
+        });
+    }
 
     private void setGrid(){
         ArrayAdapter<Place> adapter = new CustomAdapter(places);
@@ -189,4 +242,6 @@ public class Profile extends Fragment {
             return itemView;
         }
     }
+
+
 }
