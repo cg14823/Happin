@@ -147,6 +147,7 @@ public class ImageChange extends AppCompatActivity {
             Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid
                     +"/profileImage");
             ref.setValue(image);
+            showToast("Image changed!");
         }
 
     }
