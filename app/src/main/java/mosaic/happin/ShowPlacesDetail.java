@@ -49,11 +49,14 @@ public class ShowPlacesDetail extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         Intent i = getIntent();
         String url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
+
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
+
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
 
@@ -89,6 +92,10 @@ public class ShowPlacesDetail extends AppCompatActivity {
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
+    }
+
+    public void comment(){
+        // SENTHY PUT CODE HERE
     }
 
     public void liked (View view){
