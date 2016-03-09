@@ -37,7 +37,7 @@ public class GameInfoWindow extends AppCompatActivity {
     private GoogleMap mMap;
     private Place place;
     private String userId;
-    private Boolean visitable;
+    private int distance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,17 +56,21 @@ public class GameInfoWindow extends AppCompatActivity {
         Intent i = getIntent();
         String url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
-        visitable = i.getBooleanExtra("canVisit",false);
+        distance = i.getIntExtra("distance",-1);
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
         Button button = (Button) findViewById(R.id.visitButton);
-        if (visitable){
-            button.setEnabled(true);
+        if (distance < 0) {
+            showToast("Error getting distance");
         }
         else {
-            button.setEnabled(false);
+            if (distance <= 50) {
+                button.setEnabled(true);
+            } else {
+                button.setEnabled(false);
+            }
         }
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -100,7 +104,7 @@ public class GameInfoWindow extends AppCompatActivity {
     }
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
-        text.setText(place.getName()+"\nGit Gud");
+        text.setText(place.getName() + "\nDistance: "+ distance + "m");
     }
 
     public void visited(View view){

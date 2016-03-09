@@ -75,7 +75,6 @@ public class Game extends Fragment implements
         Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         mLocationRequest = new LocationRequest();
-
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -114,12 +113,7 @@ public class Game extends Fragment implements
                 Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
                 detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
                 detailShow.putExtra("USER_ID", MainActivity.userId);
-                if (distanceFromCurrent(latlng) <= 50) {
-                    detailShow.putExtra("canVisit", true);
-                } else {
-                    detailShow.putExtra("canVisit", false);
-                }
-
+                detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
                 startActivity(detailShow);
                 return true;
             }
@@ -248,7 +242,7 @@ public class Game extends Fragment implements
     public void onResume() {
         mapView.onResume();
         super.onResume();
-        if (mGoogleApiClient != null) {
+        if (mGoogleApiClient == null) {
             mGoogleApiClient.connect();
         }
         if (mLocation == null){
