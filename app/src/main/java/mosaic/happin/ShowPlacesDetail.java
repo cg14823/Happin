@@ -73,7 +73,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        text.setText(place.getName()+"\n"+place.getDescription()+"\nLikes:"+place.getLikes());
+        text.setText(place.getName()+" Likes:"+place.getLikes()+"\n"+place.getDescription());
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
@@ -92,9 +92,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 if (!dataSnapshot.exists()){
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
-                    TextView likestxtview = (TextView) findViewById(R.id.likesPlaces);
-                    text.setText(place.getName() + "\n" + place.getDescription());
-                    likestxtview.setText("Likes: "+place.getLikes());
+                    text.setText(place.getName() +" Likes: "+place.getLikes()+ "\n" + place.getDescription());
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
                     fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
