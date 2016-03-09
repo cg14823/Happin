@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:padding="5dip"
+    android:background="#f5f5f5"
+    android:descendantFocusability="blocksDescendants">
+
+<!--  ListRow Left sied Thumbnail image -->
+<LinearLayout
+    android:descendantFocusability="blocksDescendants"
+    android:id="@+id/thumbnail"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="3dip"
+    android:layout_alignParentLeft="true"
+    android:layout_marginRight="5dip">
+
+    <ImageView
+        android:id="@+id/item_imageView"
+        android:layout_width="50dip"
+        android:layout_height="50dip"
+        android:src="@drawable/star"/>
+
+</LinearLayout>
+
+<!-- Title Of Song-->
+<TextView
+    android:id="@+id/item_place_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignTop="@+id/thumbnail"
+    android:layout_toRightOf="@+id/thumbnail"
+    android:text="Rihanna Love the way lie"
+    android:textColor="#040404"
+    android:typeface="sans"
+    android:textSize="15sp"
+    android:textStyle="bold"/>
+
+
+<!-- Rightend Duration -->
+<TextView
+    android:id="@+id/item_likes"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignTop="@id/item_place_name"
+    android:gravity="right"
+    android:text="5:45"
+    android:layout_marginRight="5dip"
+    android:textSize="10sp"
+    android:textColor="#21a299"
+    android:textStyle="bold"/>
+
+<!-- Rightend Arrow -->
+<ImageView android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/item_like"
+    android:layout_alignParentTop="true"
+    android:layout_toEndOf="@+id/item_place_name"
+    android:layout_alignBottom="@+id/thumbnail"
+    android:layout_alignStart="@+id/item_likes"
+    android:layout_marginTop="5dp" />
+
+ <RatingBar
+        android:id="@+id/item_ratingBar"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:numStars="5"
+        android:rating="3.5"
+        android:isIndicator="false"
+        style="@style/foodRatingBar" />
+
+</RelativeLayout>
+
+
