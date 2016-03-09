@@ -6,4 +6,6 @@
     <color name="tabTitleColor">#000000</color>
     <color name="grey">#838181</color>
     <color name="lightGrey">#d1cccc</color>
+    <color name="white">#fdfdfd</color>
+    <color name="nearlyTransparent">#48bebebe</color>
 </resources>

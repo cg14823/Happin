@@ -92,6 +92,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="mosaic.happin.Settings" />
         </activity>
+        <activity android:name=".showImage"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

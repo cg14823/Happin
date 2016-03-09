@@ -21,7 +21,8 @@
         android:layout_width="250dp"
         android:layout_height="300dp"
         android:background="@color/lightGrey"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
+        android:onClick="viewImage"
         android:adjustViewBounds="true"
         android:layout_centerInParent="true"
         android:id = "@+id/changePicImage"/>
