@@ -79,7 +79,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
         imgView.setImageBitmap(decodedByte);
     }
 
-    public void comment(){
+    public void comment(View view){
         // SENTHY PUT CODE HERE
     }
 
