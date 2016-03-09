@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,7 +104,7 @@ public class Profile extends Fragment {
                     placesIDs.add(d.getKey());
                 }
                 if (placesIDs.isEmpty()){
-                    HorizontalScrollView parent = (HorizontalScrollView) profileView.findViewById(R.id.horizontalScrollView1);
+                    LinearLayout parent = (LinearLayout) profileView.findViewById(R.id.containerLP);
                     TextView empty = new TextView(getContext());
                     empty.setText("You haven't liked any places");
                     parent.addView(empty);
@@ -117,7 +118,7 @@ public class Profile extends Fragment {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-                                    HorizontalScrollView parent = (HorizontalScrollView) profileView.findViewById(R.id.horizontalScrollView);
+                                    LinearLayout parent = (LinearLayout) profileView.findViewById(R.id.containerLP);
 
                                     Place p = dataSnapshot.getValue(Place.class);
 

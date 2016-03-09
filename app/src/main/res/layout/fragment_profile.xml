@@ -66,6 +66,11 @@
              android:background="#C6D7D2"
              android:layout_below="@+id/ypTitle"
              android:layout_alignParentStart="true" >
+             <LinearLayout
+                 android:id="@+id/containerLP"
+                 android:orientation="horizontal"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"/>
          </HorizontalScrollView>
         <Space
             android:layout_below="@+id/horizontalScrollView1"

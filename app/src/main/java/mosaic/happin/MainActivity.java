@@ -469,6 +469,12 @@ public class MainActivity extends AppCompatActivity {
     public void showDetails(View view) {
         TextView placeid = (TextView) view.findViewById(R.id.previewId);
         String placeidStr = placeid.getText().toString();
-
+        if (placeidStr != null){
+            String ref = "https://flickering-torch-2192.firebaseio.com/places/"+placeidStr;
+            Intent showplaceDetails = new Intent(this,ShowPlacesDetail.class);
+            showplaceDetails.putExtra("ref",ref);
+            showplaceDetails.putExtra("USER_ID",userId);
+            startActivity(showplaceDetails);
+        }
     }
 }
