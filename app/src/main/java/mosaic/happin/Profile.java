@@ -47,6 +47,7 @@ import java.util.List;
 public class Profile extends Fragment {
 
     public static final String ARG_PAGE = "ARG_PAGE";
+    public int tab=0;
     private List<Place> places =new ArrayList<>();
     String userId;
     View profileView;
@@ -63,7 +64,7 @@ public class Profile extends Fragment {
         profileView = inflater.inflate(R.layout.fragment_profile, container, false);
         userId = MainActivity.userId;
         setProfile(profileView);
-        setButtons();
+        setTab(profileView);
         getLiked();
         return profileView;
 
@@ -106,52 +107,61 @@ public class Profile extends Fragment {
         });
     }
 
-    private void setButtons(){
-        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
-        ypButton.setTextColor(getResources().getColor(R.color.grey));
-        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
-        lpButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
-        lpButton.setTypeface(null, Typeface.BOLD);
-        lpButton.setChecked(true);
-        RadioGroup group = (RadioGroup) profileView.findViewById(R.id.radialGroup);
-        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(RadioGroup rGroup, int checkedId)
-            {
-                // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(checkedId);
-                // This puts the value (true/false) into the variable
-                boolean isChecked = checkedRadioButton.isChecked();
-                // If the radiobutton that has changed in check state is now checked...
-                if (isChecked)
-                {
-                    checkedRadioButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
-                    checkedRadioButton.setTypeface(null, Typeface.BOLD);
-                    if (R.id.lpButton == checkedId){
-                        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
-                        ypButton.setTextColor(getResources().getColor(R.color.grey));
-                        ypButton.setTypeface(null, Typeface.NORMAL);
-                    }
-                    else{
-                        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
-                        lpButton.setTextColor(getResources().getColor(R.color.grey));
-                        lpButton.setTypeface(null, Typeface.NORMAL);
+    private void getYours(){
+
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
+        Query refQuery = ref.orderByChild("user").equalTo(userId);
+        refQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<String> placesId = new ArrayList<String>();
+                final long num = dataSnapshot.getChildrenCount();
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    placesId.add(d.getKey());
+                }
+                if (!placesId.isEmpty()) {
+                    for (String s : placesId) {
+                        Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
+                                + s);
+                        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Place p = dataSnapshot.getValue(Place.class);
+                                places.add(p);
+                                if (places.size() == num) setGrid();
+                            }
+
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+
+                            }
+                        });
                     }
                 }
-                else{
-                    checkedRadioButton.setTextColor(getResources().getColor(R.color.grey));
-                    checkedRadioButton.setTypeface(null, Typeface.NORMAL);
-                    if (R.id.lpButton == checkedId){
-                        RadioButton ypButton = (RadioButton) profileView.findViewById(R.id.ypButton);
-                        ypButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
-                        ypButton.setTypeface(null, Typeface.BOLD);
-                    }
-                    else{
-                        RadioButton lpButton = (RadioButton) profileView.findViewById(R.id.lpButton);
-                        lpButton.setTextColor(getResources().getColor(R.color.tabTitleColor));
-                        lpButton.setTypeface(null, Typeface.BOLD);
-                    }
-                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    private void setTab(View profileView){
+        TextView likedPlaceTxtV = (TextView) profileView.findViewById(R.id.likedPlacestab);
+        TextView yourPlacesTX = (TextView) profileView.findViewById(R.id.yourPlacestab);
+        likedPlaceTxtV.setTypeface(null, Typeface.BOLD);
+        tab=1;
+        likedPlaceTxtV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeTabs(1);
+            }
+        });
+        yourPlacesTX.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeTabs(2);
             }
         });
     }
@@ -166,7 +176,7 @@ public class Profile extends Fragment {
                                     int position, long id) {
                 Place p = places.get(position);
                 String ref = "https://flickering-torch-2192.firebaseio.com/places/"
-                        +p.latLng2Id(p.getLat(),p.getLon());
+                        + p.latLng2Id(p.getLat(), p.getLon());
                 showDetails(ref);
 
             }
@@ -176,7 +186,7 @@ public class Profile extends Fragment {
     private void showDetails(String ref){
         Intent detailShow = new Intent(getContext(), ShowPlacesDetail.class);
         detailShow.putExtra("ref", ref);
-        detailShow.putExtra("USER_ID",userId);
+        detailShow.putExtra("USER_ID", userId);
         startActivity(detailShow);
     }
 
@@ -219,6 +229,44 @@ public class Profile extends Fragment {
         toast.show();
     }
 
+    private void changeTabs(int source){
+        if(source == 1){
+            if(tab == 2){
+                tab = 1;
+                View underline1 = profileView.findViewById(R.id.underline1);
+                View underline2 = profileView.findViewById(R.id.underline2);
+                underline1.setVisibility(View.VISIBLE);
+                underline2.setVisibility(View.INVISIBLE);
+                TextView likedPlaceTxtV = (TextView) profileView.findViewById(R.id.likedPlacestab);
+                TextView yourPlacesTX = (TextView) profileView.findViewById(R.id.yourPlacestab);
+                likedPlaceTxtV.setTypeface(null,Typeface.BOLD);
+                yourPlacesTX.setTypeface(null, Typeface.NORMAL);
+                GridView grid = (GridView)profileView.findViewById(R.id.profileGrid);
+                grid.setAdapter(null);
+                getLiked();
+
+            }
+        }
+        else if (source == 2){
+            if (tab == 1) {
+                tab = 2;
+                View underline1 = profileView.findViewById(R.id.underline1);
+                View underline2 = profileView.findViewById(R.id.underline2);
+                underline1.setVisibility(View.INVISIBLE);
+                underline2.setVisibility(View.VISIBLE);
+                TextView likedPlaceTxtV = (TextView) profileView.findViewById(R.id.likedPlacestab);
+                TextView yourPlacesTX = (TextView) profileView.findViewById(R.id.yourPlacestab);
+                likedPlaceTxtV.setTypeface(null, Typeface.NORMAL);
+                yourPlacesTX.setTypeface(null, Typeface.BOLD);
+                GridView grid = (GridView)profileView.findViewById(R.id.profileGrid);
+                grid.setAdapter(null);
+                getYours();
+
+            }
+        }
+
+    }
+
     private class CustomAdapter extends ArrayAdapter<Place>{
 
         public CustomAdapter(List<Place> places) {
@@ -242,6 +290,7 @@ public class Profile extends Fragment {
             return itemView;
         }
     }
+
 
 
 }
