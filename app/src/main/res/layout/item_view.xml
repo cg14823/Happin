@@ -21,11 +21,10 @@ android:padding="5dip"
         android:id="@+id/item_imageView"
         android:layout_width="50dip"
         android:layout_height="50dip"
-        android:src="@drawable/star"/>
+        android:src="@drawable/ic_star_black_36dp"/>
 
 </LinearLayout>
 
-<!-- Title Of Song-->
 <TextView
     android:id="@+id/item_place_name"
     android:layout_width="wrap_content"
@@ -39,7 +38,6 @@ android:padding="5dip"
     android:textStyle="bold"/>
 
 
-<!-- Rightend Duration -->
 <TextView
     android:id="@+id/item_likes"
     android:layout_width="wrap_content"
@@ -56,21 +54,12 @@ android:padding="5dip"
 <!-- Rightend Arrow -->
 <ImageView android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/item_like"
+    android:src="@drawable/ic_thumb_up_black_36dp"
     android:layout_alignParentTop="true"
     android:layout_toEndOf="@+id/item_place_name"
     android:layout_alignBottom="@+id/thumbnail"
     android:layout_alignStart="@+id/item_likes"
     android:layout_marginTop="5dp" />
-
- <RatingBar
-        android:id="@+id/item_ratingBar"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:numStars="5"
-        android:rating="3.5"
-        android:isIndicator="false"
-        style="@style/foodRatingBar" />
 
 </RelativeLayout>
 

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,7 +39,7 @@ import java.util.Set;
 /**
  * Created by haniboudabous on 02/03/16.
  */
-public class SearchResultsActivity extends Activity {
+public class SearchResultsActivity extends AppCompatActivity {
     Firebase myFirebaseRef;
     private List<Place> places=new ArrayList<Place>();
     private void showToast(String message) {
@@ -51,6 +52,9 @@ public class SearchResultsActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.search_list);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         handleIntent(getIntent());
         registerClickCallback();
 
@@ -143,9 +147,6 @@ public class SearchResultsActivity extends Activity {
             //Set the name of the place
             TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
             placeName.setText(currentPlace.getName());
-            //Set the rating
-            RatingBar ratingBar= (RatingBar) itemView.findViewById(R.id.item_ratingBar);
-            ratingBar.setNumStars(currentPlace.comupteScore());
             //Set the number of likes
             TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
             numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");

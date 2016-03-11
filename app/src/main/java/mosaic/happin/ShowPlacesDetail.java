@@ -30,8 +30,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.*;
 
 public class ShowPlacesDetail extends AppCompatActivity {
-    private MapView mapView;
-    private GoogleMap mMap;
     private Place place;
     private String userId;
     @Override
@@ -48,14 +46,13 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         Intent i = getIntent();
         String url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
+
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
-        mapView = (MapView) findViewById(R.id.placeMapView);
-        mapView.onCreate(savedInstanceState);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -63,15 +60,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 place = dataSnapshot.getValue(Place.class);
                 if ((place != null)){
                     addDetails();
-                    mapView.getMapAsync(new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(GoogleMap googleMap) {
-                            mMap = googleMap;
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(place.getLat(), place.getLon()), 12));
-                            mMap.addMarker(new MarkerOptions().position(new LatLng(place.getLat(), place.getLon()))
-                                    .title(place.getName()).snippet(place.getDescription()));
-                        }
-                    });
                 }
             }
             @Override
@@ -84,14 +72,17 @@ public class ShowPlacesDetail extends AppCompatActivity {
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        text.setText(place.getName()+"\n"+place.getDescription()+"\nLikes:"+place.getLikes());
+        text.setText(place.getName() + " Likes:" + place.getLikes() + "\n" + place.getDescription());
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
     }
 
+    public void comment(View view){
+        // SENTHY PUT CODE HERE
+    }
+
     public void liked (View view){
-        showToast("Im here");
         Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
                 +place.latLng2Id(place.getLat(), place.getLon()));
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -100,7 +91,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 if (!dataSnapshot.exists()){
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
-                    text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
+                    text.setText(place.getName() +" Likes: "+place.getLikes()+ "\n" + place.getDescription());
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
                     fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
@@ -121,24 +112,16 @@ public class ShowPlacesDetail extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onResume() {
-        mapView.onResume();
-        super.onResume();
-    }
+    public void viewimage(View view){
+        String ref = "https://flickering-torch-2192.firebaseio.com/places/"
+                +place.latLng2Id(place.getLat(), place.getLon())+"/img";
+        Intent showImagebig = new Intent(this, showImage.class);
+        showImagebig.putExtra("REF",ref);
+        showImagebig.putExtra("TITLE",place.getName());
+        startActivity(showImagebig);
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
 
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
-
 
     private void showToast(String message){
         Toast toast = Toast.makeText(this,

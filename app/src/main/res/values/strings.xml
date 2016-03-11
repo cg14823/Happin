@@ -21,15 +21,19 @@
     <string name="likeNotify">Like</string>
     <string name="commentNotify">Comment</string>
     <string name="gameNotify">Game proximity alert</string>
-    <string name= "email">Email</string>
-    <string name= "psw">Password</string>
-    <string name= "newpsw">New password</string>
-    <string name= "name">Your name</string>
-    <string name= "newpswcon">Repeat new password</string>
-    <string name= "oldpsw">Old password</string>
+    <string name="email">Email</string>
+    <string name="psw">Password</string>
+    <string name="newpsw">New password</string>
+    <string name="name">Your name</string>
+    <string name="newpswcon">Repeat new password</string>
+    <string name="oldpsw">Old password</string>
     <string name="fgtPswd">Forgot password?</string>
-    <string name ="pswdChange">Password change</string>
-    <string name ="nameChangeconfmsg">Are you sure you want to change your profile name?</string>
-    <string name ="deleteTitle">Account deletion</string>
-    <string name ="search_hint">Search a Happy Place</string>
+    <string name="pswdChange">Password change</string>
+    <string name="nameChangeconfmsg">Are you sure you want to change your profile name?</string>
+    <string name="deleteTitle">Account deletion</string>
+    <string name="title_activity_changeImage">Profile</string>
+    <string name="search_hint">Search a Happy Place</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
