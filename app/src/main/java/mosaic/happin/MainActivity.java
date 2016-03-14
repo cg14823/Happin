@@ -265,12 +265,11 @@ public class MainActivity extends AppCompatActivity {
                                 Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
                                 ref1.child(place.latLng2Id(placeloc)).setValue(place);
                                 showToast("Place added");
-                            } else {
+                            }
+                            else {
                                 showToast("Place already exists");
                             }
-
                         }
-
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
                             System.out.println("The read failed: " + firebaseError.getMessage());
@@ -391,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
                 (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
         return true;
     }
 
