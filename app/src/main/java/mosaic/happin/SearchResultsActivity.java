@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,8 @@ import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,9 +43,14 @@ import java.util.Set;
 /**
  * Created by haniboudabous on 02/03/16.
  */
-public class SearchResultsActivity extends AppCompatActivity {
-    Firebase myFirebaseRef;
+public class SearchResultsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private Firebase myFirebaseRef;
+    private Spinner spinner;
     private List<Place> places=new ArrayList<Place>();
+    private String current_filter;
+    MyLocation locationClass;
+    private ArrayAdapter<Place> adapter;
+
     private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
@@ -53,16 +62,26 @@ public class SearchResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.search_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        current_filter=getString(R.string.defaultFilter);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        handleIntent(getIntent());
+        ListView listPlaces= (ListView) findViewById(R.id.places_listView);
+        adapter = new myListAdapter(places);
+        listPlaces.setAdapter(adapter);
+        spinner = (Spinner) findViewById(R.id.spinner_sort);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.Sort_places_by,android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(SearchResultsActivity.this);
+        findPlaces(getIntent());
         registerClickCallback();
-
+        setIntent(getIntent().addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
+        places.clear();
+        setIntent(intent);
+        findPlaces(intent);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,42 +94,72 @@ public class SearchResultsActivity extends AppCompatActivity {
                 (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
         return true;
     }
 
-    private void handleIntent(Intent intent) {
-        /* places.add(new Place(0,0,"Hawai","magnifique","iVBORw0KGgoAAAANSUhEUgAAAoAAAARwCAIAAAD17XJXAAAAA3NCSVQICAjb4U","User1").setLikes(5));
-        places.add(new Place(0,0,"Miami","magnifique","iVBORw0KGgoAAAANSUhEUgAAAoAAAARwCAIAAAD17XJXAAAAA3NCSVQICAjb4U","User1").setLikes(2));
-        PopulateListView();*/
+    private void findPlaces(Intent intent) {
        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             final String query = intent.getStringExtra(SearchManager.QUERY).toUpperCase();
-            myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
-            myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    for (DataSnapshot child : snapshot.getChildren()) {
-                        Place currentPlace= child.getValue(Place.class);
-                        String currentName= currentPlace.getName().toUpperCase();
-                        String description= currentPlace.getDescription().toUpperCase();
-                        if ((currentName.contains(query))|| (query.contains(currentName))|| (description.contains(query))){
-                            places.add(currentPlace);
+                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot snapshot) {
+                            for (DataSnapshot child : snapshot.getChildren()) {
+                                Place currentPlace = child.getValue(Place.class);
+                                String currentName = currentPlace.getName().toUpperCase();
+                                String description = currentPlace.getDescription().toUpperCase();
+                                if ((currentName.contains(query)) || (query.contains(currentName)) || (description.contains(query))) {
+                                    places.add(currentPlace);
+                                }
+                            }
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                                sort_places(current_filter);
+                                            }
+                            });
                         }
-                        PopulateListView();
-                    }
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+                            System.out.println("The read failed: " + firebaseError.getMessage());
+                        }
+                    });
                 }
+        }
+
+    private void sort_places (String filter){
+        if (filter.equals(getString(R.string.defaultFilter))||true){
+            Collections.sort(places, new Comparator<Place>() {
                 @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                    System.out.println("The read failed: " + firebaseError.getMessage());
+                public int compare(Place place1, Place place2) {
+                    return Integer.compare(place2.getLikes(), place1.getLikes());
                 }
             });
         }
+        else{
+            final Location myPosition= locationClass.getLocation();
+            if(myPosition != null){
+                Collections.sort(places, new Comparator<Place>() {
+                    @Override
+                    public int compare(Place place1, Place place2) {
+                    float[] results1 = new float[1];
+                    Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
+                            place1.getLat(), place1.getLon(), results1);
+                    float[] results2 = new float[1];
+                    Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
+                            place2.getLat(), place2.getLon(), results2);
+                    return Float.compare(results2[0], results1[0]);
+                    }
+                });
+            }
+        }
+        runOnUiThread(new Runnable() {
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
-    private void PopulateListView(){
-        ArrayAdapter<Place> adapter = new myListAdapter(places);
-        ListView listFoundPlaces= (ListView) findViewById(R.id.places_listView);
-        listFoundPlaces.setAdapter(adapter);
-    }
     private void registerClickCallback() {
         ListView list = (ListView) findViewById(R.id.places_listView);
         list.setOnItemClickListener(new OnItemClickListener() {
@@ -118,14 +167,25 @@ public class SearchResultsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
                 Place currentPlace = places.get(position);
-                LatLng position_current_place= new LatLng(currentPlace.getLat(), currentPlace.getLon());
+                LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
                 Intent detailShow = new Intent(getApplicationContext(), ShowPlacesDetail.class);
-                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/"+Map.latLng2Id(position_current_place));
-                detailShow.putExtra("USER_ID",MainActivity.userId);
+                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + Map.latLng2Id(position_current_place));
+                detailShow.putExtra("USER_ID", MainActivity.userId);
                 startActivity(detailShow);
-
             }
         });
+    }
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        TextView filter = (TextView) view;
+            String textFilter = (String) filter.getText();
+            current_filter=textFilter;
+            sort_places(current_filter);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     private class myListAdapter extends ArrayAdapter<Place> {
@@ -152,7 +212,6 @@ public class SearchResultsActivity extends AppCompatActivity {
             numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
             return itemView;
         }
-
         public  Bitmap StringToBitMap(String encodedString){
             try {
                 byte [] encodeByte=Base64.decode(encodedString, Base64.DEFAULT);

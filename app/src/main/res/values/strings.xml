@@ -33,7 +33,12 @@
     <string name="deleteTitle">Account deletion</string>
     <string name="title_activity_changeImage">Profile</string>
     <string name="search_hint">Search a Happy Place</string>
-
+    <string name="defaultFilter">Most liked places</string>
+    <string-array name="Sort_places_by">
+        <item> "Most liked places" </item>
+        <item>  "Nearest places" </item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sort_message">Sort by</string>
 </resources>
