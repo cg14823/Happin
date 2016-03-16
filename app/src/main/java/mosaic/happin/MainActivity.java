@@ -1,6 +1,10 @@
 package mosaic.happin;
 
+import android.app.SearchManager;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+//import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +42,9 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
@@ -72,12 +80,12 @@ import static android.content.pm.PackageManager.*;
 
 /* NEW APPROACH FOR LOCATION*/
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
-    private static final String[] LOCATION_PERMS={
+    private static final String[] LOCATION_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
     };
-    private static final int LOCATION_REQUEST=1337;
+    private static final int LOCATION_REQUEST = 1337;
 
     private FragmentTabHost mTabHost;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -87,6 +95,11 @@ public class MainActivity extends AppCompatActivity{
     LocationManager manager;
     Firebase myFirebaseRef;
     MyLocation locationClass;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
 
     @Override
@@ -95,13 +108,11 @@ public class MainActivity extends AppCompatActivity{
         if (Build.VERSION.SDK_INT >= 23) {
             if (!canAccessLocation()) {
                 requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-            }
-            else {
+            } else {
                 locationClass = new MyLocation(this);
                 locationClass.onStart();
             }
-        }
-        else {
+        } else {
             locationClass = new MyLocation(this);
             locationClass.onStart();
         }
@@ -141,6 +152,9 @@ public class MainActivity extends AppCompatActivity{
         mTabHost.addTab(
                 mTabHost.newTabSpec("Profile").setIndicator("Profile", null),
                 Profile.class, null);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -151,8 +165,7 @@ public class MainActivity extends AppCompatActivity{
                 if (grantResults.length > 0 && grantResults[0] == PERMISSION_GRANTED) {
                     locationClass = new MyLocation(this);
                     locationClass.onStart();
-                }
-                else {
+                } else {
                     Toast.makeText(getApplication(), "Permission required", Toast.LENGTH_LONG).show();
                 }
         }
@@ -163,7 +176,7 @@ public class MainActivity extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.signOut:
                 myFirebaseRef.unauth();
-                Intent i=new Intent(MainActivity.this, Login.class);
+                Intent i = new Intent(MainActivity.this, Login.class);
                 startActivity(i);
                 finish();
                 break;
@@ -173,14 +186,16 @@ public class MainActivity extends AppCompatActivity{
                 break;
             case R.id.action_settings:
                 Intent settings = new Intent(this, Settings.class);
-                settings.putExtra("USER_ID",userId);
+                settings.putExtra("USER_ID", userId);
                 startActivity(settings);
                 break;
+
+
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void getLocation(){
+    private void getLocation() {
         // Check if GPS active
         manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -209,23 +224,22 @@ public class MainActivity extends AppCompatActivity{
                     });
             AlertDialog alert = alertDialogBuilder.create();
             alert.show();
-        }
-        else addPlace();
+        } else addPlace();
     }
 
-    private boolean addPlace(){
+    private boolean addPlace() {
         //Creates dialog to input place detail
         final Location location = locationClass.getLocation();
         if (location != null) {
 
-            final LatLng placeloc = new LatLng (location.getLatitude(),location.getLongitude());
+            final LatLng placeloc = new LatLng(location.getLatitude(), location.getLongitude());
             LayoutInflater inflater = this.getLayoutInflater();
             final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
             final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
             recPassDialog.setView(dialogView);
             EditText locfield = (EditText) dialogView.findViewById(R.id.location);
-            List<String> s = reverseGeo(location.getLatitude(),location.getLongitude());
-            locfield.setText(s.get(1)+ " "+ s.get(0));
+            List<String> s = reverseGeo(location.getLatitude(), location.getLongitude());
+            locfield.setText(s.get(1) + " " + s.get(0));
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -251,12 +265,11 @@ public class MainActivity extends AppCompatActivity{
                                 Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
                                 ref1.child(place.latLng2Id(placeloc)).setValue(place);
                                 showToast("Place added");
-                            } else {
+                            }
+                            else {
                                 showToast("Place already exists");
                             }
-
                         }
-
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
                             System.out.println("The read failed: " + firebaseError.getMessage());
@@ -280,13 +293,13 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    public void addImage(View view){
+    public void addImage(View view) {
         dialogView = view;
         selectImage();
 
@@ -294,20 +307,20 @@ public class MainActivity extends AppCompatActivity{
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+            ImageView imageView = (ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(photo);
             }
         }
-        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null){
-            ImageView imageView =(ImageView) dialogView.findViewById(R.id.placeImg);
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null) {
+            ImageView imageView = (ImageView) dialogView.findViewById(R.id.placeImg);
             if (imageView == null) showToast("problem with null pointers in imageView");
-            else{
+            else {
                 Uri pickedImage = data.getData();
                 // Let's read picked image path using content resolver
-                String[] filePath = { MediaStore.Images.Media.DATA };
+                String[] filePath = {MediaStore.Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
                 cursor.moveToFirst();
                 String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
@@ -321,14 +334,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void selectImage() {
-        final CharSequence[] items = { "Take Photo", "Choose from Library", "Cancel" };
+        final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Add Photo!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Take Photo")) {
-                    Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                 } else if (items[item].equals("Choose from Library")) {
                     startActivityForResult(
@@ -345,27 +358,50 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         if (locationClass != null) locationClass.onStop();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://mosaic.happin/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main_page, menu);
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(true);
         return true;
     }
 
     private boolean hasPermission(String perm) {
         if (Build.VERSION.SDK_INT >= 23) {
             return (PERMISSION_GRANTED == checkSelfPermission(perm));
-        }
-        else return false;
+        } else return false;
     }
 
     private boolean canAccessLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+        return (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
     }
 
     public List<String> reverseGeo(double lat, double lng) {
@@ -374,14 +410,71 @@ public class MainActivity extends AppCompatActivity{
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = geo.getFromLocation(lat, lng, 1);
             Address address = addresses.get(0);
-            location.add(0,address.getThoroughfare());
-            location.add(1,address.getSubThoroughfare());
+            location.add(0, address.getThoroughfare());
+            location.add(1, address.getSubThoroughfare());
             return location;
         } catch (IOException e) {
             List<String> location = new ArrayList<String>();
             location.add(0, "Can't");
             location.add(1, "find location");
             return location;
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://mosaic.happin/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    public void viewProfPic(View view){
+        String ref = "https://flickering-torch-2192.firebaseio.com/users/"+
+                userId+"/profileImage";
+        Firebase reference = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+
+                userId+"/name");
+
+        final Intent showImagebig = new Intent(this, showImage.class);
+        showImagebig.putExtra("REF",ref);
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.getValue(String.class);
+                showImagebig.putExtra("TITLE", name);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                showToast(firebaseError.getMessage());
+            }
+        });
+
+        startActivity(showImagebig);
+    }
+
+    public void showDetails(View view) {
+        TextView placeid = (TextView) view.findViewById(R.id.previewId);
+        String placeidStr = placeid.getText().toString();
+        if (placeidStr != null){
+            String ref = "https://flickering-torch-2192.firebaseio.com/places/"+placeidStr;
+            Intent showplaceDetails = new Intent(this,ShowPlacesDetail.class);
+            showplaceDetails.putExtra("ref",ref);
+            showplaceDetails.putExtra("USER_ID",userId);
+            startActivity(showplaceDetails);
         }
     }
 }

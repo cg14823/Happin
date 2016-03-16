@@ -9,20 +9,23 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MyLocation implements
+        LocationListener,
         ConnectionCallbacks, OnConnectionFailedListener {
     private Location location;
-    boolean gpsEnabled = false;
-    boolean networkEnabled = false;
-    boolean locationUpdated = false;
     GoogleApiClient mGoogleApiClient;
     Context context;
+    LocationRequest mLocationRequest;
 
     public MyLocation(Context context){
         this.context = context;
+        createLocationRequest();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
                     .addConnectionCallbacks(this)
@@ -30,16 +33,14 @@ public class MyLocation implements
                     .addApi(LocationServices.API)
                     .build();
         }
+
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         try {
-            location = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-            if (location != null) {
-                locationUpdated = true;
-            }
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient,mLocationRequest,this);
         }
         catch (SecurityException e){}
     }
@@ -48,6 +49,11 @@ public class MyLocation implements
         Toast toast = Toast.makeText(context,
                 message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    @Override
+    public void onLocationChanged(Location l) {
+        location = l;
     }
 
     @Override
@@ -74,13 +80,22 @@ public class MyLocation implements
 
 
     protected void createLocationRequest() {
-        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setExpirationDuration(12000);
     }
 
     public Location getLocation(){
+        if (location != null) return location;
+        else {
+            try {
+                location = LocationServices.FusedLocationApi.getLastLocation(
+                        mGoogleApiClient);
+            }
+            catch (SecurityException e) {}
+        }
         if (location != null) return location;
         showToast("Problem getting location try again.");
         return null;
