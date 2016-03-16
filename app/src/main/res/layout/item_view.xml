@@ -54,7 +54,7 @@ android:padding="5dip"
 <!-- Rightend Arrow -->
 <ImageView android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/ic_thumb_up_black_36dp"
+    android:src="@drawable/ic_thumb_up_black_18dp"
     android:layout_alignParentTop="true"
     android:layout_toEndOf="@+id/item_place_name"
     android:layout_alignBottom="@+id/thumbnail"
