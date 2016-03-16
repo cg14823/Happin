@@ -1,11 +1,30 @@
 package mosaic.happin;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
+import com.firebase.client.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -13,6 +32,11 @@ import android.view.ViewGroup;
  */
 public class Ranking extends Fragment {
 
+    private ArrayAdapter<Place> adapter;
+    private List<Place> places=new ArrayList<Place>();
+    private List<User> users =new ArrayList<User>();
+    private View rankingView;
+    private int current_filter;
 
     public Ranking() {
         // Required empty public constructor
@@ -23,7 +47,169 @@ public class Ranking extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ranking, container, false);
+        Firebase.setAndroidContext(getContext());
+        rankingView = inflater.inflate(R.layout.fragment_ranking, container, false);
+
+        current_filter = 0;
+        getTop();
+        setList();
+        Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(),R.array.Place_or_Person,android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // On selecting a spinner item
+                String item = parent.getItemAtPosition(position).toString();
+                if (item == "Places") current_filter = 0;
+                else current_filter = 1;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        return rankingView;
+    }
+
+    private void setList (){
+        ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
+        adapter = new myListPlaceAdapter(places);
+        rankingList.setAdapter(adapter);
+    }
+
+    private void getTop(){
+        String fireRefStr = "https://flickering-torch-2192.firebaseio.com/places";
+        String child = "likes";
+
+        if (current_filter == 1){
+            fireRefStr = "https://flickering-torch-2192.firebaseio.com/users";
+            child = "points";
+        }
+        Firebase ref = new Firebase(fireRefStr);
+        Query query = ref.orderByChild(child);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    if (current_filter == 0) {
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            Place p = d.getValue(Place.class);
+                            places.add(p);
+                        }
+                    } else {
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                            String uid = d.getKey();
+                            Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid);
+                            ref2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    User s = dataSnapshot.getValue(User.class);
+                                    users.add(s);
+                                }
+
+                                @Override
+                                public void onCancelled(FirebaseError firebaseError) {
+
+                                }
+                            });
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+
+    private void showToast(String message){
+        Toast toast = Toast.makeText(getContext(),
+                message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    private class myListPlaceAdapter extends ArrayAdapter<Place> {
+
+        public myListPlaceAdapter(List<Place> places) {
+            super(getActivity().getApplicationContext(), R.layout.item_view, places);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View itemView = convertView;
+            if(itemView== null){
+                itemView=getActivity().getLayoutInflater().inflate(R.layout.item_view,parent,false);
+            }
+            Place currentPlace= places.get(position);
+            //Set the image of the button
+            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
+            imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
+            //Set the name of the place
+            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
+            placeName.setText(currentPlace.getName());
+            //Set the number of likes
+            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
+            numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
+            return itemView;
+        }
+        public Bitmap StringToBitMap(String encodedString){
+            try {
+                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                return bitmap;
+            } catch(Exception e) {
+                e.getMessage();
+                return null;
+            }
+        }
+    }
+
+
+
+    private class myListPeopleAdapter extends ArrayAdapter<Place> {
+
+        public myListPeopleAdapter(List<Place> places) {
+            super(getActivity().getApplicationContext(), R.layout.item_view, places);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View itemView = convertView;
+            if(itemView== null){
+                itemView=getActivity().getLayoutInflater().inflate(R.layout.item_view,parent,false);
+            }
+            Place currentPlace= places.get(position);
+            //Set the image of the button
+            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
+            imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
+            //Set the name of the place
+            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
+            placeName.setText(currentPlace.getName());
+            //Set the number of likes
+            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
+            numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
+            return itemView;
+        }
+        public Bitmap StringToBitMap(String encodedString){
+            try {
+                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                return bitmap;
+            } catch(Exception e) {
+                e.getMessage();
+                return null;
+            }
+        }
     }
 
 }
