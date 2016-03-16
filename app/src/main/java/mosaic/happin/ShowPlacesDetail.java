@@ -1,14 +1,18 @@
 package mosaic.happin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,13 +95,13 @@ public class ShowPlacesDetail extends AppCompatActivity {
     }
 
     public void liked (View view){
-        showToast("Im here");
         Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
                 +place.latLng2Id(place.getLat(), place.getLon()));
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
+                if (!dataSnapshot.exists()) {
+                    showToast("<3");
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
                     text.setText(place.getName() + "\n" + place.getDescription() + "\nLikes:" + place.getLikes());
@@ -105,12 +109,12 @@ public class ShowPlacesDetail extends AppCompatActivity {
                             + userId);
                     fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
-                            +place.latLng2Id(place.getLat(), place.getLon()));
-                    java.util.Map<String,Object> likes =new HashMap<>();
+                            + place.latLng2Id(place.getLat(), place.getLon()));
+                    java.util.Map<String, Object> likes = new HashMap<>();
                     likes.put("likes", place.getLikes());
                     fref.updateChildren(likes);
                 } else {
-                    showToast("Chill you've already liked this place");
+                    showToast("</3"); //en el futuro: unlike on second press of like button
                 }
             }
 
@@ -119,6 +123,43 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void writeComment (View view) {
+        LayoutInflater inflater = getLayoutInflater();
+        // writing a new comment
+        final AlertDialog.Builder commentBox = new AlertDialog.Builder(this);
+        final View dialogView = (inflater.inflate(R.layout.dialog_write_comment, null));
+        commentBox.setView(dialogView);
+        commentBox.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                EditText text = (EditText) dialogView.findViewById(R.id.writecomment);
+                final String comment = text.getText().toString();
+                final Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
+                        + place.latLng2Id(place.getLat(), place.getLon()));
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
+                        ref.push().setValue(newComment);
+                        showToast("Tom sucks balls");
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+
+                    }
+                });
+
+            }
+        });
+        commentBox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = commentBox.create();
+        alert.show();
     }
 
     @Override
