@@ -147,8 +147,19 @@ public class ImageChange extends AppCompatActivity {
             Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid
                     +"/profileImage");
             ref.setValue(image);
+            showToast("Image changed!");
         }
 
+    }
+
+    public void viewImage(View view){
+        String ref = "https://flickering-torch-2192.firebaseio.com/users/"+
+                uid+"/profileImage";
+        String name = ((TextView)findViewById(R.id.changePicName)).getText().toString();
+        Intent showImagebig = new Intent(this, showImage.class);
+        showImagebig.putExtra("REF",ref);
+        showImagebig.putExtra("TITLE",name);
+        startActivity(showImagebig);
     }
 
     private void showToast(String message) {

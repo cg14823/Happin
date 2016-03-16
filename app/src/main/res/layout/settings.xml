@@ -1,161 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:orientation="vertical">
 
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:orientation="vertical">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            app:popupTheme="@style/AppTheme.PopupOverlay"></android.support.v7.widget.Toolbar>
 
-        </android.support.v7.widget.Toolbar>
-        <TextView android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/settings_Ac_title"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/account"
             android:textColor="@color/colorAccent"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:textStyle="bold"
-            android:id ="@+id/settings_Ac_title"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/nameChange"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_change_name"
-            android:clickable="true"
-            android:onClick="nameChange"
-            android:focusableInTouchMode="false"
-            />
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/changePic"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_change_pic"
-            android:clickable="true"
-            android:onClick="profileChange"
-            android:focusableInTouchMode="false"
-            />
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/settings_change_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pswrRst"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_change_psw"
             android:clickable="true"
-            android:onClick="passwordChange"
             android:focusableInTouchMode="false"
-            />
+            android:onClick="nameChange"
+            android:text="@string/nameChange"
+            android:textColor="@color/tabTitleColor" />
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
+
         <TextView
+            android:id="@+id/settings_change_pic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/deleteAc"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_delete_ac"
+            android:clickable="true"
+            android:focusableInTouchMode="false"
+            android:onClick="profileChange"
+            android:text="@string/changePic"
+            android:textColor="@color/tabTitleColor" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
+
+        <TextView
+            android:id="@+id/settings_change_psw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:clickable="true"
+            android:focusableInTouchMode="false"
+            android:onClick="passwordChange"
+            android:text="@string/pswrRst"
+            android:textColor="@color/tabTitleColor" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
+
+        <TextView
+            android:id="@+id/settings_delete_ac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:clickable="true"
             android:onClick="deleteAccount"
-            />
+            android:text="@string/deleteAc"
+            android:textColor="@color/tabTitleColor" />
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
 
-        <TextView android:layout_height="wrap_content"
+        <TextView
+            android:id="@+id/settings_notification_title"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/notification"
             android:textColor="@color/colorAccent"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:textStyle="bold"
-            android:id ="@+id/settings_notification_title"
-            />
+            android:textStyle="bold" />
+
         <CheckBox
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:button="@null"
-            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
+            android:id="@+id/settings_like"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:button="@null"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:text="@string/likeNotify"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_like"
-            />
+            android:textColor="@color/tabTitleColor" />
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
+
         <CheckBox
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:button="@null"
-            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
+            android:id="@+id/settings_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:button="@null"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:text="@string/commentNotify"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_comment"
-            />
+            android:textColor="@color/tabTitleColor" />
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
+
         <CheckBox
+            android:id="@+id/settings_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:button="@null"
             android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-            android:layout_width="match_parent"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_height="wrap_content"
             android:text="@string/gameNotify"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:textColor="@color/tabTitleColor"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:id ="@+id/settings_game"
-            />
+            android:textColor="@color/tabTitleColor" />
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="0.5dp"
-            android:background="@color/grey"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/grey" />
     </LinearLayout>
 </ScrollView>

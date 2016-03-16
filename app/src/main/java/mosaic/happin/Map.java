@@ -244,12 +244,10 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     @Override
     public boolean onMarkerClick(final Marker marker) {
         LatLng latlng = marker.getPosition();
-        Intent detailShow = new Intent(getActivity(), ShowPlacesDetail.class);
+        Intent detailShow = new Intent(this.getActivity(), ShowPlacesDetail.class);
         detailShow.putExtra("ref","https://flickering-torch-2192.firebaseio.com/places/"+latLng2Id(latlng));
         detailShow.putExtra("USER_ID",MainActivity.userId);
         startActivity(detailShow);
-
-
         return true;
     }
 
@@ -277,7 +275,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         toast.show();
     }
 
-    private String latLng2Id(LatLng location){
+    public static String latLng2Id(LatLng location){
         String lat = String.valueOf(location.latitude);
         String lon = String.valueOf(location.longitude);
         String strLoc = (lat+"L"+lon).replace(".", "p");
