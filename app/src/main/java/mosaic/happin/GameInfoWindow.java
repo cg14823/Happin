@@ -18,6 +18,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
+import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,6 +39,10 @@ public class GameInfoWindow extends AppCompatActivity {
     private Place place;
     private String userId;
     private int distance;
+    private User user;
+    private Firebase uref;
+    private Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +64,10 @@ public class GameInfoWindow extends AppCompatActivity {
         distance = i.getIntExtra("distance",-1);
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
+        uref = new Firebase(i.getStringExtra("uref") + userId);
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
-        Button button = (Button) findViewById(R.id.visitButton);
+        button = (Button) findViewById(R.id.visitButton);
         if (distance < 0) {
             showToast("Error getting distance");
         }
@@ -98,6 +104,17 @@ public class GameInfoWindow extends AppCompatActivity {
             }
         });
 
+        uref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
 
 
 
@@ -108,7 +125,26 @@ public class GameInfoWindow extends AppCompatActivity {
     }
 
     public void visited(View view){
-        showToast("Praise The Sun");
+        button.setEnabled(false);
+        button.setText("VISITED");
+        uref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    user.incrementPoints(1);
+                    java.util.Map<String, Object> points = new HashMap<>();
+                    points.put("points", user.getPoints());
+                    uref.updateChildren(points);
+                } else {
+                    showToast("You've been here before.");
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError error) {
+                showToast(error.getMessage());
+            }
+        });
     }
 
     @Override

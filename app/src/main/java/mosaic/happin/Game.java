@@ -112,6 +112,7 @@ public class Game extends Fragment implements
 
                 Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
                 detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
+                detailShow.putExtra("uref", "https://flickering-torch-2192.firebaseio.com/users/");
                 detailShow.putExtra("USER_ID", MainActivity.userId);
                 detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
                 startActivity(detailShow);
