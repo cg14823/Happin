@@ -24,6 +24,7 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -52,7 +53,7 @@ public class Ranking extends Fragment {
 
         current_filter = 0;
         getTop();
-        setList();
+
         Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(),R.array.Place_or_Person,android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -63,7 +64,7 @@ public class Ranking extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // On selecting a spinner item
                 String item = parent.getItemAtPosition(position).toString();
-                if (item == "Places") current_filter = 0;
+                if (item.equals("Places")) current_filter = 0;
                 else current_filter = 1;
             }
 
@@ -79,6 +80,7 @@ public class Ranking extends Fragment {
 
     private void setList (){
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
+        rankingList.setAdapter(null);
         adapter = new myListPlaceAdapter(places);
         rankingList.setAdapter(adapter);
     }
@@ -91,6 +93,7 @@ public class Ranking extends Fragment {
             fireRefStr = "https://flickering-torch-2192.firebaseio.com/users";
             child = "points";
         }
+
         Firebase ref = new Firebase(fireRefStr);
         Query query = ref.orderByChild(child);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -105,7 +108,7 @@ public class Ranking extends Fragment {
                     } else {
                         for (DataSnapshot d : dataSnapshot.getChildren()) {
                             String uid = d.getKey();
-                            Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid);
+                            Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid);
                             ref2.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -115,12 +118,12 @@ public class Ranking extends Fragment {
 
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
-
                                 }
                             });
-
                         }
                     }
+                    Collections.reverse(places);
+                    setList();
                 }
             }
 
@@ -141,27 +144,34 @@ public class Ranking extends Fragment {
     private class myListPlaceAdapter extends ArrayAdapter<Place> {
 
         public myListPlaceAdapter(List<Place> places) {
-            super(getActivity().getApplicationContext(), R.layout.item_view, places);
+            super(getActivity().getApplicationContext(), R.layout.ranking_item_view, places);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
             if(itemView== null){
-                itemView=getActivity().getLayoutInflater().inflate(R.layout.item_view,parent,false);
+                itemView=getActivity().getLayoutInflater().inflate(R.layout.ranking_item_view,parent,false);
             }
             Place currentPlace= places.get(position);
             //Set the image of the button
-            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
+            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView_rank);
             imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
             //Set the name of the place
-            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
+            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name_rank);
             placeName.setText(currentPlace.getName());
             //Set the number of likes
-            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
-            numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
+            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes_rank);
+            numOfLikes.setText(Integer.toString(currentPlace.getLikes()));
+
+            TextView placeRank = (TextView) itemView.findViewById(R.id.place_ranking);
+            String rankStr = Integer.toString(position +1)+".";
+            placeRank.setText(rankStr);
+
+
             return itemView;
         }
+
         public Bitmap StringToBitMap(String encodedString){
             try {
                 byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
@@ -173,43 +183,4 @@ public class Ranking extends Fragment {
             }
         }
     }
-
-
-
-    private class myListPeopleAdapter extends ArrayAdapter<Place> {
-
-        public myListPeopleAdapter(List<Place> places) {
-            super(getActivity().getApplicationContext(), R.layout.item_view, places);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View itemView = convertView;
-            if(itemView== null){
-                itemView=getActivity().getLayoutInflater().inflate(R.layout.item_view,parent,false);
-            }
-            Place currentPlace= places.get(position);
-            //Set the image of the button
-            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
-            imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
-            //Set the name of the place
-            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
-            placeName.setText(currentPlace.getName());
-            //Set the number of likes
-            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
-            numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
-            return itemView;
-        }
-        public Bitmap StringToBitMap(String encodedString){
-            try {
-                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                return bitmap;
-            } catch(Exception e) {
-                e.getMessage();
-                return null;
-            }
-        }
-    }
-
 }
