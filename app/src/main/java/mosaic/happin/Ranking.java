@@ -54,8 +54,22 @@ public class Ranking extends Fragment {
 
         current_filter = 0;
 
-        places = new ArrayList<>();
-        users = new ArrayList<>();
+        ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
+        rankingList.setAdapter(null);
+        rankingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View viewClicked,
+                                    int position, long id) {
+                if (current_filter == 0) {
+                    Place currentPlace = places.get(position);
+                    LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
+                    Intent detailShow = new Intent(getContext(), ShowPlacesDetail.class);
+                    detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id(position_current_place));
+                    detailShow.putExtra("USER_ID", MainActivity.userId);
+                    startActivity(detailShow);
+                }
+            }
+        });
 
         getTop();
 
@@ -96,20 +110,6 @@ public class Ranking extends Fragment {
     private void setList (){
         showToast("Set List");
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
-        rankingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View viewClicked,
-                                    int position, long id) {
-                if (current_filter == 0) {
-                    Place currentPlace = places.get(position);
-                    LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
-                    Intent detailShow = new Intent(getContext(), ShowPlacesDetail.class);
-                    detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id(position_current_place));
-                    detailShow.putExtra("USER_ID", MainActivity.userId);
-                    startActivity(detailShow);
-                }
-            }
-        });
         rankingList.setAdapter(null);
 
         if (current_filter == 0){
@@ -124,6 +124,10 @@ public class Ranking extends Fragment {
     }
 
     private void getTop(){
+
+        places = new ArrayList<>();
+        users = new ArrayList<>();
+
         String fireRefStr = "https://flickering-torch-2192.firebaseio.com/places";
         String child = "likes";
 
@@ -131,24 +135,29 @@ public class Ranking extends Fragment {
             fireRefStr = "https://flickering-torch-2192.firebaseio.com/users";
             child = "points";
         }
-        showToast("GOD WHY!");
+
+        showToast("CurrentFilter:"+current_filter);
+
         Firebase ref = new Firebase(fireRefStr);
         Query query = ref.orderByChild(child);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                showToast("DAMM");
                 if (dataSnapshot.exists()) {
-                    showToast("PREPARE LOADING");
                     if (current_filter == 0) {
                         for (DataSnapshot d : dataSnapshot.getChildren()) {
                             Place p = d.getValue(Place.class);
                             places.add(p);
                             showToast("LOADING");
                         }
+                        Collections.reverse(places);
+                        setList();
                     } else {
+                        showToast("USERS");
+                        final long userCount = dataSnapshot.getChildrenCount();
                         for (DataSnapshot d : dataSnapshot.getChildren()) {
+
                             String uid = d.getKey();
                             Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid);
                             ref2.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -156,17 +165,20 @@ public class Ranking extends Fragment {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     User s = dataSnapshot.getValue(User.class);
                                     users.add(s);
+                                    if (users.size() == userCount){
+                                        Collections.reverse(users);
+                                        setList();
+                                    }
                                 }
 
                                 @Override
                                 public void onCancelled(FirebaseError firebaseError) {
                                 }
                             });
-                            showToast("LOADING");                        }
+
+                        }
+                        showToast("Num users:"+users.size());
                     }
-                    Collections.reverse(places);
-                    Collections.reverse(users);
-                    setList();
                 }
             }
 
@@ -239,12 +251,14 @@ public class Ranking extends Fragment {
             if(itemView== null){
                 itemView=getActivity().getLayoutInflater().inflate(R.layout.ranking_user,parent,false);
             }
-            User cUser= users.get(position);
+            User cUser = users.get(position);
             //Set the image of the button
             ImageView imageViewe = (ImageView) itemView.findViewById(R.id.user_imageView_rank);
             String userProfilPic = cUser.getProfileImage();
+
             if (userProfilPic.equals("null Image")) imageViewe.setImageResource(R.drawable.empty_profile);
             else imageViewe.setImageBitmap(this.StringToBitMap(userProfilPic));
+
             //Set the name of the place
             TextView name= (TextView) itemView.findViewById(R.id.user_name_rank);
             name.setText(cUser.getName());
