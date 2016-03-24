@@ -93,6 +93,7 @@ public class Ranking extends Fragment {
     }
 
     private void setList (){
+        showToast("Set List");
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(null);
 
@@ -115,10 +116,10 @@ public class Ranking extends Fragment {
             fireRefStr = "https://flickering-torch-2192.firebaseio.com/users";
             child = "points";
         }
-
+        showToast("GOD WHY!");
         Firebase ref = new Firebase(fireRefStr);
         Query query = ref.orderByChild(child);
-        
+
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
