@@ -33,9 +33,8 @@ import java.util.List;
  */
 public class Ranking extends Fragment {
 
-    private ArrayAdapter<Place> adapter;
-    private List<Place> places=new ArrayList<Place>();
-    private List<User> users =new ArrayList<User>();
+    private List<Place> places;
+    private List<User> users;
     private View rankingView;
     private int current_filter;
 
@@ -52,6 +51,10 @@ public class Ranking extends Fragment {
         rankingView = inflater.inflate(R.layout.fragment_ranking, container, false);
 
         current_filter = 0;
+
+        places = new ArrayList<>();
+        users = new ArrayList<>();
+
         getTop();
 
         Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
@@ -62,10 +65,21 @@ public class Ranking extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                showToast("Spinner change");
                 // On selecting a spinner item
                 String item = parent.getItemAtPosition(position).toString();
-                if (item.equals("Places")) current_filter = 0;
-                else current_filter = 1;
+                if (item.equals("Places")) {
+                    if (current_filter == 1){
+                        current_filter = 0;
+                        getTop();
+                    }
+                }
+                else{
+                    if (current_filter == 0){
+                        current_filter = 1;
+                        getTop();
+                    }
+                }
             }
 
             @Override
@@ -81,8 +95,16 @@ public class Ranking extends Fragment {
     private void setList (){
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(null);
-        adapter = new myListPlaceAdapter(places);
-        rankingList.setAdapter(adapter);
+
+        if (current_filter == 0){
+            ArrayAdapter<Place> adapter = new myListPlaceAdapter(places);
+            rankingList.setAdapter(adapter);
+        }
+        else{
+            ArrayAdapter<User> adapter = new myListUserAdapter(users);
+            rankingList.setAdapter(adapter);
+        }
+
     }
 
     private void getTop(){
@@ -96,14 +118,17 @@ public class Ranking extends Fragment {
 
         Firebase ref = new Firebase(fireRefStr);
         Query query = ref.orderByChild(child);
+        
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    showToast("PREPARE LOADING");
                     if (current_filter == 0) {
                         for (DataSnapshot d : dataSnapshot.getChildren()) {
                             Place p = d.getValue(Place.class);
                             places.add(p);
+                            showToast("LOADING");
                         }
                     } else {
                         for (DataSnapshot d : dataSnapshot.getChildren()) {
@@ -120,9 +145,10 @@ public class Ranking extends Fragment {
                                 public void onCancelled(FirebaseError firebaseError) {
                                 }
                             });
-                        }
+                            showToast("LOADING");                        }
                     }
                     Collections.reverse(places);
+                    Collections.reverse(users);
                     setList();
                 }
             }
@@ -165,6 +191,51 @@ public class Ranking extends Fragment {
             numOfLikes.setText(Integer.toString(currentPlace.getLikes()));
 
             TextView placeRank = (TextView) itemView.findViewById(R.id.place_ranking);
+            String rankStr = Integer.toString(position +1)+".";
+            placeRank.setText(rankStr);
+
+
+            return itemView;
+        }
+
+        public Bitmap StringToBitMap(String encodedString){
+            try {
+                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                return bitmap;
+            } catch(Exception e) {
+                e.getMessage();
+                return null;
+            }
+        }
+    }
+
+    private class myListUserAdapter extends ArrayAdapter<User> {
+
+        public myListUserAdapter(List<User> users) {
+            super(getActivity().getApplicationContext(), R.layout.ranking_user, users);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View itemView = convertView;
+            if(itemView== null){
+                itemView=getActivity().getLayoutInflater().inflate(R.layout.ranking_user,parent,false);
+            }
+            User cUser= users.get(position);
+            //Set the image of the button
+            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.user_imageView_rank);
+            String userProfilPic = cUser.getProfileImage();
+            if (userProfilPic.equals("null Image")) imageViewe.setImageResource(R.drawable.empty_profile);
+            else imageViewe.setImageBitmap(this.StringToBitMap(userProfilPic));
+            //Set the name of the place
+            TextView name= (TextView) itemView.findViewById(R.id.user_name_rank);
+            name.setText(cUser.getName());
+            //Set the number of likes
+            TextView points= (TextView) itemView.findViewById(R.id.user_points);
+            points.setText(Integer.toString(cUser.getPoints()));
+
+            TextView placeRank = (TextView) itemView.findViewById(R.id.rank_num_user);
             String rankStr = Integer.toString(position +1)+".";
             placeRank.setText(rankStr);
 
