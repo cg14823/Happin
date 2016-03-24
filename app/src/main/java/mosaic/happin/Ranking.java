@@ -71,8 +71,6 @@ public class Ranking extends Fragment {
             }
         });
 
-        getTop();
-
         Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(),R.array.Place_or_Person,android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -103,6 +101,7 @@ public class Ranking extends Fragment {
             }
         });
 
+        getTop();
 
         return rankingView;
     }
@@ -154,11 +153,12 @@ public class Ranking extends Fragment {
                         Collections.reverse(places);
                         setList();
                     } else {
-                        showToast("USERS");
-                        final long userCount = dataSnapshot.getChildrenCount();
-                        for (DataSnapshot d : dataSnapshot.getChildren()) {
 
+                        final long userCount = dataSnapshot.getChildrenCount();
+                        showToast("user count:"+userCount);
+                        for (DataSnapshot d : dataSnapshot.getChildren()) {
                             String uid = d.getKey();
+                            showToast("uid:"+uid);
                             Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid);
                             ref2.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -177,7 +177,6 @@ public class Ranking extends Fragment {
                             });
 
                         }
-                        showToast("Num users:"+users.size());
                     }
                 }
             }
