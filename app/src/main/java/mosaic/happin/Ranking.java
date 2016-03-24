@@ -1,6 +1,7 @@
 package mosaic.happin;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,13 +71,12 @@ public class Ranking extends Fragment {
                 // On selecting a spinner item
                 String item = parent.getItemAtPosition(position).toString();
                 if (item.equals("Places")) {
-                    if (current_filter == 1){
+                    if (current_filter == 1) {
                         current_filter = 0;
                         getTop();
                     }
-                }
-                else{
-                    if (current_filter == 0){
+                } else {
+                    if (current_filter == 0) {
                         current_filter = 1;
                         getTop();
                     }
@@ -95,6 +96,20 @@ public class Ranking extends Fragment {
     private void setList (){
         showToast("Set List");
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
+        rankingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View viewClicked,
+                                    int position, long id) {
+                if (current_filter == 0) {
+                    Place currentPlace = places.get(position);
+                    LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
+                    Intent detailShow = new Intent(getContext(), ShowPlacesDetail.class);
+                    detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id(position_current_place));
+                    detailShow.putExtra("USER_ID", MainActivity.userId);
+                    startActivity(detailShow);
+                }
+            }
+        });
         rankingList.setAdapter(null);
 
         if (current_filter == 0){
@@ -123,6 +138,7 @@ public class Ranking extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                showToast("DAMM");
                 if (dataSnapshot.exists()) {
                     showToast("PREPARE LOADING");
                     if (current_filter == 0) {
@@ -156,7 +172,7 @@ public class Ranking extends Fragment {
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-
+                showToast(firebaseError.getMessage());
             }
         });
     }
