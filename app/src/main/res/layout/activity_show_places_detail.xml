@@ -45,44 +45,6 @@
                     android:layout_marginStart="@dimen/activity_vertical_margin"
                     android:id="@+id/placeText" />
 
-<<<<<<< HEAD
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=":)"
-            android:onClick= "liked"
-            android:id="@+id/button4"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
-
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="..."
-            android:onClick= "writeComment"
-            android:id="@+id/button3"
-            android:layout_gravity="right"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/button4" />
-
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView"
-            android:layout_below="@+id/placeImgview"
-            android:layout_alignParentStart="true" />
-
-    </RelativeLayout>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_gravity="right" />
-</LinearLayout>
-=======
                 <ImageButton
                     android:id="@+id/showdetailslike"
                     android:layout_width="wrap_content"
@@ -104,4 +66,4 @@
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
->>>>>>> master
+

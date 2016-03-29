@@ -1,5 +1,8 @@
 package mosaic.happin;
 
+/**
+ * Created by senthuran on 16/03/16.
+ */
 public class Comments {
     private Long timestamp;
     private String user;

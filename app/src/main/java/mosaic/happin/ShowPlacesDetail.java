@@ -83,8 +83,41 @@ public class ShowPlacesDetail extends AppCompatActivity {
     }
 
     public void comment(View view){
-        // SENTHY PUT CODE HERE
-    }
+            LayoutInflater inflater = getLayoutInflater();
+            final AlertDialog.Builder commentBox = new AlertDialog.Builder(this);
+            final View dialogView = (inflater.inflate(R.layout.dialog_write_comment, null));
+            commentBox.setView(dialogView);
+            commentBox.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    EditText text = (EditText) dialogView.findViewById(R.id.writecomment);
+                    final String comment = text.getText().toString();
+                    final Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
+                            + place.latLng2Id(place.getLat(), place.getLon()));
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
+                            ref.push().setValue(newComment);
+
+                            showToast("Tom sucks balls");
+                        }
+
+                        @Override
+                        public void onCancelled (FirebaseError firebaseError) {
+
+                        }
+                    });
+
+                }
+            });
+            commentBox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog alert = commentBox.create();
+            alert.show();
+        }
 
     public void liked (View view){
         Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
@@ -96,7 +129,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     showToast("<3");
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
-                    text.setText(place.getName() +" Likes: "+place.getLikes()+ "\n" + place.getDescription());
+                    text.setText(place.getName() + " Likes: " + place.getLikes() + "\n" + place.getDescription());
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
                     fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
@@ -117,50 +150,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
         });
     }
 
-<<<<<<< HEAD
-    public void writeComment (View view) {
-        LayoutInflater inflater = getLayoutInflater();
-        // writing a new comment
-        final AlertDialog.Builder commentBox = new AlertDialog.Builder(this);
-        final View dialogView = (inflater.inflate(R.layout.dialog_write_comment, null));
-        commentBox.setView(dialogView);
-        commentBox.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                EditText text = (EditText) dialogView.findViewById(R.id.writecomment);
-                final String comment = text.getText().toString();
-                final Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
-                        + place.latLng2Id(place.getLat(), place.getLon()));
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
-                        ref.push().setValue(newComment);
-                        showToast("Tom sucks balls");
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
-                    }
-                });
-
-            }
-        });
-        commentBox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        AlertDialog alert = commentBox.create();
-        alert.show();
-    }
-
-    @Override
-    public void onResume() {
-        mapView.onResume();
-        super.onResume();
-    }
-=======
     public void viewimage(View view){
         String ref = "https://flickering-torch-2192.firebaseio.com/places/"
                 +place.latLng2Id(place.getLat(), place.getLon())+"/img";
@@ -168,8 +157,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
         showImagebig.putExtra("REF",ref);
         showImagebig.putExtra("TITLE",place.getName());
         startActivity(showImagebig);
->>>>>>> master
-
 
     }
 
@@ -178,7 +165,5 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-
 
 }
