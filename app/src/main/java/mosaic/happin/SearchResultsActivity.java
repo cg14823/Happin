@@ -174,9 +174,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
                 Place currentPlace = places.get(position);
-                LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
                 Intent detailShow = new Intent(getApplicationContext(), ShowPlacesDetail.class);
-                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + Map.latLng2Id(position_current_place));
+                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id());
                 detailShow.putExtra("USER_ID", MainActivity.userId);
                 startActivity(detailShow);
             }

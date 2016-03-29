@@ -1,6 +1,7 @@
 package mosaic.happin;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -25,6 +27,7 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.widget.AdapterView.OnItemSelectedListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +38,11 @@ import java.util.List;
  */
 public class Ranking extends Fragment {
 
-    private List<Place> places;
-    private List<User> users;
+    private ArrayList<PlaceorUser> poru;
+    private MyCustomAdapter adapter;
     private View rankingView;
     private int current_filter;
+    private List<String> keys;
 
     public Ranking() {
         // Required empty public constructor
@@ -53,139 +57,120 @@ public class Ranking extends Fragment {
         rankingView = inflater.inflate(R.layout.fragment_ranking, container, false);
 
         current_filter = 0;
+        poru = new ArrayList<>();
 
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
-        rankingList.setAdapter(null);
         rankingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View viewClicked,
-                                    int position, long id) {
-                if (current_filter == 0) {
-                    Place currentPlace = places.get(position);
-                    LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
-                    Intent detailShow = new Intent(getContext(), ShowPlacesDetail.class);
-                    detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id(position_current_place));
-                    detailShow.putExtra("USER_ID", MainActivity.userId);
-                    startActivity(detailShow);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (current_filter == 0){
+                    PlaceorUser p = poru.get(position);
+
+                    if (p.poru == 0){
+                        Intent showPlaceDetails = new Intent(getContext(), ShowPlacesDetail.class);
+                        showPlaceDetails.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + p.p.latLng2Id());
+                        showPlaceDetails.putExtra("USER_ID", MainActivity.userId);
+                        startActivity(showPlaceDetails);
+                    }
                 }
             }
         });
 
-        Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(),R.array.Place_or_Person,android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                showToast("Spinner change");
-                // On selecting a spinner item
-                String item = parent.getItemAtPosition(position).toString();
-                if (item.equals("Places")) {
-                    if (current_filter == 1) {
-                        current_filter = 0;
-                        getTop();
-                    }
-                } else {
-                    if (current_filter == 0) {
-                        current_filter = 1;
-                        getTop();
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        getTop();
+        setSpinner();
+        getRanked();
 
         return rankingView;
     }
 
-    private void setList (){
-        showToast("Set List");
-        ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
-        rankingList.setAdapter(null);
+    private void setSpinner() {
+        Spinner spinner = (Spinner) rankingView.findViewById(R.id.spinnerRanking);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.Place_or_Person, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int pos, long id) {
 
-        if (current_filter == 0){
-            ArrayAdapter<Place> adapter = new myListPlaceAdapter(places);
-            rankingList.setAdapter(adapter);
-        }
-        else{
-            ArrayAdapter<User> adapter = new myListUserAdapter(users);
-            rankingList.setAdapter(adapter);
-        }
+                if (current_filter == 1) {
+                    if (parent.getItemAtPosition(pos).equals("Place")) {
+                        current_filter = 0;
+                        getRanked();
+
+                    }
+                } else {
+                    if (parent.getItemAtPosition(pos).equals("People")) {
+                        current_filter = 1;
+                        getRanked();
+                    }
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Another interface callback
+            }
+        });
 
     }
 
-    private void getTop(){
-
-        places = new ArrayList<>();
-        users = new ArrayList<>();
-
-        String fireRefStr = "https://flickering-torch-2192.firebaseio.com/places";
+    private void getRanked() {
+        showToast("Getting ranked");
+        poru = new ArrayList<>();
+        String ref = "https://flickering-torch-2192.firebaseio.com/places/";
         String child = "likes";
-
-        if (current_filter == 1){
-            fireRefStr = "https://flickering-torch-2192.firebaseio.com/users";
+        if (current_filter == 1) {
+            ref = "https://flickering-torch-2192.firebaseio.com/users/";
             child = "points";
         }
-
-        showToast("CurrentFilter:"+current_filter);
-
-        Firebase ref = new Firebase(fireRefStr);
-        Query query = ref.orderByChild(child);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        final Firebase fireRef = new Firebase(ref);
+        Query queryRef = fireRef.orderByChild(child);
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    if (current_filter == 0) {
-                        for (DataSnapshot d : dataSnapshot.getChildren()) {
-                            Place p = d.getValue(Place.class);
-                            places.add(p);
-                            showToast("LOADING");
-                        }
-                        Collections.reverse(places);
-                        setList();
-                    } else {
-
-                        final long userCount = dataSnapshot.getChildrenCount();
-                        showToast("user count:"+userCount);
-                        for (DataSnapshot d : dataSnapshot.getChildren()) {
-                            String uid = d.getKey();
-                            showToast("uid:"+uid);
-                            Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid);
-                            ref2.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    User s = dataSnapshot.getValue(User.class);
-                                    users.add(s);
-                                    if (users.size() == userCount){
-                                        Collections.reverse(users);
+                    final long count = dataSnapshot.getChildrenCount();
+                    showToast("Count:"+count+" child:"+current_filter);
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        fireRef.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    if (current_filter == 0) {
+                                        Place p = dataSnapshot.getValue(Place.class);
+                                        PlaceorUser pu = new PlaceorUser(p);
+                                        poru.add(pu);
+                                    } else {
+                                        User u = dataSnapshot.getValue(User.class);
+                                        PlaceorUser up = new PlaceorUser(u);
+                                        poru.add(up);
+                                    }
+                                    if (poru.size() >= count) {
                                         setList();
                                     }
                                 }
+                            }
 
-                                @Override
-                                public void onCancelled(FirebaseError firebaseError) {
-                                }
-                            });
-
-                        }
+                            @Override
+                            public void onCancelled(FirebaseError firebaseError) {
+                            }
+                        });
                     }
                 }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                showToast(firebaseError.getMessage());
+
             }
         });
+    }
+
+    private void setList() {
+        showToast("list");
+        Collections.reverse(poru);
+        adapter = new MyCustomAdapter(getContext(),poru);
+        ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
+        rankingList.setAdapter(adapter);
     }
 
 
@@ -195,93 +180,111 @@ public class Ranking extends Fragment {
         toast.show();
     }
 
-    private class myListPlaceAdapter extends ArrayAdapter<Place> {
+    private class PlaceorUser {
+        public Place p;
+        public User u;
+        public int poru;
 
-        public myListPlaceAdapter(List<Place> places) {
-            super(getActivity().getApplicationContext(), R.layout.ranking_item_view, places);
+        public PlaceorUser(Place p) {
+            this.p = p;
+            poru = 0;
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View itemView = convertView;
-            if(itemView== null){
-                itemView=getActivity().getLayoutInflater().inflate(R.layout.ranking_item_view,parent,false);
-            }
-            Place currentPlace= places.get(position);
-            //Set the image of the button
-            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView_rank);
-            imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
-            //Set the name of the place
-            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name_rank);
-            placeName.setText(currentPlace.getName());
-            //Set the number of likes
-            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes_rank);
-            numOfLikes.setText(Integer.toString(currentPlace.getLikes()));
-
-            TextView placeRank = (TextView) itemView.findViewById(R.id.place_ranking);
-            String rankStr = Integer.toString(position +1)+".";
-            placeRank.setText(rankStr);
-
-
-            return itemView;
-        }
-
-        public Bitmap StringToBitMap(String encodedString){
-            try {
-                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                return bitmap;
-            } catch(Exception e) {
-                e.getMessage();
-                return null;
-            }
+        public PlaceorUser(User u) {
+            this.u = u;
+            poru = 1;
         }
     }
 
-    private class myListUserAdapter extends ArrayAdapter<User> {
+    public class MyCustomAdapter extends BaseAdapter {
 
-        public myListUserAdapter(List<User> users) {
-            super(getActivity().getApplicationContext(), R.layout.ranking_user, users);
+
+        // Tag for Logging
+        private static final String TAG = "MyCustomAdapter";
+
+        int type;
+        private static final int PLACE = 0;
+        private static final int PERSON = 1;
+
+
+        private ArrayList<PlaceorUser> placeorUsers;
+        private LayoutInflater mInflater;
+
+
+        private Context context;
+
+        public MyCustomAdapter(Context context, ArrayList<PlaceorUser> placeoruser) {
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.context = context;
+
+            this.placeorUsers = placeoruser;
+        }
+
+        @Override
+        public Object getItem(int position){
+            if (placeorUsers.size()> position){
+                return placeorUsers.get(position);
+            }
+            else return null;
+        }
+
+        @Override
+        public int getCount() {
+            return placeorUsers.size();
+        }
+
+
+        @Override
+        public long getItemId(int position) {
+            return position;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View itemView = convertView;
-            if(itemView== null){
-                itemView=getActivity().getLayoutInflater().inflate(R.layout.ranking_user,parent,false);
+            View slotView = convertView;
+            if (convertView == null){
+                PlaceorUser p = placeorUsers.get(position);
+                if (p.poru == PERSON){
+                    slotView = mInflater.inflate(R.layout.ranking_user,null);
+                    TextView rankNum = (TextView) slotView.findViewById(R.id.rank_num_user);
+                    TextView userName = (TextView) slotView.findViewById(R.id.user_name_rank);
+                    TextView userPoints = (TextView) slotView.findViewById(R.id.user_points);
+                    ImageView profileImage = (ImageView) slotView.findViewById(R.id.user_imageView_rank);
+
+                    rankNum.setText(String.valueOf(position + 1));
+                    userName.setText(p.u.getName());
+                    userPoints.setText(String.valueOf(p.u.getPoints()));
+
+                    if (p.u.getProfileImage().equals("null Image")){
+                        profileImage.setImageResource(R.drawable.empty_profile);
+                    }
+                    else{
+                        profileImage.setImageBitmap(String2Image(p.u.getProfileImage()));
+                    }
+                }
+                else{
+                    slotView = mInflater.inflate(R.layout.ranking_item_view,null);
+                    TextView rankNum = (TextView) slotView.findViewById(R.id.place_ranking);
+                    TextView placeName = (TextView) slotView.findViewById(R.id.item_place_name_rank);
+                    TextView placeLikes = (TextView) slotView.findViewById(R.id.item_likes_rank);
+                    ImageView placeImage = (ImageView) slotView.findViewById(R.id.item_imageView_rank);
+
+                    rankNum.setText(String.valueOf(position + 1));
+                    placeName.setText(p.p.getName());
+                    placeLikes.setText(String.valueOf(p.p.getLikes()));
+                    placeImage.setImageBitmap(String2Image(p.p.getImg()));
+
+                }
+                return slotView;
             }
-            User cUser = users.get(position);
-            //Set the image of the button
-            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.user_imageView_rank);
-            String userProfilPic = cUser.getProfileImage();
 
-            if (userProfilPic.equals("null Image")) imageViewe.setImageResource(R.drawable.empty_profile);
-            else imageViewe.setImageBitmap(this.StringToBitMap(userProfilPic));
-
-            //Set the name of the place
-            TextView name= (TextView) itemView.findViewById(R.id.user_name_rank);
-            name.setText(cUser.getName());
-            //Set the number of likes
-            TextView points= (TextView) itemView.findViewById(R.id.user_points);
-            points.setText(Integer.toString(cUser.getPoints()));
-
-            TextView placeRank = (TextView) itemView.findViewById(R.id.rank_num_user);
-            String rankStr = Integer.toString(position +1)+".";
-            placeRank.setText(rankStr);
-
-
-            return itemView;
+            return convertView;
         }
 
-        public Bitmap StringToBitMap(String encodedString){
-            try {
-                byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                return bitmap;
-            } catch(Exception e) {
-                e.getMessage();
-                return null;
-            }
+        private Bitmap String2Image (String image){
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         }
+
     }
 }

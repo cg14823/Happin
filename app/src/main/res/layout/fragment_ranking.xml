@@ -27,13 +27,12 @@
         android:layout_marginStart="5dp"
         android:spinnerMode="dropdown" />
 
-
-
     <ListView
         android:layout_below="@id/spinnerRanking"
         android:id="@+id/rankingList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
 
 </RelativeLayout>
 
