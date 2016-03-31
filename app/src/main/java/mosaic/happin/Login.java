@@ -48,23 +48,39 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+    private void loadingSwitch (boolean on){
+        TextView forgotP = (TextView)findViewById(R.id.forgot);
+        Button sign = (Button)findViewById(R.id.signUpButton);
+        Button log = (Button)findViewById(R.id.loginButton);
+        EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
+        ProgressBar loading = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        if (on){
+            emailField.setVisibility(View.INVISIBLE);
+            passwordField.setVisibility(View.INVISIBLE);
+            forgotP.setVisibility(View.INVISIBLE);
+            sign.setVisibility(View.INVISIBLE);
+            log.setVisibility(View.INVISIBLE);
+            loading.setVisibility(View.VISIBLE);
+        }
+        else{
+            emailField.setVisibility(View.VISIBLE);
+            passwordField.setVisibility(View.VISIBLE);
+            forgotP.setVisibility(View.VISIBLE);
+            sign.setVisibility(View.VISIBLE);
+            log.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.GONE);
+        }
+
+    }
 
     public void login(View view) {
-        final TextView forgotP = (TextView)findViewById(R.id.forgot);
-        final Button sign = (Button)findViewById(R.id.signUpButton);
-        final Button log = (Button)findViewById(R.id.loginButton);
         final EditText emailField = (EditText) findViewById(R.id.email);
         final EditText passwordField = (EditText) findViewById(R.id.password);
         final String email = emailField.getText().toString();
-        final ProgressBar loading = (ProgressBar) findViewById(R.id.progressBarLogIn);
-        emailField.setVisibility(View.INVISIBLE);
-        passwordField.setVisibility(View.INVISIBLE);
-        forgotP.setVisibility(View.INVISIBLE);
-        sign.setVisibility(View.INVISIBLE);
-        log.setVisibility(View.INVISIBLE);
-        loading.setVisibility(View.VISIBLE);
-
         String pass = passwordField.getText().toString();
+
+        loadingSwitch(true);
         if (isValidEmail(email)) {
             myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
                 @Override
@@ -74,13 +90,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
-                    loading.setVisibility(View.GONE);
-                    emailField.setVisibility(View.VISIBLE);
-                    passwordField.setVisibility(View.VISIBLE);
-                    forgotP.setVisibility(View.VISIBLE);
-                    sign.setVisibility(View.VISIBLE);
-                    log.setVisibility(View.VISIBLE);
-
+                    loadingSwitch(false);
                     switch (firebaseError.getCode()) {
                         case FirebaseError.INVALID_EMAIL:
                             new AlertDialog.Builder(Login.this)
@@ -111,14 +121,8 @@ public class Login extends AppCompatActivity {
                     }
                 }
             });
-        } else showToast("Enter a valid email");
-
-        loading.setVisibility(View.GONE);
-        emailField.setVisibility(View.VISIBLE);
-        passwordField.setVisibility(View.VISIBLE);
-        forgotP.setVisibility(View.VISIBLE);
-        sign.setVisibility(View.VISIBLE);
-        log.setVisibility(View.VISIBLE);
+        } else {
+            showToast("Enter a valid email"); loadingSwitch(false);}
     }
 
     public void signUp(View view) {
