@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,7 +75,6 @@ public class Ranking extends Fragment {
                 }
             }
         });
-
         setSpinner();
         getRanked();
 
@@ -151,6 +151,8 @@ public class Ranking extends Fragment {
     }
 
     private void getRanked() {
+        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
+        loading.setVisibility(View.VISIBLE);
         poru = new ArrayList<>();
         String ref = "https://flickering-torch-2192.firebaseio.com/places/";
         String child = "likes";
@@ -203,6 +205,8 @@ public class Ranking extends Fragment {
     private void setList() {
         Collections.reverse(poru);
         adapter = new MyCustomAdapter(getContext(),poru);
+        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
+        loading.setVisibility(View.GONE);
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(adapter);
     }

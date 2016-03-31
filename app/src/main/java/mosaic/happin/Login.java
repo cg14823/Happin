@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,9 +50,20 @@ public class Login extends AppCompatActivity {
     }
 
     public void login(View view) {
+        final TextView forgotP = (TextView)findViewById(R.id.forgot);
+        final Button sign = (Button)findViewById(R.id.signUpButton);
+        final Button log = (Button)findViewById(R.id.loginButton);
         final EditText emailField = (EditText) findViewById(R.id.email);
         final EditText passwordField = (EditText) findViewById(R.id.password);
         final String email = emailField.getText().toString();
+        final ProgressBar loading = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        emailField.setVisibility(View.INVISIBLE);
+        passwordField.setVisibility(View.INVISIBLE);
+        forgotP.setVisibility(View.INVISIBLE);
+        sign.setVisibility(View.INVISIBLE);
+        log.setVisibility(View.INVISIBLE);
+        loading.setVisibility(View.VISIBLE);
+
         String pass = passwordField.getText().toString();
         if (isValidEmail(email)) {
             myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
@@ -61,6 +74,13 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
+                    loading.setVisibility(View.GONE);
+                    emailField.setVisibility(View.VISIBLE);
+                    passwordField.setVisibility(View.VISIBLE);
+                    forgotP.setVisibility(View.VISIBLE);
+                    sign.setVisibility(View.VISIBLE);
+                    log.setVisibility(View.VISIBLE);
+
                     switch (firebaseError.getCode()) {
                         case FirebaseError.INVALID_EMAIL:
                             new AlertDialog.Builder(Login.this)
@@ -92,6 +112,13 @@ public class Login extends AppCompatActivity {
                 }
             });
         } else showToast("Enter a valid email");
+
+        loading.setVisibility(View.GONE);
+        emailField.setVisibility(View.VISIBLE);
+        passwordField.setVisibility(View.VISIBLE);
+        forgotP.setVisibility(View.VISIBLE);
+        sign.setVisibility(View.VISIBLE);
+        log.setVisibility(View.VISIBLE);
     }
 
     public void signUp(View view) {
