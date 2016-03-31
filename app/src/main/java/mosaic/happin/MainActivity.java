@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(settings);
                 break;
 
-
         }
         return super.onOptionsItemSelected(item);
     }
