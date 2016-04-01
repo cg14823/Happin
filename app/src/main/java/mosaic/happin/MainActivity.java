@@ -141,16 +141,16 @@ public class MainActivity extends AppCompatActivity {
 
         // add 4 tabs
         mTabHost.addTab(
-                mTabHost.newTabSpec("Map").setIndicator("Map", null),
+                mTabHost.newTabSpec("Map").setIndicator(null,getResources().getDrawable(R.drawable.ic_map_black_18dp)),
                 Map.class, null);
         mTabHost.addTab(
-                mTabHost.newTabSpec("Ranking").setIndicator("Ranking", null),
+                mTabHost.newTabSpec("Ranking").setIndicator(null, getResources().getDrawable(R.drawable.ic_trophy_black_18dp)),
                 Ranking.class, null);
         mTabHost.addTab(
-                mTabHost.newTabSpec("Game").setIndicator("Game", null),
+                mTabHost.newTabSpec("Game").setIndicator(null, getResources().getDrawable(R.drawable.ic_videogame_asset_black_18dp)),
                 Game.class, null);
         mTabHost.addTab(
-                mTabHost.newTabSpec("Profile").setIndicator("Profile", null),
+                mTabHost.newTabSpec("Profile").setIndicator(null, getResources().getDrawable(R.drawable.ic_person_black_18dp)),
                 Profile.class, null);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -189,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
                 settings.putExtra("USER_ID", userId);
                 startActivity(settings);
                 break;
-
 
         }
         return super.onOptionsItemSelected(item);

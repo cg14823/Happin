@@ -83,6 +83,11 @@ public class Place{
         return strLoc;
     }
 
+    public String latLng2Id(){
+        return latLng2Id(lat,lon);
+
+    }
+
     public LatLng id2LatLng (String location){
         String decodeLoc = location.replace("p", ".");
         String [] parts = location.split("");

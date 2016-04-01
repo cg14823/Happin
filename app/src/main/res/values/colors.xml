@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3aada5</color>
+    <color name="green_points">#4eb938</color>
     <color name="colorPrimaryDark">#349c95</color>
     <color name="colorAccent">#2088ca</color>
     <color name="tabTitleColor">#000000</color>
