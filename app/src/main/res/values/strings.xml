@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Happin</string>
+    <string name="logo_text">HAPPIN</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="mainMenuSettings">Settings</string>
+    <string name="signOut">Sign Out</string>
+    <string name="signUp">Sign Up</string>
+    <string name="log_in">Log In</string>
+    <string name="search">Search</string>
+    <string name="add">Add</string>
+    <string name="google_maps_key">AIzaSyCeVdCjWfVHF6q-wdthxTBjcjwzbn9FSsE</string>
+    <string name="title_activity_add_place">AddPlace</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="profile">Profile</string>
+    <string name="account">Account</string>
+    <string name="notification">Notifications</string>
+    <string name="pswrRst">Change password</string>
+    <string name="nameChange">Change name</string>
+    <string name="changePic">Change profile picture </string>
+    <string name="deleteAc">Delete account</string>
+    <string name="likeNotify">Like</string>
+    <string name="commentNotify">Comment</string>
+    <string name="gameNotify">Game proximity alert</string>
+    <string name="email">Email</string>
+    <string name="psw">Password</string>
+    <string name="newpsw">New password</string>
+    <string name="name">Your name</string>
+    <string name="newpswcon">Repeat new password</string>
+    <string name="oldpsw">Old password</string>
+    <string name="fgtPswd">Forgot password?</string>
+    <string name="pswdChange">Password change</string>
+    <string name="nameChangeconfmsg">Are you sure you want to change your profile name?</string>
+    <string name="deleteTitle">Account deletion</string>
+    <string name="title_activity_changeImage">Profile</string>
+    <string name="search_hint">Search a Happy Place</string>
+    <string name="defaultFilter">Most liked places</string>
+    <string-array name="Sort_places_by">
+        <item> "Most liked places" </item>
+        <item>  "Nearest places" </item>
+    </string-array>
+    <string-array name="Place_or_Person">
+        <item> "Places" </item>
+        <item> "People" </item>
+    </string-array>
+    <string name="sort_message">Sort by</string>
+    <string name="PorPFilter">Filter by</string>
+</resources>
