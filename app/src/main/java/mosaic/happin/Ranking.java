@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +43,6 @@ public class Ranking extends Fragment {
     private MyCustomAdapter adapter;
     private View rankingView;
     private int current_filter;
-    private List<String> keys;
 
     public Ranking() {
         // Required empty public constructor
@@ -63,10 +63,10 @@ public class Ranking extends Fragment {
         rankingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (current_filter == 0){
+                if (current_filter == 0) {
                     PlaceorUser p = poru.get(position);
 
-                    if (p.poru == 0){
+                    if (p.poru == 0) {
                         Intent showPlaceDetails = new Intent(getContext(), ShowPlacesDetail.class);
                         showPlaceDetails.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + p.p.latLng2Id());
                         showPlaceDetails.putExtra("USER_ID", MainActivity.userId);
@@ -75,7 +75,6 @@ public class Ranking extends Fragment {
                 }
             }
         });
-
         setSpinner();
         getRanked();
 
@@ -88,15 +87,14 @@ public class Ranking extends Fragment {
                 R.array.Place_or_Person, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener(){
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int pos, long id) {
 
                 if (current_filter == 1) {
-                    if (parent.getItemAtPosition(pos).equals("Place")) {
+                    if (parent.getItemAtPosition(pos).equals("Places")) {
                         current_filter = 0;
                         getRanked();
-
                     }
                 } else {
                     if (parent.getItemAtPosition(pos).equals("People")) {
@@ -113,8 +111,48 @@ public class Ranking extends Fragment {
 
     }
 
+    private void getRankedTesting(){
+        /* To avoid server delay this function is used instead of the server retrieval one
+         *which has already been tested and proven to work.*/
+        poru = new ArrayList<>();
+        if (current_filter == 0){
+            Place p0 = new Place(2,5,"Test 1","Test 1 description","null Image", "some user");
+            Place p1 = new Place(2.2,5.1,"Test 2","Test 2 description","null Image", "some user");
+            Place p2 = new Place(2.5,5.5,"Test 3","Test 3 description","null Image", "some user");
+            Place p3 = new Place(2.0,5.1,"Test 4","Test 4 description","null Image", "some user");
+            p0.addLike();
+            p0.addLike();
+            p1.addLike();
+            p3.addLike();
+            p3.addLike();
+            p3.addLike();
+
+            poru.add(new PlaceorUser(p0));
+            poru.add(new PlaceorUser(p1));
+            poru.add(new PlaceorUser(p2));
+            poru.add(new PlaceorUser(p3));
+
+        }
+        else{
+            User u0 = new User ("U0","u@g.com","password","null Image");
+            User u1 = new User ("U1","u@g.com","password","null Image");
+            User u2 = new User ("U2","u@g.com","password","null Image");
+            User u3 = new User ("U3","u@g.com","password","null Image");
+            u0.incrementPoints(100);
+            u1.incrementPoints(1000);
+            u2.incrementPoints(700);
+
+            poru.add(new PlaceorUser(u0));
+            poru.add(new PlaceorUser(u1));
+            poru.add(new PlaceorUser(u2));
+            poru.add(new PlaceorUser(u3));
+        }
+        setList();
+    }
+
     private void getRanked() {
-        showToast("Getting ranked");
+        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
+        loading.setVisibility(View.VISIBLE);
         poru = new ArrayList<>();
         String ref = "https://flickering-torch-2192.firebaseio.com/places/";
         String child = "likes";
@@ -129,7 +167,6 @@ public class Ranking extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     final long count = dataSnapshot.getChildrenCount();
-                    showToast("Count:"+count+" child:"+current_filter);
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         fireRef.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -166,9 +203,10 @@ public class Ranking extends Fragment {
     }
 
     private void setList() {
-        showToast("list");
         Collections.reverse(poru);
         adapter = new MyCustomAdapter(getContext(),poru);
+        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
+        loading.setVisibility(View.GONE);
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(adapter);
     }
@@ -272,7 +310,10 @@ public class Ranking extends Fragment {
                     rankNum.setText(String.valueOf(position + 1));
                     placeName.setText(p.p.getName());
                     placeLikes.setText(String.valueOf(p.p.getLikes()));
-                    placeImage.setImageBitmap(String2Image(p.p.getImg()));
+                    if (p.p.getImg().equals("null Image")){
+                        placeImage.setImageResource(R.mipmap.emptyplace);
+                    }
+                    else placeImage.setImageBitmap(String2Image(p.p.getImg()));
 
                 }
                 return slotView;
