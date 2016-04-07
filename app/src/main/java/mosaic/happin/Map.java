@@ -210,7 +210,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private void getPlaces(){
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
-        likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        /*likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 for (DataSnapshot d : querySnapshot.getChildren()) {
@@ -235,7 +235,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
-        });
+        });*/
 
         LatLng bristol = new LatLng(51.465411, -2.585911);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));

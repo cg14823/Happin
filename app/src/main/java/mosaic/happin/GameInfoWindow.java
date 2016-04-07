@@ -1,9 +1,11 @@
 package mosaic.happin;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -35,8 +37,8 @@ import java.util.*;
  */
 public class GameInfoWindow extends AppCompatActivity {
     private MapView mapView;
-    private GoogleMap mMap;
-    private Place place;
+    //private GoogleMap mMap;
+    //private Place place;
     private String userId;
     private int distance;
     private User user;
@@ -59,12 +61,12 @@ public class GameInfoWindow extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Intent i = getIntent();
-        String url = i.getStringExtra("ref");
+        //String url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
-        distance = i.getIntExtra("distance",-1);
+        distance = 50;//i.getIntExtra("distance",-1);
         Firebase.setAndroidContext(this);
-        Firebase ref = new Firebase(url);
-        uref = new Firebase(i.getStringExtra("uref") + userId);
+        //Firebase ref = new Firebase(url);
+        uref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + userId);
         mapView = (MapView) findViewById(R.id.placeMapView);
         mapView.onCreate(savedInstanceState);
         button = (Button) findViewById(R.id.visitButton);
@@ -79,7 +81,7 @@ public class GameInfoWindow extends AppCompatActivity {
             }
         }
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        /*ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 place = dataSnapshot.getValue(Place.class);
@@ -102,7 +104,7 @@ public class GameInfoWindow extends AppCompatActivity {
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
-        });
+        });*/
 
         uref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -120,31 +122,72 @@ public class GameInfoWindow extends AppCompatActivity {
 
     }
     private void addDetails(){
-        TextView text = (TextView)findViewById(R.id.placeText);
-        text.setText(place.getName() + "\nDistance: "+ distance + "m");
+        //TextView text = (TextView)findViewById(R.id.placeText);
+        //text.setText(place.getName() + "\nDistance: "+ distance + "m");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                button.setEnabled(false);
+                button.setText("VISITED");
+                uref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        user.incrementPoints(1);
+                        java.util.Map<String, Object> points = new HashMap<>();
+                        points.put("points", user.getPoints());
+                        uref.updateChildren(points);
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError error) {
+                        showToast(error.getMessage());
+                    }
+                });
+            }
+            else {
+                userId = data.getStringExtra("userId");
+                uref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + userId);
+                showToast(uref.toString());
+                uref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        user = dataSnapshot.getValue(User.class);
+
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError error) {
+                        showToast(error.getMessage());
+                    }
+                });
+                showToast(user.toString());
+            }
+        }
     }
 
     public void visited(View view){
-        button.setEnabled(false);
+        Intent simonSays = new Intent(this, SimonSaysGame.class);
+        simonSays.putExtra("userId",userId);
+        startActivityForResult(simonSays, 1);
+        /*button.setEnabled(false);
         button.setText("VISITED");
         uref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    user.incrementPoints(1);
-                    java.util.Map<String, Object> points = new HashMap<>();
-                    points.put("points", user.getPoints());
-                    uref.updateChildren(points);
-                } else {
-                    showToast("You've been here before.");
-                }
+                user.incrementPoints(1);
+                java.util.Map<String, Object> points = new HashMap<>();
+                points.put("points", user.getPoints());
+                uref.updateChildren(points);
             }
 
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
-        });
+        });*/
     }
 
     @Override
