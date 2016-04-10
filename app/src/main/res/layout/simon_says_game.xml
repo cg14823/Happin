@@ -22,96 +22,170 @@
             android:textSize="20sp" />
 
     </android.support.v7.widget.Toolbar>
-
-    <RelativeLayout android:layout_height="0dp"
-        android:layout_width="match_parent" android:layout_weight="8">
-        <TextView  android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text=""
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="25dp"
-            android:id="@+id/placeText" />
-
-        <Button
-            android:background="#b40000"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="150dp"
-            android:onClick="redClick"
-            android:id="@+id/redButton" />
-        <Button
-            android:background="#d7d800"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="145dp"
-            android:layout_marginTop="150dp"
-            android:onClick="yellowClick"
-            android:id="@+id/yellowButton" />
-        <Button
-        android:background="#0790ae"
+    <Space
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="250dp"
-        android:layout_marginTop="150dp"
-        android:onClick="blueClick"
-        android:id="@+id/blueButton" />
-        <Button
-            android:layout_width="wrap_content"
+        android:layout_weight="4"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
-            android:layout_marginTop="300dp"
-            android:text="Start"
-            android:onClick="started"
-            android:id="@+id/startButton" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="200dp"
-            android:layout_marginTop="300dp"
-            android:text="replay"
-            android:onClick="replayClick"
-            android:id="@+id/replayButton" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Press START to begin"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:textSize="20sp"
-            android:id="@+id/gameText"/>
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginTop="400dp"
-            android:background="#ffffff"
-            android:id="@+id/oneButton"
-            android:enabled="false" />
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="120dp"
-            android:layout_marginTop="400dp"
-            android:background="#ffffff"
-            android:id="@+id/twoButton"
-            android:enabled="false"/>
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="200dp"
-            android:layout_marginTop="400dp"
-            android:background="#ffffff"
-            android:id="@+id/threeButton"
-            android:enabled="false"/>
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="280dp"
-            android:layout_marginTop="400dp"
-            android:background="#ffffff"
-            android:id="@+id/fourButton"
-            android:enabled="false"/>
-    </RelativeLayout>
+            android:orientation="horizontal">
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:background="#b40000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="redClick"
+                android:id="@+id/redButton" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:background="#d7d800"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="yellowClick"
+                android:id="@+id/yellowButton" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:background="#0790ae"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="blueClick"
+                android:id="@+id/blueButton" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+        </LinearLayout>
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Press START to begin"
+                android:layout_weight="1"
+                android:textSize="20sp"
+                android:id="@+id/gameText"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+        </LinearLayout>
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Start"
+                android:onClick="started"
+                android:id="@+id/startButton" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="replay"
+                android:onClick="replayClick"
+                android:id="@+id/replayButton" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+        </LinearLayout>
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:id="@+id/oneButton"
+                android:enabled="false" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:id="@+id/twoButton"
+                android:enabled="false"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:id="@+id/threeButton"
+                android:enabled="false"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="#ffffff"
+                android:id="@+id/fourButton"
+                android:enabled="false"/>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"/>
+        </LinearLayout>
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"/>
 </LinearLayout>
