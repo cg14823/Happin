@@ -61,17 +61,23 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.search_list);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         current_filter=getString(R.string.defaultFilter);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         ListView listPlaces= (ListView) findViewById(R.id.places_listView);
         adapter = new myListAdapter(places);
         listPlaces.setAdapter(adapter);
+
         spinner = (Spinner) findViewById(R.id.spinner_sort);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.Sort_places_by,android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(SearchResultsActivity.this);
+
         findPlaces(getIntent());
         registerClickCallback();
         setIntent(getIntent().addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP));
@@ -83,6 +89,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
         setIntent(intent);
         findPlaces(intent);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -148,7 +155,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
                     float[] results2 = new float[1];
                     Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
                             place2.getLat(), place2.getLon(), results2);
-                    return Float.compare(results2[0], results1[0]);
+                        return Float.compare(results2[0], results1[0]);
                     }
                 });
             }
@@ -167,9 +174,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             public void onItemClick(AdapterView<?> parent, View viewClicked,
                                     int position, long id) {
                 Place currentPlace = places.get(position);
-                LatLng position_current_place = new LatLng(currentPlace.getLat(), currentPlace.getLon());
                 Intent detailShow = new Intent(getApplicationContext(), ShowPlacesDetail.class);
-                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + Map.latLng2Id(position_current_place));
+                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + currentPlace.latLng2Id());
                 detailShow.putExtra("USER_ID", MainActivity.userId);
                 startActivity(detailShow);
             }

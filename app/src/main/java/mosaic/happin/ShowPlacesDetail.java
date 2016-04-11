@@ -94,7 +94,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     text.setText(place.getName() +" Likes: "+place.getLikes()+ "\n" + place.getDescription());
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
-                    fref.child((place.latLng2Id(place.getLat(), place.getLon()))).setValue(ServerValue.TIMESTAMP);
+                    fref.child((place.latLng2Id())).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
                             +place.latLng2Id(place.getLat(), place.getLon()));
                     java.util.Map<String,Object> likes =new HashMap<>();

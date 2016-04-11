@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,12 +48,39 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+    private void loadingSwitch (boolean on){
+        TextView forgotP = (TextView)findViewById(R.id.forgot);
+        Button sign = (Button)findViewById(R.id.signUpButton);
+        Button log = (Button)findViewById(R.id.loginButton);
+        EditText emailField = (EditText) findViewById(R.id.email);
+        EditText passwordField = (EditText) findViewById(R.id.password);
+        ProgressBar loading = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        if (on){
+            emailField.setVisibility(View.INVISIBLE);
+            passwordField.setVisibility(View.INVISIBLE);
+            forgotP.setVisibility(View.INVISIBLE);
+            sign.setVisibility(View.INVISIBLE);
+            log.setVisibility(View.INVISIBLE);
+            loading.setVisibility(View.VISIBLE);
+        }
+        else{
+            emailField.setVisibility(View.VISIBLE);
+            passwordField.setVisibility(View.VISIBLE);
+            forgotP.setVisibility(View.VISIBLE);
+            sign.setVisibility(View.VISIBLE);
+            log.setVisibility(View.VISIBLE);
+            loading.setVisibility(View.GONE);
+        }
+
+    }
 
     public void login(View view) {
         final EditText emailField = (EditText) findViewById(R.id.email);
         final EditText passwordField = (EditText) findViewById(R.id.password);
         final String email = emailField.getText().toString();
         String pass = passwordField.getText().toString();
+
+        loadingSwitch(true);
         if (isValidEmail(email)) {
             myFirebaseRef.authWithPassword(email, pass, new Firebase.AuthResultHandler() {
                 @Override
@@ -61,6 +90,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onAuthenticationError(FirebaseError firebaseError) {
+                    loadingSwitch(false);
                     switch (firebaseError.getCode()) {
                         case FirebaseError.INVALID_EMAIL:
                             new AlertDialog.Builder(Login.this)
@@ -91,7 +121,8 @@ public class Login extends AppCompatActivity {
                     }
                 }
             });
-        } else showToast("Enter a valid email");
+        } else {
+            showToast("Enter a valid email"); loadingSwitch(false);}
     }
 
     public void signUp(View view) {
