@@ -40,6 +40,7 @@ public class showImage extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
+        if (title.equals("NULL_NAME")){
             String nameRef = ref.substring(0,ref.length()-3) +"name";
             Firebase nameFire = new Firebase (nameRef);
             nameFire.addListenerForSingleValueEvent(new ValueEventListener() {
