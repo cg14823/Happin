@@ -9,7 +9,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "2.0"
         multiDexEnabled true
     }
     buildTypes {
@@ -19,20 +19,27 @@ android {
         }
     }
     packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/NOTICE'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
     }
-}
+    dexOptions {
+        preDexLibraries = false
+    }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
-    compile 'com.android.support:support-v4:23.2.0'
-    compile 'com.google.android.gms:play-services:8.4.0'
-    compile 'com.google.android.gms:play-services-auth:8.4.0'
-    compile 'com.firebase:firebase-client-android:2.5.2+'
-    compile 'com.android.support:multidex:1.0.0'
+
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        testCompile 'junit:junit:4.12'
+        compile 'com.android.support:appcompat-v7:24.0.0-alpha1'
+        compile 'com.android.support:design:24.0.0-alpha1'
+        compile 'com.android.support:support-v4:24.0.0-alpha1'
+        compile 'com.google.android.gms:play-services:8.4.0'
+        compile 'com.google.android.gms:play-services-auth:8.4.0'
+        compile 'com.android.support:multidex:1.0.1'
+        compile 'com.firebase:firebase-client-android:2.5.2+'
+    }
 }

@@ -217,10 +217,15 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                Place p  = dataSnapshot.getValue(Place.class);
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(),p.getLon()))
-                                        .title(p.getName()).snippet(p.getDescription()));
+                            try {
+                                if (dataSnapshot.exists()) {
+                                    Place p = dataSnapshot.getValue(Place.class);
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
+                                            .title(p.getName()).snippet(p.getDescription()));
+                                }
+                            }
+                            catch (Exception e){
+                                showToast("getting places failed");
                             }
                         }
 
