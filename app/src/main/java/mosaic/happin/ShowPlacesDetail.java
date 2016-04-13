@@ -1,14 +1,19 @@
 package mosaic.happin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,10 +63,11 @@ public class ShowPlacesDetail extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 place = dataSnapshot.getValue(Place.class);
-                if ((place != null)){
+                if ((place != null)) {
                     addDetails();
                 }
             }
+
             @Override
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
@@ -72,14 +78,85 @@ public class ShowPlacesDetail extends AppCompatActivity {
     private void addDetails(){
         TextView text = (TextView)findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        text.setText(place.getName() + " Likes:" + place.getLikes() + "\n" + place.getDescription());
+        if(place.getLikes()==1){
+            String description = "<font color=#00000><b>"+place.getName()+"</b></font><br> <font color=#2088ca>"+ place.getLikes() + " like" + "</font><br> <i>" + place.getDescription() +"</i>";
+            text.setText(Html.fromHtml(description));
+        }
+        else {
+            String description = "<font color=#00000><b>" + place.getName() + "</b></font><br> <font color=#2088ca>" + place.getLikes() + " likes" + "</font><br> <i>" + place.getDescription() + "</i>";
+            text.setText(Html.fromHtml(description));
+        }
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
+        Firebase ref = new Firebase( "https://flickering-torch-2192.firebaseio.com/comments/"
+                +place.latLng2Id(place.getLat(), place.getLon()));
+        final TextView vcomments = (TextView) findViewById(R.id.commentSection);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+                    final Comments post = postSnapshot.getValue(Comments.class);
+                    Firebase usernameref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+post.getUser()+"/name");
+                    usernameref.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String name = dataSnapshot.getValue(String.class);
+                            String text = "<font color=#3aada5><b>"+name+"</b></font> <font color=#000000>"+post.getComment()+"</font><br>";
+                            vcomments.append(Html.fromHtml(text));
+                        }
+
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
+
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
     }
 
-    public void comment(View view){
-        // SENTHY PUT CODE HERE
+    public void comment(View view) {
+        LayoutInflater inflater = getLayoutInflater();
+        final AlertDialog.Builder commentBox = new AlertDialog.Builder(this);
+        final View dialogView = (inflater.inflate(R.layout.dialog_write_comment, null));
+        commentBox.setView(dialogView);
+        commentBox.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                EditText text = (EditText) dialogView.findViewById(R.id.writecomment);
+                final String comment = text.getText().toString();
+                final Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
+                        + place.latLng2Id(place.getLat(), place.getLon()));
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
+                        ref.push().setValue(newComment);
+                        final TextView vcomments = (TextView) findViewById(R.id.commentSection);
+                        vcomments.setText("");
+                    }
+
+                    @Override
+                    public void onCancelled (FirebaseError firebaseError) {
+
+                    }
+                });
+
+            }
+        });
+        commentBox.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog alert = commentBox.create();
+        alert.show();
     }
 
     public void liked (View view){
@@ -88,20 +165,22 @@ public class ShowPlacesDetail extends AppCompatActivity {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
+                if (!dataSnapshot.exists()) {
+                    showToast("<3");
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
-                    text.setText(place.getName() +" Likes: "+place.getLikes()+ "\n" + place.getDescription());
+                    String description = "<font color=#00000><b>"+place.getName()+"</b></font><br> <font color=#2088ca>"+ place.getLikes() + " likes" + "</font><br> <i>" + place.getDescription() +"</i><br>";
+                    text.setText(Html.fromHtml(description));
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
                     fref.child((place.latLng2Id())).setValue(ServerValue.TIMESTAMP);
                     fref = new Firebase("https://flickering-torch-2192.firebaseio.com/places/"
-                            +place.latLng2Id(place.getLat(), place.getLon()));
-                    java.util.Map<String,Object> likes =new HashMap<>();
+                            + place.latLng2Id(place.getLat(), place.getLon()));
+                    java.util.Map<String, Object> likes = new HashMap<>();
                     likes.put("likes", place.getLikes());
                     fref.updateChildren(likes);
                 } else {
-                    showToast("Chill you've already liked this place");
+                    showToast("</3"); //en el futuro: unlike on second press of like button
                 }
             }
 
@@ -120,7 +199,6 @@ public class ShowPlacesDetail extends AppCompatActivity {
         showImagebig.putExtra("TITLE",place.getName());
         startActivity(showImagebig);
 
-
     }
 
     private void showToast(String message){
@@ -128,7 +206,5 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-
 
 }
