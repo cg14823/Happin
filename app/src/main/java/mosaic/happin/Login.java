@@ -54,7 +54,7 @@ public class Login extends AppCompatActivity {
         Button log = (Button)findViewById(R.id.loginButton);
         EditText emailField = (EditText) findViewById(R.id.email);
         EditText passwordField = (EditText) findViewById(R.id.password);
-        ProgressBar loading = (ProgressBar) findViewById(R.id.progressBarLogIn);
+        com.wang.avi.AVLoadingIndicatorView loading = (com.wang.avi.AVLoadingIndicatorView) findViewById(R.id.progressBarLogIn);
         if (on){
             emailField.setVisibility(View.INVISIBLE);
             passwordField.setVisibility(View.INVISIBLE);
