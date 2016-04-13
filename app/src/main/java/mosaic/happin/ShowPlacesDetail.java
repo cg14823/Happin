@@ -138,6 +138,8 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
                         ref.push().setValue(newComment);
+                        final TextView vcomments = (TextView) findViewById(R.id.commentSection);
+                        vcomments.setText("");
                     }
 
                     @Override
