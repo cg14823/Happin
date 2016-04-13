@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
 
-        </android.support.v7.widget.Toolbar>
 
         <LinearLayout
+            android:id="@+id/linLayout1"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -45,12 +49,25 @@
                 android:spinnerMode="dropdown" />
 
         </LinearLayout>
-
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/searchloading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:indicator="BallSpinFadeLoader"
+            app:indicator_color="#e6007e"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/linLayout1"
+            />
         <ListView
+            android:layout_below="@id/linLayout1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/places_listView"
             android:theme="@style/AppTheme" />
-    </LinearLayout>
 
-</RelativeLayout>
+
+    </RelativeLayout>
+
+
+</LinearLayout>
