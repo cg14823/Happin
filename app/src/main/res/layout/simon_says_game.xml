@@ -36,9 +36,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="#b40000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/round_button_red"
+                android:layout_width="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:onClick="redClick"
                 android:id="@+id/redButton" />
@@ -47,9 +47,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="#d7d800"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/round_button_yellow"
+                android:layout_width="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:onClick="yellowClick"
                 android:id="@+id/yellowButton" />
@@ -58,9 +58,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="#0790ae"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/round_button_blue"
+                android:layout_width="100dp"
+                android:layout_height="110dp"
                 android:layout_weight="1"
                 android:onClick="blueClick"
                 android:id="@+id/blueButton" />

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,9 +38,9 @@ import java.util.*;
  * Created by Tom on 07/04/2016.
  */
 public class SimonSaysGame extends AppCompatActivity {
-    private Button red;
-    private Button yellow;
-    private Button blue;
+    private Button red; // Dark:#b40000  Light:#ff0000
+    private Button yellow; // Dark:#d7d800  Light:#fdff00
+    private Button blue; // Dark:#0790ae  Light:#00d2ff
     private Button start;
     private Button replay;
     private int[] sequence;
@@ -50,6 +51,7 @@ public class SimonSaysGame extends AppCompatActivity {
     private Button three;
     private Button four;
     private String user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +89,12 @@ public class SimonSaysGame extends AppCompatActivity {
     }
 
     public void redClick(View view){
-        red.setBackgroundColor(Color.parseColor("#ff0000"));
+        red.setBackgroundResource(R.drawable.round_button_red_light);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-               red.setBackgroundColor(Color.parseColor("#b40000"));
+               red.setBackgroundResource(R.drawable.round_button_red_dark);
             }
         },200);
         if (sequence[current] == 1){
@@ -126,12 +128,12 @@ public class SimonSaysGame extends AppCompatActivity {
     }
 
     public void yellowClick(View view){
-        yellow.setBackgroundColor(Color.parseColor("#fdff00"));
+        yellow.setBackgroundResource(R.drawable.round_button_yellow_light);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                yellow.setBackgroundColor(Color.parseColor("#d7d800"));
+                yellow.setBackgroundResource(R.drawable.round_button_yellow_dark);
             }
         },200);
         if (sequence[current] == 2){
@@ -165,12 +167,12 @@ public class SimonSaysGame extends AppCompatActivity {
     }
 
     public void blueClick(View view){
-        blue.setBackgroundColor(Color.parseColor("#00d2ff"));
+        blue.setBackgroundResource(R.drawable.round_button_blue_light);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                blue.setBackgroundColor(Color.parseColor("#0790ae"));
+                blue.setBackgroundResource(R.drawable.round_button_blue_dark);
             }
         },200);
         if (sequence[current] == 3){
@@ -217,11 +219,11 @@ public class SimonSaysGame extends AppCompatActivity {
                             @Override
                             public void run() {
                                 Handler handler = new Handler();
-                                red.setBackgroundColor(Color.parseColor("#ff0000"));
+                                red.setBackgroundResource(R.drawable.round_button_red_light);
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        red.setBackgroundColor(Color.parseColor("#b40000"));
+                                        red.setBackgroundResource(R.drawable.round_button_red_dark);
                                     }
                                 }, 1000);
                             }
@@ -231,12 +233,12 @@ public class SimonSaysGame extends AppCompatActivity {
                 case 2: handler1.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                yellow.setBackgroundColor(Color.parseColor("#fdff00"));
+                                yellow.setBackgroundResource(R.drawable.round_button_yellow_light);
                                 Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        yellow.setBackgroundColor(Color.parseColor("#d7d800"));
+                                        yellow.setBackgroundResource(R.drawable.round_button_yellow_dark);
                                     }
                                 }, 1000);
                             }
@@ -246,12 +248,12 @@ public class SimonSaysGame extends AppCompatActivity {
                 case 3: handler1.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                blue.setBackgroundColor(Color.parseColor("#00d2ff"));
+                                blue.setBackgroundResource(R.drawable.round_button_blue_light);
                                 Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        blue.setBackgroundColor(Color.parseColor("#0790ae"));
+                                        blue.setBackgroundResource(R.drawable.round_button_blue_dark);
                                     }
                                 }, 1000);
                             }
@@ -270,24 +272,59 @@ public class SimonSaysGame extends AppCompatActivity {
                 blue.setEnabled(true);
                 text.setText("Repeat the sequence\nPress REPLAY to see it again");
             }
-        },8000);
+        },(2000*(sequence.length)));
+    }
+
+    public void replayClick(View view){
+        replay.setEnabled(false);
+        one.setBackgroundColor(Color.parseColor("#ffffff"));
+        two.setBackgroundColor(Color.parseColor("#ffffff"));
+        three.setBackgroundColor(Color.parseColor("#ffffff"));
+        four.setBackgroundColor(Color.parseColor("#ffffff"));
+        text.setText("Playing Sequence...");
+        current = 0;
+        for (int i = 0;i<sequence.length;i++){
+            Handler handler1 = new Handler();
+            handler1.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Handler handler = new Handler();
+                    switch (sequence[current]){
+                        case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
+                        case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
+                        case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
+                    }
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (sequence[current]){
+                                case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
+                                case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
+                                case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
+                            }
+                            current++;
+                        }
+                    }, 1000);
+                }
+            }, (2000*i));
+        }
         /*Handler handler1 = new Handler();
         handler1.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Handler handler = new Handler();
                 switch (sequence[0]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
+                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
+                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
+                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
                 }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         switch (sequence[0]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
+                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
+                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
+                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
                         }
                     }
                 }, 1000);
@@ -298,17 +335,17 @@ public class SimonSaysGame extends AppCompatActivity {
             public void run() {
                 Handler handler = new Handler();
                 switch (sequence[1]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
+                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
+                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
+                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
                 }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         switch (sequence[1]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
+                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
+                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
+                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
                         }
                     }
                 }, 1000);
@@ -319,17 +356,17 @@ public class SimonSaysGame extends AppCompatActivity {
             public void run() {
                 Handler handler = new Handler();
                 switch (sequence[2]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
+                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
+                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
+                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
                 }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         switch (sequence[2]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
+                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
+                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
+                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
                         }
                     }
                 }, 1000);
@@ -339,125 +376,44 @@ public class SimonSaysGame extends AppCompatActivity {
             @Override
             public void run() {
                 Handler handler = new Handler();
-                switch (sequence[3]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
+                switch (sequence[3]) {
+                    case 1:
+                        red.setBackgroundResource(R.drawable.round_button_red_light);
+                        break;
+                    case 2:
+                        yellow.setBackgroundResource(R.drawable.round_button_yellow_light);
+                        break;
+                    case 3:
+                        blue.setBackgroundResource(R.drawable.round_button_blue_light);
+                        break;
                 }
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        switch (sequence[3]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
+                        switch (sequence[3]) {
+                            case 1:
+                                red.setBackgroundResource(R.drawable.round_button_red_dark);
+                                break;
+                            case 2:
+                                yellow.setBackgroundResource(R.drawable.round_button_yellow_dark);
+                                break;
+                            case 3:
+                                blue.setBackgroundResource(R.drawable.round_button_blue_dark);
+                                break;
                         }
                     }
                 }, 1000);
             }
         }, (6000));*/
-    }
-
-    public void replayClick(View view){
-        replay.setEnabled(false);
-        current = 0;
-        one.setBackgroundColor(Color.parseColor("#ffffff"));
-        two.setBackgroundColor(Color.parseColor("#ffffff"));
-        three.setBackgroundColor(Color.parseColor("#ffffff"));
-        four.setBackgroundColor(Color.parseColor("#ffffff"));
-        text.setText("Playing Sequence...");
-        Handler handler1 = new Handler();
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[0]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[0]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (0));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[1]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[1]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (2000));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[2]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[2]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (4000));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[3]){
-                    case 1:red.setBackgroundColor(Color.parseColor("#ff0000")); break;
-                    case 2:yellow.setBackgroundColor(Color.parseColor("#fdff00")); break;
-                    case 3:blue.setBackgroundColor(Color.parseColor("#00d2ff")); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[3]){
-                            case 1:red.setBackgroundColor(Color.parseColor("#b40000")); break;
-                            case 2:yellow.setBackgroundColor(Color.parseColor("#d7d800")); break;
-                            case 3:blue.setBackgroundColor(Color.parseColor("#0790ae")); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (6000));
-        handler1.postDelayed(new Runnable() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 replay.setEnabled(true);
                 text.setText("Repeat the sequence\nPress REPLAY to see it again");
+                current = 0;
             }
-        }, 8000);
+        }, (2000*((sequence.length))));
     }
 
     @Override

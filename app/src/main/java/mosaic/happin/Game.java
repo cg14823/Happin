@@ -102,15 +102,7 @@ public class Game extends Fragment implements
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
-                //LatLng latlng = marker.getPosition();
-
-                Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
-                //detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
-                detailShow.putExtra("USER_ID", MainActivity.userId);
-                //detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
-                startActivity(detailShow);
-                //return true;
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
             }
         });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -119,9 +111,9 @@ public class Game extends Fragment implements
                 LatLng latlng = marker.getPosition();
 
                 Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
-                //detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
+                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
                 detailShow.putExtra("USER_ID", MainActivity.userId);
-                //detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
+                detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
                 startActivity(detailShow);
                 return true;
             }
@@ -213,7 +205,7 @@ public class Game extends Fragment implements
         places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
-        /*likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 for (DataSnapshot d : querySnapshot.getChildren()) {
@@ -239,9 +231,9 @@ public class Game extends Fragment implements
             public void onCancelled(FirebaseError error) {
                 showToast(error.getMessage());
             }
-        });*/
+        });
 
-        LatLng bristol = new LatLng(51.465411, -2.585911);
+        LatLng bristol = new LatLng(51.4556676, -2.6266423);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 17));
     }
 
@@ -255,8 +247,8 @@ public class Game extends Fragment implements
         }
         if (mLocation == null){
             mLocation = new Location(LocationManager.GPS_PROVIDER);
-            mLocation.setLatitude(51.465411);
-            mLocation.setLongitude(-2.585911);
+            mLocation.setLatitude(51.4556676);
+            mLocation.setLongitude(-2.6266423);
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
     }
