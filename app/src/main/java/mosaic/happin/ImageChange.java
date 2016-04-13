@@ -17,7 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.widget.ImageView.ScaleType;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -25,12 +25,14 @@ import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class ImageChange extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_IMAGE = 2;
     private String uid;
-
+    private PhotoViewAttacher mAttacher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,17 +43,19 @@ public class ImageChange extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setProfile();
         Intent i = getIntent();
         uid = i.getStringExtra("USER_ID");
+        ImageView view = (ImageView) findViewById(R.id.changePicImage);
+        mAttacher = new PhotoViewAttacher(view);
+        mAttacher.setScaleType(ScaleType.CENTER_CROP);
+        setProfile();
     }
 
     private void setProfile (){
         // Retrive Name from database
-        String userId = MainActivity.userId;
         final TextView nameField = (TextView) findViewById(R.id.changePicName);
         final ImageView profilePicView = (ImageView) findViewById(R.id.changePicImage);
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/");
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid+"/");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -66,6 +70,7 @@ public class ImageChange extends AppCompatActivity {
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         profilePicView.setImageBitmap(decodedByte);
                     }
+                    mAttacher.update();
                 } else
                     showToast("ERROR!");
             }
@@ -112,6 +117,7 @@ public class ImageChange extends AppCompatActivity {
             else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(photo);
+                mAttacher.update();
 
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
@@ -135,6 +141,7 @@ public class ImageChange extends AppCompatActivity {
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
                 imageView.setImageBitmap(bitmap);
+                mAttacher.update();
 
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bYtE);

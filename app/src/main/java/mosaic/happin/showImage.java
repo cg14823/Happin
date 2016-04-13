@@ -22,6 +22,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class showImage extends AppCompatActivity {
 
     PhotoViewAttacher mAttacher;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +32,41 @@ public class showImage extends AppCompatActivity {
         Firebase.setAndroidContext(this);
 
         Intent i = getIntent();
-
         String ref = i.getStringExtra("REF");
         String title = i.getStringExtra("TITLE");
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        TextView titleTextView = (TextView) toolbar.findViewById(R.id.showImageTitle);
-        titleTextView.setText(title);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
-        titleTextView.setTypeface(custom_font);
+        if (title.equals("NULL_NAME")){
+            String nameRef = ref.substring(0,ref.length()-3) +"name";
+            Firebase nameFire = new Firebase (nameRef);
+            nameFire.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String title =dataSnapshot.getValue(String.class);
+                    TextView titleTextView = (TextView) toolbar.findViewById(R.id.showImageTitle);
+                    titleTextView.setText(title);
+                    Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
+                    titleTextView.setTypeface(custom_font);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            });
+        }
+        else{
+            TextView titleTextView = (TextView) toolbar.findViewById(R.id.showImageTitle);
+            titleTextView.setText(title);
+            Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
+            titleTextView.setTypeface(custom_font);
+        }
+
+
 
         Firebase fireRef = new Firebase(ref);
         ImageView view = (ImageView) findViewById(R.id.bigImage);
