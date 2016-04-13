@@ -214,14 +214,12 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     /* This function should ge the top rated places from the server*/
     private void getPlaces(){
-
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 for (DataSnapshot d : querySnapshot.getChildren()) {
-                    final long count = d.getChildrenCount();
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -250,7 +248,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
                 showToast(error.getMessage());
             }
         });
-
     }
 
     @Override
