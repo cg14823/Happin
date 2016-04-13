@@ -49,6 +49,7 @@ import android.location.Geocoder;
 public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
+    private View thisView;
     Firebase ref;
     public Map (){}
 
@@ -60,6 +61,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
 
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        thisView = view;
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
@@ -69,7 +71,9 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         mMap.setOnMarkerClickListener(this);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         try{mMap.setMyLocationEnabled(true);}
-        catch (SecurityException e){}
+        catch (SecurityException e){
+            showToast(e.getMessage());
+        }
 
         mMap.getUiSettings().setTiltGesturesEnabled(false);
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -83,10 +87,12 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         try {
             MapsInitializer.initialize(this.getActivity());
+            LatLng bristol = new LatLng(51.465411, -2.585911);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        view.findViewById(R.id.maploadingbar).setVisibility(View.VISIBLE);
         getPlaces();
 
         /* setLocationCheck creates a location button listener, if someone clicks it will check if
@@ -145,7 +151,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             location.add(1,address.getSubThoroughfare());
             return location;
         } catch (IOException e) {
-            List<String> location = new ArrayList<String>();
+            List<String> location = new ArrayList<>();
             location.add(0, "Can't");
             location.add(1, "find location");
             return location;
@@ -208,19 +214,27 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     /* This function should ge the top rated places from the server*/
     private void getPlaces(){
+
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
                 for (DataSnapshot d : querySnapshot.getChildren()) {
+                    final long count = d.getChildrenCount();
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
-                                Place p  = dataSnapshot.getValue(Place.class);
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(),p.getLon()))
-                                        .title(p.getName()).snippet(p.getDescription()));
+                                try {
+                                    Place p = dataSnapshot.getValue(Place.class);
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
+                                            .title(p.getName()).snippet(p.getDescription()));
+                                    thisView.findViewById(R.id.maploadingbar).setVisibility(View.GONE);
+                                }
+                                catch (Exception e){
+                                    showToast(e.getMessage());
+                                }
                             }
                         }
 
@@ -237,8 +251,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
             }
         });
 
-        LatLng bristol = new LatLng(51.465411, -2.585911);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 10));
     }
 
     @Override
@@ -271,15 +283,14 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
 
     private void showToast(String message){
         Toast toast = Toast.makeText(getContext(),
-                message, Toast.LENGTH_SHORT);
+                message, Toast.LENGTH_LONG);
         toast.show();
     }
 
     public static String latLng2Id(LatLng location){
         String lat = String.valueOf(location.latitude);
         String lon = String.valueOf(location.longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
-        return strLoc;
+        return (lat+"L"+lon).replace(".", "p");
     }
 
 
