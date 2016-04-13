@@ -50,6 +50,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     private GoogleMap mMap;
     private MapView mapView;
     private View thisView;
+    private int markerCount;
     Firebase ref;
     public Map (){}
 
@@ -57,6 +58,8 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        markerCount = 0;
+
         Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
 
@@ -219,16 +222,18 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         likeQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot querySnapshot) {
+                final long count = querySnapshot.getChildrenCount();
                 for (DataSnapshot d : querySnapshot.getChildren()) {
                     ref.child(d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
                                 try {
+                                    markerCount++;
+                                    if (markerCount == count) thisView.findViewById(R.id.maploadingbar).setVisibility(View.GONE);
                                     Place p = dataSnapshot.getValue(Place.class);
                                     mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
                                             .title(p.getName()).snippet(p.getDescription()));
-                                    thisView.findViewById(R.id.maploadingbar).setVisibility(View.GONE);
                                 }
                                 catch (Exception e){
                                     showToast(e.getMessage());
