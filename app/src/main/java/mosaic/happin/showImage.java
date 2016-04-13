@@ -17,8 +17,11 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class showImage extends AppCompatActivity {
 
+    PhotoViewAttacher mAttacher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,8 @@ public class showImage extends AppCompatActivity {
         titleTextView.setTypeface(custom_font);
 
         Firebase fireRef = new Firebase(ref);
+        ImageView view = (ImageView) findViewById(R.id.bigImage);
+        mAttacher = new PhotoViewAttacher(view);
         fireRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -53,7 +58,7 @@ public class showImage extends AppCompatActivity {
                 byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 view.setImageBitmap(decodedByte);
-
+                mAttacher.update();
             }
 
             @Override

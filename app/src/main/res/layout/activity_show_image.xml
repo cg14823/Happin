@@ -17,10 +17,9 @@
             android:id="@+id/showImageTitle"/>
     </android.support.v7.widget.Toolbar>
 
-    <ImageView android:layout_height="400dp" android:layout_width="500dp"
-        android:background="@color/lightGrey"
+    <ImageView android:layout_height="450dp" android:layout_width="match_parent"
         android:layout_centerInParent="true"
-        android:scaleType="centerCrop"
+        android:scaleType="fitCenter"
         android:id="@+id/bigImage"/>
 
 </RelativeLayout>
