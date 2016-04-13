@@ -98,7 +98,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     final Comments post = postSnapshot.getValue(Comments.class);
                     Firebase usernameref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+post.getUser()+"/name");
-                    usernameref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    usernameref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String name = dataSnapshot.getValue(String.class);
