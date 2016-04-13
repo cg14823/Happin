@@ -19,7 +19,7 @@ android {
         }
     }
     packagingOptions {
-	exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/NOTICE'
@@ -31,6 +31,7 @@ android {
     dexOptions {
         preDexLibraries = false
     }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
