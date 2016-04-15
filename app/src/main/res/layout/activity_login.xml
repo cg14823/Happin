@@ -3,23 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
     tools:context=".Login">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/logo_text"
+        android:textColor="#e6007e"
+        android:textSize="60sp" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_below="@+id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="180dp"
+        android:layout_marginTop="125dp"
         android:ems="10"
+        android:hint="@string/email"
         android:inputType="textEmailAddress"
-        android:textColor="#000000"
-        android:hint="email" />
+        android:textColor="#000000" />
 
     <EditText
         android:id="@+id/password"
@@ -29,28 +38,9 @@
         android:layout_below="@+id/email"
         android:layout_marginTop="15dp"
         android:ems="10"
+        android:hint="@string/psw"
         android:inputType="textPassword"
-        android:textColor="#000000"
-        android:hint="password" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/password"
-        android:layout_alignTop="@+id/button2"
-        android:onClick="signUp"
-        android:text="Sign Up" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/password"
-        android:layout_below="@+id/password"
-        android:layout_marginTop="35dp"
-        android:onClick="login"
-        android:text="LogIn" />
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/forgot"
@@ -59,19 +49,40 @@
         android:layout_alignEnd="@+id/password"
         android:layout_below="@+id/password"
         android:onClick="forgotPwd"
-        android:text="Forgot password?"
+        android:text="@string/fgtPswd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#a40000ff" />
 
-    <TextView
+    <Button
+        android:id="@+id/signUpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/logo_text"
-        android:id="@+id/logo"
-        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/loginButton"
+        android:layout_alignStart="@+id/password"
+        android:layout_alignTop="@+id/loginButton"
+        android:onClick="signUp"
+        android:text="@string/signUp" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/password"
+        android:layout_below="@+id/password"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="35dp"
+        android:onClick="login"
+        android:text="@string/log_in" />
+
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/progressBarLogIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:indicator="BallSpinFadeLoader"
+        app:indicator_color="#e6007e"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
-        android:textColor="#e6007e"
-        android:textSize="60dp" />
+        android:layout_below="@id/email"/>
 
 </RelativeLayout>
