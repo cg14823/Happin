@@ -105,13 +105,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!canAccessLocation()) {
-                requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-            } else {
-                locationClass = new MyLocation(this);
-                locationClass.onStart();
-            }
+        if (Build.VERSION.SDK_INT >= 23 && !canAccessLocation()) {
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         } else {
             locationClass = new MyLocation(this);
             locationClass.onStart();
@@ -141,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         // add 4 tabs
         mTabHost.addTab(
-                mTabHost.newTabSpec("Map").setIndicator(null,getResources().getDrawable(R.drawable.ic_map_black_18dp)),
+                mTabHost.newTabSpec("Map").setIndicator(null, getResources().getDrawable(R.drawable.ic_map_black_18dp)),
                 Map.class, null);
         mTabHost.addTab(
                 mTabHost.newTabSpec("Ranking").setIndicator(null, getResources().getDrawable(R.drawable.ic_trophy_black_18dp)),
@@ -204,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     " enable it? It is required to add a place.")
                     // Have to respond to this message not cancelable
                     .setCancelable(false)
-                            // If yes open setting page to enable location
+                    // If yes open setting page to enable location
                     .setPositiveButton("Yes",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
@@ -264,11 +259,11 @@ public class MainActivity extends AppCompatActivity {
                                 Firebase ref1 = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
                                 ref1.child(place.latLng2Id(placeloc)).setValue(place);
                                 showToast("Place added");
-                            }
-                            else {
+                            } else {
                                 showToast("Place already exists");
                             }
                         }
+
                         @Override
                         public void onCancelled(FirebaseError firebaseError) {
                             System.out.println("The read failed: " + firebaseError.getMessage());
@@ -440,20 +435,26 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.start(client, viewAction);
     }
 
-    public void viewProfPic(View view){
-        String ref = "https://flickering-torch-2192.firebaseio.com/users/"+
-                userId+"/profileImage";
-        Firebase reference = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+
-                userId+"/name");
+    public void viewProfPic(View view) {
+        String ref = "https://flickering-torch-2192.firebaseio.com/users/" +
+                userId + "/profileImage";
+        Firebase reference = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" +
+                userId + "/");
 
         final Intent showImagebig = new Intent(this, showImage.class);
-        showImagebig.putExtra("REF",ref);
+        showImagebig.putExtra("REF", ref);
 
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.getValue(String.class);
-                showImagebig.putExtra("TITLE", name);
+            public void onDataChange(DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                String image = user.getProfileImage();
+                if (image.equals("null Image")) {
+                    showToast("This user has no profile picture");
+                } else {
+                    showImagebig.putExtra("TITLE", user.getName());
+                    startActivity(showImagebig);
+                }
             }
 
             @Override
@@ -461,18 +462,16 @@ public class MainActivity extends AppCompatActivity {
                 showToast(firebaseError.getMessage());
             }
         });
-
-        startActivity(showImagebig);
     }
 
     public void showDetails(View view) {
         TextView placeid = (TextView) view.findViewById(R.id.previewId);
         String placeidStr = placeid.getText().toString();
-        if (placeidStr != null){
-            String ref = "https://flickering-torch-2192.firebaseio.com/places/"+placeidStr;
-            Intent showplaceDetails = new Intent(this,ShowPlacesDetail.class);
-            showplaceDetails.putExtra("ref",ref);
-            showplaceDetails.putExtra("USER_ID",userId);
+        if (placeidStr != null) {
+            String ref = "https://flickering-torch-2192.firebaseio.com/places/" + placeidStr;
+            Intent showplaceDetails = new Intent(this, ShowPlacesDetail.class);
+            showplaceDetails.putExtra("ref", ref);
+            showplaceDetails.putExtra("USER_ID", userId);
             startActivity(showplaceDetails);
         }
     }

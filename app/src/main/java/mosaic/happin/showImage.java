@@ -40,13 +40,13 @@ public class showImage extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        if (title.equals("NULL_NAME")){
-            String nameRef = ref.substring(0,ref.length()-3) +"name";
-            Firebase nameFire = new Firebase (nameRef);
+        if (title.equals("NULL_NAME")) {
+            String nameRef = ref.substring(0, ref.length() - 3) + "name";
+            Firebase nameFire = new Firebase(nameRef);
             nameFire.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    String title =dataSnapshot.getValue(String.class);
+                    String title = dataSnapshot.getValue(String.class);
                     TextView titleTextView = (TextView) toolbar.findViewById(R.id.showImageTitle);
                     titleTextView.setText(title);
                     Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
@@ -58,14 +58,12 @@ public class showImage extends AppCompatActivity {
 
                 }
             });
-        }
-        else{
+        } else {
             TextView titleTextView = (TextView) toolbar.findViewById(R.id.showImageTitle);
             titleTextView.setText(title);
             Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/verdanab.ttf");
             titleTextView.setTypeface(custom_font);
         }
-
 
 
         Firebase fireRef = new Firebase(ref);
