@@ -89,18 +89,16 @@ public class Game extends Fragment implements
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
-        try{
+        try {
             mMap.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
         }
-        catch(SecurityException e){}
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
             }
         });
-
-
 
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
@@ -132,7 +130,7 @@ public class Game extends Fragment implements
                     alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
                             // Have to respond to this message not cancelable
                             .setCancelable(false)
-                                    // If yes open setting page to enable location
+                            // If yes open setting page to enable location
                             .setPositiveButton("Yes",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
@@ -160,7 +158,7 @@ public class Game extends Fragment implements
 
 
     /* This function should ge the top rated places from the server*/
-    private void getPlaces(){
+    private void getPlaces() {
         places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
@@ -220,7 +218,7 @@ public class Game extends Fragment implements
         mapView.onLowMemory();
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -230,9 +228,9 @@ public class Game extends Fragment implements
     public void onConnected(Bundle connectionHint) {
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient,mLocationRequest,this);
+                    mGoogleApiClient, mLocationRequest, this);
+        } catch (SecurityException e) {
         }
-        catch (SecurityException e){}
     }
 
     @Override
@@ -241,6 +239,7 @@ public class Game extends Fragment implements
         // Disable any UI components that depend on Google APIs
         // until onConnected() is called.
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // This callback is important for handling errors that
@@ -254,7 +253,8 @@ public class Game extends Fragment implements
         super.onStart();
         mGoogleApiClient.connect();
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -262,7 +262,7 @@ public class Game extends Fragment implements
     @Override
     public void onLocationChanged(Location l) {
         mLocation = l;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(),l.getLongitude()), 17));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 17));
     }
 
 }

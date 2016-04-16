@@ -37,6 +37,7 @@ import java.util.*;
 public class ShowPlacesDetail extends AppCompatActivity {
     private Place place;
     private String userId;
+    private String referencePlace;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +54,11 @@ public class ShowPlacesDetail extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent i = getIntent();
-        String url = i.getStringExtra("ref");
+        referencePlace = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
 
         Firebase.setAndroidContext(this);
-        Firebase ref = new Firebase(url);
+        Firebase ref = new Firebase(referencePlace);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -192,11 +193,12 @@ public class ShowPlacesDetail extends AppCompatActivity {
     }
 
     public void viewimage(View view){
-        String ref = "https://flickering-torch-2192.firebaseio.com/places/"
-                +place.latLng2Id(place.getLat(), place.getLon())+"/img";
+        String ref = referencePlace+"/img";
+        String name = "NULL_NAME";
+        if (place != null) name = place.getName();
         Intent showImagebig = new Intent(this, showImage.class);
         showImagebig.putExtra("REF",ref);
-        showImagebig.putExtra("TITLE",place.getName());
+        showImagebig.putExtra("TITLE",name);
         startActivity(showImagebig);
 
     }
