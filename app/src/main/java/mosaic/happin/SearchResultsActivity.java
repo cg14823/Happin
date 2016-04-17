@@ -208,8 +208,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             }
             Place currentPlace= places.get(position);
             //Set the image of the button
-            ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
-            imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
+            ImageView imageView = (ImageView) itemView.findViewById(R.id.item_imageView);
+            imageView.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
             //Set the name of the place
             TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
             placeName.setText(currentPlace.getName());
@@ -218,7 +218,7 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
             return itemView;
         }
-        public  Bitmap StringToBitMap(String encodedString){
+        public Bitmap StringToBitMap(String encodedString){
             try {
                 byte [] encodeByte=Base64.decode(encodedString, Base64.DEFAULT);
                 Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
