@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
+import android.os.ParcelFileDescriptor;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView.ScaleType;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -24,12 +28,19 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImageChange extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int SELECT_IMAGE = 2;
     private String uid;
+    private PhotoViewAttacher mAttacher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +52,19 @@ public class ImageChange extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setProfile();
         Intent i = getIntent();
         uid = i.getStringExtra("USER_ID");
+        ImageView view = (ImageView) findViewById(R.id.changePicImage);
+        mAttacher = new PhotoViewAttacher(view);
+        mAttacher.setScaleType(ScaleType.CENTER_CROP);
+        setProfile();
     }
 
-    private void setProfile (){
-        // Retrive Name from database
-        String userId = MainActivity.userId;
+    private void setProfile() {
+        // Retrieve Name from database
         final TextView nameField = (TextView) findViewById(R.id.changePicName);
         final ImageView profilePicView = (ImageView) findViewById(R.id.changePicImage);
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+userId+"/");
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid + "/");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -66,6 +79,7 @@ public class ImageChange extends AppCompatActivity {
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         profilePicView.setImageBitmap(decodedByte);
                     }
+                    mAttacher.update();
                 } else
                     showToast("ERROR!");
             }
@@ -77,11 +91,11 @@ public class ImageChange extends AppCompatActivity {
         });
     }
 
-    public void changeImage (View view) {
+    public void changeImage(View view) {
 
         final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add Photo!");
+        //builder.setTitle("Add Photo!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
@@ -89,76 +103,85 @@ public class ImageChange extends AppCompatActivity {
                     Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                     startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                 } else if (items[item].equals("Choose from Library")) {
-                    startActivityForResult(
-                            Intent.createChooser(
-                                    new Intent(Intent.ACTION_GET_CONTENT)
-                                            .setType("image/*"), "Choose an image"),
-                            SELECT_IMAGE);
-                } else if (items[item].equals("Cancel")) {
+                    Intent galleryIntent = Intent.createChooser(
+                            new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
+                            "Choose an image");
+                    startActivityForResult(galleryIntent, SELECT_IMAGE);
+                } else {
                     dialog.dismiss();
                 }
             }
         });
         builder.show();
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Boolean succesful = false ;
+        Boolean success = false;
         String image = " ";
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            ImageView imageView =(ImageView) findViewById(R.id.changePicImage);
+            ImageView imageView = (ImageView) findViewById(R.id.changePicImage);
             if (imageView == null) showToast("problem with null pointers in imageView");
             else {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(photo);
+                mAttacher.update();
 
                 ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
                 photo.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
                 byte[] byteArray = bYtE.toByteArray();
                 image = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                succesful = true;
+                success = true;
             }
         }
-        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null){
-            ImageView imageView =(ImageView) findViewById(R.id.changePicImage);
+        if (requestCode == SELECT_IMAGE && resultCode == RESULT_OK && data != null) {
+            ImageView imageView = (ImageView) findViewById(R.id.changePicImage);
             if (imageView == null) showToast("problem with null pointers in imageView");
-            else{
+            else {
+                // Let's read picked image path using ParcelFileDescriptor
                 Uri pickedImage = data.getData();
-                // Let's read picked image path using content resolver
-                String[] filePath = { MediaStore.Images.Media.DATA };
-                Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
-                cursor.moveToFirst();
-                String imagePath = cursor.getString(cursor.getColumnIndex(filePath[0]));
+                if (pickedImage != null) {
+                    ParcelFileDescriptor parcelFileDescriptor = null;
+                    try {
+                        parcelFileDescriptor = getContentResolver().openFileDescriptor(pickedImage, "r");
+                        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                        imageView.setImageBitmap(bitmap);
+                        mAttacher.update();
 
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-                imageView.setImageBitmap(bitmap);
+                        ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
+                        byte[] byteArray = bYtE.toByteArray();
+                        image = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                        success = true;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } finally {
+                        try {
+                            if (parcelFileDescriptor != null)
+                                parcelFileDescriptor.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
 
-                ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
-                byte[] byteArray = bYtE.toByteArray();
-                image = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                succesful = true;
             }
         }
-        if (succesful){
-            Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+uid
-                    +"/profileImage");
+        if (success) {
+            Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid
+                    + "/profileImage");
             ref.setValue(image);
             showToast("Image changed!");
-        }
-
+        } else showToast("Oops! Something went wrong");
     }
 
-    public void viewImage(View view){
-        String ref = "https://flickering-torch-2192.firebaseio.com/users/"+
-                uid+"/profileImage";
-        String name = ((TextView)findViewById(R.id.changePicName)).getText().toString();
+    public void viewImage(View view) {
+        String ref = "https://flickering-torch-2192.firebaseio.com/users/" +
+                uid + "/profileImage";
+        String name = ((TextView) findViewById(R.id.changePicName)).getText().toString();
         Intent showImagebig = new Intent(this, showImage.class);
-        showImagebig.putExtra("REF",ref);
-        showImagebig.putExtra("TITLE",name);
+        showImagebig.putExtra("REF", ref);
+        showImagebig.putExtra("TITLE", name);
         startActivity(showImagebig);
     }
 

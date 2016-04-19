@@ -18,8 +18,8 @@
     </android.support.v7.widget.Toolbar>
 
     <ImageView
-        android:layout_width="250dp"
-        android:layout_height="300dp"
+        android:layout_width="300dp"
+        android:layout_height="350dp"
         android:background="@color/lightGrey"
         android:scaleType="centerCrop"
         android:onClick="viewImage"

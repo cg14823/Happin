@@ -27,11 +27,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Query;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.maps.model.LatLng;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +47,7 @@ import java.util.Set;
 public class SearchResultsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Firebase myFirebaseRef;
     private Spinner spinner;
-    private List<Place> places=new ArrayList<Place>();
+    private List<Place> places = new ArrayList<Place>();
     private String current_filter;
     MyLocation locationClass;
     private ArrayAdapter<Place> adapter;
@@ -63,17 +64,18 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
         this.setContentView(R.layout.search_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        current_filter=getString(R.string.defaultFilter);
+        current_filter = getString(R.string.defaultFilter);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ListView listPlaces= (ListView) findViewById(R.id.places_listView);
+        ListView listPlaces = (ListView) findViewById(R.id.places_listView);
+        findViewById(R.id.searchloading).setVisibility(View.VISIBLE);
         adapter = new myListAdapter(places);
         listPlaces.setAdapter(adapter);
 
         spinner = (Spinner) findViewById(R.id.spinner_sort);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,R.array.Sort_places_by,android.R.layout.simple_spinner_item);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.Sort_places_by, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(SearchResultsActivity.this);
@@ -106,55 +108,58 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
     }
 
     private void findPlaces(Intent intent) {
-       if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             final String query = intent.getStringExtra(SearchManager.QUERY).toUpperCase();
-                    myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
-                    myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            for (DataSnapshot child : snapshot.getChildren()) {
-                                Place currentPlace = child.getValue(Place.class);
-                                String currentName = currentPlace.getName().toUpperCase();
-                                String description = currentPlace.getDescription().toUpperCase();
-                                if ((currentName.contains(query)) || (query.contains(currentName)) || (description.contains(query))) {
-                                    places.add(currentPlace);
-                                }
-                            }
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                                sort_places(current_filter);
-                                            }
-                            });
+
+            myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places/");
+            com.firebase.client.Query queryRef = myFirebaseRef.orderByChild("likes");
+            myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Place currentPlace = child.getValue(Place.class);
+                        String currentName = currentPlace.getName().toUpperCase();
+                        String description = currentPlace.getDescription().toUpperCase();
+                        if ((currentName.contains(query)) || (query.contains(currentName)) || (description.contains(query))) {
+                            places.add(currentPlace);
                         }
-                        @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-                            System.out.println("The read failed: " + firebaseError.getMessage());
+                    }
+                    findViewById(R.id.maploadingbar).setVisibility(View.GONE);
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            sort_places(current_filter);
                         }
                     });
                 }
-        }
 
-    private void sort_places (String filter){
-        if (filter.equals(getString(R.string.defaultFilter))||true){
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
+            });
+        }
+    }
+
+    private void sort_places(String filter) {
+        if (filter.equals(getString(R.string.defaultFilter)) || true) {
             Collections.sort(places, new Comparator<Place>() {
                 @Override
                 public int compare(Place place1, Place place2) {
                     return Integer.compare(place2.getLikes(), place1.getLikes());
                 }
             });
-        }
-        else{
-            final Location myPosition= locationClass.getLocation();
-            if(myPosition != null){
+        } else {
+            final Location myPosition = locationClass.getLocation();
+            if (myPosition != null) {
                 Collections.sort(places, new Comparator<Place>() {
                     @Override
                     public int compare(Place place1, Place place2) {
-                    float[] results1 = new float[1];
-                    Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
-                            place1.getLat(), place1.getLon(), results1);
-                    float[] results2 = new float[1];
-                    Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
-                            place2.getLat(), place2.getLon(), results2);
+                        float[] results1 = new float[1];
+                        Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
+                                place1.getLat(), place1.getLon(), results1);
+                        float[] results2 = new float[1];
+                        Location.distanceBetween(myPosition.getLatitude(), myPosition.getLongitude(),
+                                place2.getLat(), place2.getLon(), results2);
                         return Float.compare(results2[0], results1[0]);
                     }
                 });
@@ -181,12 +186,13 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             }
         });
     }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         TextView filter = (TextView) view;
-            String textFilter = (String) filter.getText();
-            current_filter=textFilter;
-            sort_places(current_filter);
+        String textFilter = (String) filter.getText();
+        current_filter = textFilter;
+        sort_places(current_filter);
     }
 
     @Override
@@ -203,27 +209,28 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View itemView = convertView;
-            if(itemView== null){
-                itemView=getLayoutInflater().inflate(R.layout.item_view,parent,false);
+            if (itemView == null) {
+                itemView = getLayoutInflater().inflate(R.layout.item_view, parent, false);
             }
-            Place currentPlace= places.get(position);
+            Place currentPlace = places.get(position);
             //Set the image of the button
             ImageView imageViewe = (ImageView) itemView.findViewById(R.id.item_imageView);
             imageViewe.setImageBitmap(this.StringToBitMap(currentPlace.getImg()));
             //Set the name of the place
-            TextView placeName= (TextView) itemView.findViewById(R.id.item_place_name);
+            TextView placeName = (TextView) itemView.findViewById(R.id.item_place_name);
             placeName.setText(currentPlace.getName());
             //Set the number of likes
-            TextView numOfLikes= (TextView) itemView.findViewById(R.id.item_likes);
-            numOfLikes.setText(Integer.toString(currentPlace.getLikes())+" Likes");
+            TextView numOfLikes = (TextView) itemView.findViewById(R.id.item_likes);
+            numOfLikes.setText(Integer.toString(currentPlace.getLikes()) + " Likes");
             return itemView;
         }
-        public  Bitmap StringToBitMap(String encodedString){
+
+        public Bitmap StringToBitMap(String encodedString) {
             try {
-                byte [] encodeByte=Base64.decode(encodedString, Base64.DEFAULT);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
                 return bitmap;
-            } catch(Exception e) {
+            } catch (Exception e) {
                 e.getMessage();
                 return null;
             }
