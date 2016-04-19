@@ -83,6 +83,7 @@ public class MyLocation implements
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setExpirationDuration(12000);
     }
 
     public Location getLocation(){
