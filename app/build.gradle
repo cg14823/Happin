@@ -27,10 +27,6 @@ android {
         exclude 'META-INF/notice.txt'
     }
 
-    dexOptions{
-        preDexLibraries = false
-        javaMaxHeapSize "4g"
-    }
 }
 
 dependencies {
@@ -42,5 +38,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.firebase:firebase-client-android:2.5.2+'
-    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:multidex:1.0.0'
 }
