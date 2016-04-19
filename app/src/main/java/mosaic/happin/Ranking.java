@@ -151,9 +151,8 @@ public class Ranking extends Fragment {
     }
 
     private void getRanked() {
-        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
-        loading.setVisibility(View.VISIBLE);
         poru = new ArrayList<>();
+        rankingView.findViewById(R.id.progressBar1).setVisibility(View.VISIBLE);
         String ref = "https://flickering-torch-2192.firebaseio.com/places/";
         String child = "likes";
         if (current_filter == 1) {
@@ -205,8 +204,7 @@ public class Ranking extends Fragment {
     private void setList() {
         Collections.reverse(poru);
         adapter = new MyCustomAdapter(getContext(),poru);
-        ProgressBar loading = (ProgressBar) rankingView.findViewById(R.id.progressBar1);
-        loading.setVisibility(View.GONE);
+        rankingView.findViewById(R.id.progressBar1).setVisibility(View.GONE);
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(adapter);
     }

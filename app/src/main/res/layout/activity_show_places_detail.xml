@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -38,6 +40,17 @@
                     android:id="@+id/placeImgview"
                     android:onClick="viewimage"/>
 
+                <ImageButton
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:id="@+id/showdetailslike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_thumb_up_white_36dp"
+                    android:onClick= "liked"
+                    android:layout_alignEnd="@id/placeImgview"
+                    android:layout_alignBottom="@id/placeImgview"
+                    android:layout_marginEnd="5dp" />
+
                 <TextView  android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_below="@+id/placeImgview"
@@ -45,24 +58,44 @@
                     android:layout_marginStart="@dimen/activity_vertical_margin"
                     android:id="@+id/placeText" />
 
-                <ImageButton
-                    android:id="@+id/showdetailslike"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_thumb_up_black_36dp"
-                    android:onClick= "liked"
-                    android:layout_alignEnd="@id/placeImgview"
-                    android:layout_alignBottom="@id/placeImgview"
-                    android:layout_marginEnd="5dp" />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_comment_black_36dp"
-                    android:onClick= "comment"
-                    android:layout_toLeftOf="@id/showdetailslike"
-                    android:layout_alignBottom="@id/placeImgview"
-                    android:layout_marginTop="@dimen/activity_vertical_margin" />
+                    android:id="@+id/commentSection"
+                    android:focusable="false"
+                    android:maxLines = "100"
+                    android:layout_below="@id/placeText" />
+
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
+    <LinearLayout
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:maxLength="140"
+            android:id="@+id/writeaComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="What&apos;s happin-ing?"
+            android:imeOptions="actionDone">
+        </EditText>
+
+        <ImageButton
+            android:src="@drawable/ic_send_white_36dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:id="@+id/commentB"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"/>
+    </LinearLayout>
+
 </LinearLayout>
+

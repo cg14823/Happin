@@ -33,7 +33,6 @@ public class MyLocation implements
                     .addApi(LocationServices.API)
                     .build();
         }
-
     }
 
     @Override
