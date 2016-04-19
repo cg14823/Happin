@@ -224,12 +224,8 @@ public class SearchResultsActivity extends AppCompatActivity implements AdapterV
             numOfLikes.setText(Integer.toString(currentPlace.getLikes()) + " Likes");
             return itemView;
         }
-<<<<<<< HEAD
-        public Bitmap StringToBitMap(String encodedString){
-=======
 
         public Bitmap StringToBitMap(String encodedString) {
->>>>>>> master
             try {
                 byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
