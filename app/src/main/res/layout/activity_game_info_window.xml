@@ -38,10 +38,11 @@
             android:id="@+id/placeText" />
 
         <Button
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="visit" android:onClick= "visited"
-            android:layout_below="@+id/imageView"
+            android:text="visit"
+            android:onClick= "visited"
             android:layout_marginLeft="240dp"
             android:layout_marginTop="20dp"
             android:id="@+id/visitButton" />
