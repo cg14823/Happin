@@ -242,7 +242,7 @@ public class Game extends Fragment implements
     public void onResume() {
         mapView.onResume();
         super.onResume();
-        if (mGoogleApiClient == null) {
+        if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
         if (mLocation == null){
