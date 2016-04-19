@@ -25,6 +25,7 @@ public class MyLocation implements
 
     public MyLocation(Context context){
         this.context = context;
+        createLocationRequest();
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)
                     .addConnectionCallbacks(this)
@@ -32,7 +33,6 @@ public class MyLocation implements
                     .addApi(LocationServices.API)
                     .build();
         }
-        createLocationRequest();
     }
 
     @Override
