@@ -23,7 +23,7 @@ public class MyLocation implements
     Context context;
     LocationRequest mLocationRequest;
 
-    public MyLocation(Context context) {
+    public MyLocation(Context context){
         this.context = context;
         createLocationRequest();
         if (mGoogleApiClient == null) {
@@ -33,23 +33,18 @@ public class MyLocation implements
                     .addApi(LocationServices.API)
                     .build();
         }
-        try {
-            location = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-        } catch (SecurityException e) {
-        }
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-        } catch (SecurityException e) {
+                    mGoogleApiClient,mLocationRequest,this);
         }
+        catch (SecurityException e){}
     }
 
-    private void showToast(String message) {
+    private void showToast(String message){
         Toast toast = Toast.makeText(context,
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -66,7 +61,6 @@ public class MyLocation implements
         // Disable any UI components that depend on Google APIs
         // until onConnected() is called.
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // This callback is important for handling errors that
@@ -79,8 +73,7 @@ public class MyLocation implements
     public void onStart() {
         mGoogleApiClient.connect();
     }
-
-    public void onStop() {
+    public void onStop(){
         mGoogleApiClient.disconnect();
     }
 
@@ -93,9 +86,17 @@ public class MyLocation implements
         mLocationRequest.setExpirationDuration(12000);
     }
 
-    public Location getLocation() {
-        if (location == null)
-            showToast("Problem getting location. Please try again.");
-        return location;
+    public Location getLocation(){
+        if (location != null) return location;
+        else {
+            try {
+                location = LocationServices.FusedLocationApi.getLastLocation(
+                        mGoogleApiClient);
+            }
+            catch (SecurityException e) {}
+        }
+        if (location != null) return location;
+        showToast("Problem getting location try again.");
+        return null;
     }
 }
