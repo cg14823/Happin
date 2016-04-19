@@ -18,6 +18,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,7 +65,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
         Intent i = getIntent();
         referencePlace = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
-        Button buttonOne = (Button) findViewById(R.id.commentB);
+        ImageButton buttonOne = (ImageButton) findViewById(R.id.commentB);
         buttonOne.setOnClickListener(new Button.OnClickListener() {
             public void onClick(final View v) {
                 final EditText text = (EditText) findViewById(R.id.writeaComment);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -35,7 +36,10 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
@@ -54,7 +58,7 @@ public class Game extends Fragment implements
     public Game() {
         // Required empty public constructor
     }
-
+    private Circle circle;
     private GoogleMap mMap;
     private MapView mapView;
     Firebase ref;
@@ -67,6 +71,7 @@ public class Game extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         mLocationRequest = new LocationRequest();
@@ -89,16 +94,36 @@ public class Game extends Fragment implements
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
+
         try {
             mMap.setMyLocationEnabled(true);
-        } catch (SecurityException e) {
         }
+        catch (SecurityException e) {}
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
             }
         });
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LatLng latlng = marker.getPosition();
+
+                Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
+                detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
+                detailShow.putExtra("USER_ID", MainActivity.userId);
+                detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
+                startActivity(detailShow);
+                return true;
+            }
+        });
+        circle = mMap.addCircle(new CircleOptions()
+                .center(new LatLng(0, 0))
+                .visible(false)
+                .strokeWidth(2)
+                .radius(50));
+
 
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
@@ -118,6 +143,24 @@ public class Game extends Fragment implements
         return view;
     }
 
+    private String latLng2Id(LatLng location){
+        String lat = String.valueOf(location.latitude);
+        String lon = String.valueOf(location.longitude);
+        String strLoc = (lat+"L"+lon).replace(".", "p");
+        return strLoc;
+    }
+
+    private float distanceFromCurrent(LatLng latLng) {
+
+        Location loc1 = new Location(LocationManager.GPS_PROVIDER);
+
+        loc1.setLatitude(latLng.latitude);
+        loc1.setLongitude(latLng.longitude);
+
+
+        return loc1.distanceTo(mLocation);
+    }
+
     private void setLocationCheck() {
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -130,7 +173,7 @@ public class Game extends Fragment implements
                     alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
                             // Have to respond to this message not cancelable
                             .setCancelable(false)
-                            // If yes open setting page to enable location
+                                    // If yes open setting page to enable location
                             .setPositiveButton("Yes",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
@@ -158,7 +201,7 @@ public class Game extends Fragment implements
 
 
     /* This function should ge the top rated places from the server*/
-    private void getPlaces() {
+    private void getPlaces(){
         places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
@@ -190,9 +233,10 @@ public class Game extends Fragment implements
             }
         });
 
-        LatLng bristol = new LatLng(51.465411, -2.585911);
+        LatLng bristol = new LatLng(51.4556676, -2.6266423);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 17));
     }
+
 
     @Override
     public void onResume() {
@@ -201,6 +245,12 @@ public class Game extends Fragment implements
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+        if (mLocation == null){
+            mLocation = new Location(LocationManager.GPS_PROVIDER);
+            mLocation.setLatitude(51.4556676);
+            mLocation.setLongitude(-2.6266423);
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
     }
 
     @Override
@@ -218,7 +268,7 @@ public class Game extends Fragment implements
         mapView.onLowMemory();
     }
 
-    private void showToast(String message) {
+    private void showToast(String message){
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -228,9 +278,9 @@ public class Game extends Fragment implements
     public void onConnected(Bundle connectionHint) {
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, this);
-        } catch (SecurityException e) {
+                    mGoogleApiClient,mLocationRequest,this);
         }
+        catch (SecurityException e){}
     }
 
     @Override
@@ -239,7 +289,6 @@ public class Game extends Fragment implements
         // Disable any UI components that depend on Google APIs
         // until onConnected() is called.
     }
-
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // This callback is important for handling errors that
@@ -253,8 +302,7 @@ public class Game extends Fragment implements
         super.onStart();
         mGoogleApiClient.connect();
     }
-
-    public void onStop() {
+    public void onStop(){
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -262,7 +310,11 @@ public class Game extends Fragment implements
     @Override
     public void onLocationChanged(Location l) {
         mLocation = l;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 17));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(),l.getLongitude()), 17));
+        circle.setCenter(new LatLng(l.getLatitude(), l.getLongitude()));
+        if (!(circle.isVisible())) {
+            circle.setVisible(true);
+        }
     }
 
 }
