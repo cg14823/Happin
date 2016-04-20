@@ -66,7 +66,7 @@ public class Profile extends Fragment {
                     userPoints.setText(user.getPoints() + " Points");
                     ImageView profile_picture = (ImageView) profileView.findViewById(R.id.profile_picture);
                     String profileImage = user.getProfileImage();
-                    if (profileImage == null) {
+                    if (profileImage.equals("null Image")) {
                         profile_picture.setImageResource(R.drawable.empty_profile);
                     } else {
                         profile_picture.setImageBitmap(StringToBitMap(profileImage));
@@ -171,7 +171,6 @@ public class Profile extends Fragment {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Place currentPlace = child.getValue(Place.class);
                         if (currentPlace != null && addedPlaces.contains(currentPlace) == false) {
-                            showToast("ADDED PLACE=" + currentPlace.getName());
                             addedPlaces.add(currentPlace);
                             imagesOfAddedPlaces.add(StringToBitMap(currentPlace.getImg()));
                             adapterToAddedPlaces.notifyDataSetChanged();

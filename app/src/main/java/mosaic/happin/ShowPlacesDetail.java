@@ -72,23 +72,27 @@ public class ShowPlacesDetail extends AppCompatActivity {
                 final String comment = text.getText().toString();
                 final Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
                         + place.latLng2Id(place.getLat(), place.getLon()));
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Comments newComment = new Comments(comment,userId ,System.currentTimeMillis());
-                        ref.push().setValue(newComment);
-                        final TextView vcomments = (TextView) findViewById(R.id.commentSection);
-                        vcomments.setText("");
-                        text.setText("");
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    }
+                if (comment.equals("")) {
+                    showToast("Enter a comment");
+                } else {
+                    ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Comments newComment = new Comments(comment, userId, System.currentTimeMillis());
+                            ref.push().setValue(newComment);
+                            final TextView vcomments = (TextView) findViewById(R.id.commentSection);
+                            vcomments.setText("");
+                            text.setText("");
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                        }
 
-                    @Override
-                    public void onCancelled (FirebaseError firebaseError) {
+                        @Override
+                        public void onCancelled(FirebaseError firebaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
         });
 
