@@ -231,9 +231,11 @@ public class MainActivity extends AppCompatActivity {
             final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(this);
             final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
             recPassDialog.setView(dialogView);
-            EditText locfield = (EditText) dialogView.findViewById(R.id.location);
+            TextView locfield = (TextView) dialogView.findViewById(R.id.location);
             List<String> s = reverseGeo(location.getLatitude(), location.getLongitude());
-            locfield.setText(s.get(1) + " " + s.get(0));
+            String locationStr = s.get(1) + " " + s.get(0);
+            locationStr = locationStr.replace("null","");
+            locfield.setText(locationStr);
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
@@ -286,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
 
     }
-
+    
     private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);

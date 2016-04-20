@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.support.v4.app.Fragment;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -177,9 +178,11 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         final AlertDialog.Builder recPassDialog = new AlertDialog.Builder(getContext());
         final View dialogView = (inflater.inflate(R.layout.dialog_add_place, null));
         recPassDialog.setView(dialogView);
-        EditText locfield = (EditText) dialogView.findViewById(R.id.location);
+        TextView locfield = (TextView) dialogView.findViewById(R.id.location);
         List<String> s = reverseGeo(location.latitude, location.longitude);
-        locfield.setText(s.get(1) + " " + s.get(0));
+        String locationStr = s.get(1) + " " + s.get(0);
+        locationStr = locationStr.replace("null","");
+        locfield.setText(locationStr);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
