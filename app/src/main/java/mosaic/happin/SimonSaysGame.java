@@ -15,6 +15,8 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,11 +48,16 @@ public class SimonSaysGame extends AppCompatActivity {
     private int[] sequence;
     private TextView text;
     private int current;
-    private Button one;
-    private Button two;
-    private Button three;
-    private Button four;
+    private ProgressBar score;
     private String user;
+    private final long FAST_SPEED = 800;
+    private final long NORMAL_SPEED = 1200;
+    private int sequenceLength;
+    private int pointsGained;
+    private String url;
+    private Place place;
+    private int likes;
+    private long playSpeed;
 
 
     @Override
@@ -82,10 +89,28 @@ public class SimonSaysGame extends AppCompatActivity {
         start.setEnabled(true);
         text = (TextView) findViewById(R.id.gameText);
         current = 0;
-        one = (Button) findViewById(R.id.oneButton);
-        two = (Button) findViewById(R.id.twoButton);
-        three = (Button) findViewById(R.id.threeButton);
-        four = (Button) findViewById(R.id.fourButton);
+        score = (ProgressBar) findViewById(R.id.progressBar);
+        sequenceLength = 6;
+        pointsGained = 6;
+        likes = 0;
+        playSpeed = NORMAL_SPEED;
+        url = i.getStringExtra("place");
+        Firebase ref = new Firebase(url);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                place = dataSnapshot.getValue(Place.class);
+                if (place != null){
+                    likes = place.getLikes();
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+        score.setMax(sequenceLength);
     }
 
     public void redClick(View view){
@@ -98,14 +123,9 @@ public class SimonSaysGame extends AppCompatActivity {
             }
         },200);
         if (sequence[current] == 1){
-            switch (current){
-                case 0:one.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 1:two.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 2:three.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 3:four.setBackgroundColor(Color.parseColor("#00ff11")); break;
-            }
             current++;
-            if (current > 3){
+            score.setProgress(current);
+            if (current > sequenceLength-1){
                 replay.setEnabled(false);
                 red.setEnabled(false);
                 yellow.setEnabled(false);
@@ -113,6 +133,7 @@ public class SimonSaysGame extends AppCompatActivity {
                 text.setText("Congratulations!");
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("userId", user);
+                returnIntent.putExtra("points", pointsGained);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -120,10 +141,7 @@ public class SimonSaysGame extends AppCompatActivity {
         else {
             text.setText("Incorrect\nTry again");
             current = 0;
-            one.setBackgroundColor(Color.parseColor("#ffffff"));
-            two.setBackgroundColor(Color.parseColor("#ffffff"));
-            three.setBackgroundColor(Color.parseColor("#ffffff"));
-            four.setBackgroundColor(Color.parseColor("#ffffff"));
+            score.setProgress(current);
         }
     }
 
@@ -137,14 +155,9 @@ public class SimonSaysGame extends AppCompatActivity {
             }
         },200);
         if (sequence[current] == 2){
-            switch (current){
-                case 0:one.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 1:two.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 2:three.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 3:four.setBackgroundColor(Color.parseColor("#00ff11")); break;
-            }
             current++;
-            if (current > 3){
+            score.setProgress(current);
+            if (current > sequenceLength-1){
                 replay.setEnabled(false);
                 red.setEnabled(false);
                 yellow.setEnabled(false);
@@ -152,6 +165,7 @@ public class SimonSaysGame extends AppCompatActivity {
                 text.setText("Congratulations!");
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("userId", user);
+                returnIntent.putExtra("points", pointsGained);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -159,10 +173,7 @@ public class SimonSaysGame extends AppCompatActivity {
         else {
             text.setText("Incorrect\nTry again");
             current = 0;
-            one.setBackgroundColor(Color.parseColor("#ffffff"));
-            two.setBackgroundColor(Color.parseColor("#ffffff"));
-            three.setBackgroundColor(Color.parseColor("#ffffff"));
-            four.setBackgroundColor(Color.parseColor("#ffffff"));
+            score.setProgress(current);
         }
     }
 
@@ -176,14 +187,9 @@ public class SimonSaysGame extends AppCompatActivity {
             }
         },200);
         if (sequence[current] == 3){
-            switch (current){
-                case 0:one.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 1:two.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 2:three.setBackgroundColor(Color.parseColor("#00ff11")); break;
-                case 3:four.setBackgroundColor(Color.parseColor("#00ff11")); break;
-            }
             current++;
-            if (current > 3){
+            score.setProgress(current);
+            if (current > sequenceLength-1){
                 replay.setEnabled(false);
                 red.setEnabled(false);
                 yellow.setEnabled(false);
@@ -191,6 +197,7 @@ public class SimonSaysGame extends AppCompatActivity {
                 text.setText("Congratulations!");
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("userId", user);
+                returnIntent.putExtra("points", pointsGained);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -198,10 +205,7 @@ public class SimonSaysGame extends AppCompatActivity {
         else {
             text.setText("Incorrect\nTry again");
             current = 0;
-            one.setBackgroundColor(Color.parseColor("#ffffff"));
-            two.setBackgroundColor(Color.parseColor("#ffffff"));
-            three.setBackgroundColor(Color.parseColor("#ffffff"));
-            four.setBackgroundColor(Color.parseColor("#ffffff"));
+            score.setProgress(current);
         }
     }
 
@@ -209,8 +213,8 @@ public class SimonSaysGame extends AppCompatActivity {
         text.setText("Playing Sequence...");
         start.setEnabled(false);
         int colour;
-        sequence = new int[4];
-        for (int i=0;i<4;i++){
+        sequence = new int[sequenceLength];
+        for (int i=0;i<sequenceLength;i++){
             colour = (int)((Math.random()*3)+1);
             sequence[i] = colour;
             Handler handler1 = new Handler();
@@ -225,9 +229,9 @@ public class SimonSaysGame extends AppCompatActivity {
                                     public void run() {
                                         red.setBackgroundResource(R.drawable.round_button_red_dark);
                                     }
-                                }, 1000);
+                                }, playSpeed/2);
                             }
-                        }, (2000*i));
+                        }, (playSpeed*i));
                         break;
 
                 case 2: handler1.postDelayed(new Runnable() {
@@ -240,9 +244,9 @@ public class SimonSaysGame extends AppCompatActivity {
                                     public void run() {
                                         yellow.setBackgroundResource(R.drawable.round_button_yellow_dark);
                                     }
-                                }, 1000);
+                                }, playSpeed/2);
                             }
-                        }, (2000*i));
+                        }, (playSpeed*i));
                         break;
 
                 case 3: handler1.postDelayed(new Runnable() {
@@ -255,9 +259,9 @@ public class SimonSaysGame extends AppCompatActivity {
                                     public void run() {
                                         blue.setBackgroundResource(R.drawable.round_button_blue_dark);
                                     }
-                                }, 1000);
+                                }, playSpeed/2);
                             }
-                        }, (2000*i));
+                        }, (playSpeed*i));
                         break;
 
             }
@@ -272,15 +276,12 @@ public class SimonSaysGame extends AppCompatActivity {
                 blue.setEnabled(true);
                 text.setText("Repeat the sequence\nPress REPLAY to see it again");
             }
-        },(2000*(sequence.length)));
+        },(playSpeed*(sequence.length)));
     }
 
     public void replayClick(View view){
         replay.setEnabled(false);
-        one.setBackgroundColor(Color.parseColor("#ffffff"));
-        two.setBackgroundColor(Color.parseColor("#ffffff"));
-        three.setBackgroundColor(Color.parseColor("#ffffff"));
-        four.setBackgroundColor(Color.parseColor("#ffffff"));
+        score.setProgress(0);
         text.setText("Playing Sequence...");
         current = 0;
         for (int i = 0;i<sequence.length;i++){
@@ -304,107 +305,10 @@ public class SimonSaysGame extends AppCompatActivity {
                             }
                             current++;
                         }
-                    }, 1000);
+                    }, playSpeed/2);
                 }
-            }, (2000*i));
+            }, (playSpeed*i));
         }
-        /*Handler handler1 = new Handler();
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[0]){
-                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
-                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
-                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[0]){
-                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
-                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
-                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (0));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[1]){
-                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
-                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
-                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[1]){
-                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
-                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
-                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (2000));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[2]){
-                    case 1:red.setBackgroundResource(R.drawable.round_button_red_light); break;
-                    case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_light); break;
-                    case 3:blue.setBackgroundResource(R.drawable.round_button_blue_light); break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[2]){
-                            case 1:red.setBackgroundResource(R.drawable.round_button_red_dark); break;
-                            case 2:yellow.setBackgroundResource(R.drawable.round_button_yellow_dark); break;
-                            case 3:blue.setBackgroundResource(R.drawable.round_button_blue_dark); break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (4000));
-        handler1.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                switch (sequence[3]) {
-                    case 1:
-                        red.setBackgroundResource(R.drawable.round_button_red_light);
-                        break;
-                    case 2:
-                        yellow.setBackgroundResource(R.drawable.round_button_yellow_light);
-                        break;
-                    case 3:
-                        blue.setBackgroundResource(R.drawable.round_button_blue_light);
-                        break;
-                }
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (sequence[3]) {
-                            case 1:
-                                red.setBackgroundResource(R.drawable.round_button_red_dark);
-                                break;
-                            case 2:
-                                yellow.setBackgroundResource(R.drawable.round_button_yellow_dark);
-                                break;
-                            case 3:
-                                blue.setBackgroundResource(R.drawable.round_button_blue_dark);
-                                break;
-                        }
-                    }
-                }, 1000);
-            }
-        }, (6000));*/
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -413,7 +317,7 @@ public class SimonSaysGame extends AppCompatActivity {
                 text.setText("Repeat the sequence\nPress REPLAY to see it again");
                 current = 0;
             }
-        }, (2000*((sequence.length))));
+        }, (playSpeed*((sequence.length))));
     }
 
     @Override

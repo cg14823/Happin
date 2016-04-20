@@ -35,6 +35,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -97,6 +98,7 @@ public class Game extends Fragment implements
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
@@ -225,7 +227,8 @@ public class Game extends Fragment implements
                             if (dataSnapshot.exists()) {
                                 Place p = dataSnapshot.getValue(Place.class);
                                 mMap.addMarker(new MarkerOptions().position(new LatLng(p.getLat(), p.getLon()))
-                                        .title(p.getName()).snippet(p.getDescription()));
+                                        .title(p.getName()).snippet(p.getDescription())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.happy_marker)));
                             }
                         }
 
