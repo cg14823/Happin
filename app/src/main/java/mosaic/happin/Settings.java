@@ -176,6 +176,8 @@ public class Settings extends AppCompatActivity {
                 if (serverEmail.equals(email)) {
                     Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + uid);
                     ref.removeValue();
+                    ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/" + uid);
+                    ref.removeValue();
                     Firebase ref2 = new Firebase("https://flickering-torch-2192.firebaseio.com");
                     ref.removeUser(email, password, new Firebase.ResultHandler() {
                         @Override
