@@ -32,7 +32,7 @@
         android:layout_marginBottom="4dp"
         android:maxLength="25"
         android:hint="name" />
-    <EditText
+    <TextView
         android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,8 +41,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="sans-serif"
-        android:text="Location grabbed automatically"
-        android:hint="location"/>
+        android:text="Getting location" />
     <EditText
         android:id="@+id/description"
         android:inputType="textLongMessage"
