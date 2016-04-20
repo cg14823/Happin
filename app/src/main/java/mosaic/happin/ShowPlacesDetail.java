@@ -138,9 +138,11 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     usernameref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            String name = dataSnapshot.getValue(String.class);
-                            String text = "<font color=#3aada5><b>"+name+"</b></font> <font color=#000000>"+post.getComment()+"</font><br>";
-                            vcomments.append(Html.fromHtml(text));
+                            if (dataSnapshot.exists()) {
+                                String name = dataSnapshot.getValue(String.class);
+                                String text = "<font color=#3aada5><b>" + name + "</b></font> <font color=#000000>" + post.getComment() + "</font><br>";
+                                vcomments.append(Html.fromHtml(text));
+                            }
                         }
 
                         @Override

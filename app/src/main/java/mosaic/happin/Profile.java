@@ -54,20 +54,13 @@ public class Profile extends Fragment {
         profileView = inflater.inflate(R.layout.fragment_profile_temp, container, false);
         userId = MainActivity.userId;
         imageAdapter = new ImageAdapter(getContext());
-        showToast(userId);
-        //new PopulateUser().execute();
-        //new PopulatePlaces().execute();
         myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + userId);
         myFirebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
-                showToast("the user name is(1): " + user.getName());
-                if (user == null) {
-                    showToast("the user name is(2): " + "user is null");
-                } else {
+                if (user != null) {
                     TextView userName = (TextView) profileView.findViewById(R.id.user_name);
-                    showToast("the user name is(2): " + user.getName());
                     userName.setText(user.getName());
                     TextView userPoints = (TextView) profileView.findViewById(R.id.user_points);
                     userPoints.setText(user.getPoints() + " Points");
@@ -116,7 +109,6 @@ public class Profile extends Fragment {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    //showToast(child.getKey());
                     myFirebaseRef = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
                     myFirebaseRef.child(child.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -124,10 +116,8 @@ public class Profile extends Fragment {
                             if (dataSnapshot != null) {
                                 Place currentPlace = dataSnapshot.getValue(Place.class);
                                 if (currentPlace != null && likedPlaces.contains(currentPlace) == false) {
-                                    showToast(currentPlace.getName());
                                     likedPlaces.add(currentPlace);
                                     imagesOflikedPlaces.add(StringToBitMap(currentPlace.getImg()));
-                                    //showToast("Likes places: " + likedPlaces.toString());
                                     adapterToLikedPlaces.notifyDataSetChanged();
                                 }
                             }
@@ -142,10 +132,8 @@ public class Profile extends Fragment {
                 }
                 ImageView header_ImageView = (ImageView) profileView.findViewById(R.id.header_imageview);
                 if (likedPlaces.isEmpty() == false) {
-                    showToast("postExecute PLACES: number of places is" + likedPlaces.size());
                     header_ImageView.setImageBitmap(StringToBitMap(likedPlaces.get(0).getImg()));
                 } else {
-                    showToast("PLACES EMPTY");
                     header_ImageView.setImageResource(R.drawable.bristol);
                 }
             }
