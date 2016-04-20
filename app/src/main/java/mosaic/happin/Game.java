@@ -66,6 +66,7 @@ public class Game extends Fragment implements
     Location mLocation;
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
+    private float zoomLevel;
 
 
     @Override
@@ -74,6 +75,7 @@ public class Game extends Fragment implements
 
         Firebase.setAndroidContext(getContext());
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
+        zoomLevel = 17;
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
@@ -93,8 +95,16 @@ public class Game extends Fragment implements
         mMap = mapView.getMap();
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setRotateGesturesEnabled(true);
-
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                if (cameraPosition.zoom != zoomLevel){
+                    zoomLevel = cameraPosition.zoom;
+                }
+            }
+        });
         try {
             mMap.setMyLocationEnabled(true);
         }
@@ -102,7 +112,7 @@ public class Game extends Fragment implements
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), 17));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), zoomLevel));
             }
         });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -234,7 +244,7 @@ public class Game extends Fragment implements
         });
 
         LatLng bristol = new LatLng(51.4556676, -2.6266423);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, 17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bristol, zoomLevel));
     }
 
 
@@ -250,7 +260,7 @@ public class Game extends Fragment implements
             mLocation.setLatitude(51.4556676);
             mLocation.setLongitude(-2.6266423);
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), 17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), zoomLevel));
     }
 
     @Override
@@ -310,7 +320,7 @@ public class Game extends Fragment implements
     @Override
     public void onLocationChanged(Location l) {
         mLocation = l;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(),l.getLongitude()), 17));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(),l.getLongitude()), zoomLevel));
         circle.setCenter(new LatLng(l.getLatitude(), l.getLongitude()));
         if (!(circle.isVisible())) {
             circle.setVisible(true);
