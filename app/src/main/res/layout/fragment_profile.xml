@@ -1,89 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
- <ScrollView
-     android:layout_width="match_parent"
-     android:layout_height="match_parent">
-     <RelativeLayout
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:id="@+id/details"
-             android:layout_alignTop="@+id/profilePic"
-             android:layout_toEndOf="@+id/profilePic"
-             android:layout_marginTop="20dp"/>
 
-         <ImageView
-             android:layout_width="100dp"
-             android:layout_height="100dp"
-             android:src="@mipmap/ic_launcher"
-             android:id="@+id/profilePic"
-             android:layout_marginTop="20dp"
-             android:layout_marginLeft="20dp"/>
 
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Places you've liked"
-             android:id="@+id/lpTitle"
-             android:layout_below="@+id/profilePic"
-             android:layout_alignStart="@+id/profilePic"
-             android:layout_marginTop="10dp"/>
+    <TextView
+        android:id="@+id/details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/profilePic"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@+id/profilePic" />
 
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:text="Your Places"
-             android:id="@+id/ypTitle"
-             android:layout_marginLeft="20dp"
-             android:layout_below="@+id/horizontalScrollView" />
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="100dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="20dp"
+        android:background="@color/lightGrey"
+        android:onClick="viewProfPic"
+        android:scaleType="centerCrop" />
 
-         <HorizontalScrollView
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-             android:layout_width="fill_parent"
-             android:layout_height="180dp"
-             android:id="@+id/horizontalScrollView"
-             android:background="#C6D7D2"
-             android:layout_below="@+id/lpTitle"
-             android:layout_alignParentStart="true" >
-             <RelativeLayout
-                 android:id="@+id/container"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"/>
-         </HorizontalScrollView>
+    <TextView
+        android:id="@+id/points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/details"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_toEndOf="@+id/profilePic"
+        android:text="Points:"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-         <HorizontalScrollView
-             android:layout_marginLeft="10dp"
-             android:layout_marginRight="10dp"
-             android:layout_width="fill_parent"
-             android:layout_height="180dp"
-             android:id="@+id/horizontalScrollView1"
-             android:background="#C6D7D2"
-             android:layout_below="@+id/ypTitle"
-             android:layout_alignParentStart="true" >
-             <RelativeLayout
-                 android:id="@+id/container2"
-                 android:layout_width="fill_parent"
-                 android:layout_height="fill_parent"/>
-         </HorizontalScrollView>
-        <Space
-            android:layout_below="@+id/horizontalScrollView1"
+    <RelativeLayout
+        android:id="@+id/tabsProfile"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/profilePic"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/likedPlacestab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/separatorTab"
+            android:layout_alignParentStart="true"
+            android:background="@color/unfocusedTab"
+            android:clickable="true"
+            android:gravity="center"
+            android:minHeight="50dp"
+            android:minWidth="50dp"
+            android:text="Liked places"
+            android:textAlignment="center"
+            android:textColor="@color/tabTitleColor" />
+
+        <View
+            android:id="@+id/separatorTab"
+            android:layout_width="1dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:background="@color/grey" />
+
+        <View
+            android:id="@+id/underline1"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/activity_vertical_margin" />
+            android:layout_height="3dp"
+            android:layout_alignEnd="@+id/separatorTab"
+            android:layout_below="@+id/likedPlacestab"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/colorAccent" />
 
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:textAppearance="?android:attr/textAppearanceSmall"
-             android:text="Points:"
-             android:id="@+id/points"
-             android:layout_below="@+id/details"
-             android:layout_toEndOf="@+id/profilePic" />
-     </RelativeLayout>
- </ScrollView>
+        <View
+            android:id="@+id/underline2"
+            android:layout_width="fill_parent"
+            android:layout_height="3dp"
+            android:layout_below="@+id/yourPlacestab"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_toEndOf="@+id/underline1"
+            android:background="@color/colorAccent"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/yourPlacestab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/likedPlacestab"
+            android:background="@color/unfocusedTab"
+            android:clickable="true"
+            android:gravity="center"
+            android:minHeight="50dp"
+            android:minWidth="50dp"
+            android:text="Your places"
+            android:textAlignment="center"
+            android:textColor="@color/tabTitleColor" />
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/profileGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabsProfile"
+        android:background="@color/white"
+        android:columnWidth="100dp"
+        android:gravity="center"
+        android:numColumns="2" />
+
+
 </RelativeLayout>

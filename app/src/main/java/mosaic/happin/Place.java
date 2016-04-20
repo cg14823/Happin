@@ -37,6 +37,14 @@ public class Place{
     }
     public Place(){}
 
+    @Override
+    public boolean equals(Object o) {
+        if(this.lat==((Place) o).getLat() &&this.lon==((Place) o).getLon())return true;
+        else return false;
+    }
+
+
+
     public Place(Place p){
         this.lat = p.getLat();
         this.lon =p.getLon();
@@ -83,6 +91,11 @@ public class Place{
         return strLoc;
     }
 
+    public String latLng2Id(){
+        return latLng2Id(lat,lon);
+
+    }
+
     public LatLng id2LatLng (String location){
         String decodeLoc = location.replace("p", ".");
         String [] parts = location.split("");
@@ -98,4 +111,14 @@ public class Place{
         return name+ " "+ lat+","+lon+" "+description;
     }
 
+    // This method should somehow compute the score(number of stars to display)
+    public int comupteScore() {
+        if (likes>50) return 5;
+        else return likes/10;
+    }
+
+    public Place setLikes(int likes) {
+        this.likes = likes;
+        return this;
+    }
 }

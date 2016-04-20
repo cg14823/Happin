@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3aada5</color>
+    <color name="green_points">#4eb938</color>
     <color name="colorPrimaryDark">#349c95</color>
     <color name="colorAccent">#2088ca</color>
     <color name="tabTitleColor">#000000</color>
     <color name="grey">#838181</color>
+    <color name="lightGrey">#d1cccc</color>
+    <color name="unfocusedTab">#c6c3c3</color>
+    <color name="white">#fdfdfd</color>
+    <color name="nearlyTransparent">#48bebebe</color>
+    <color name="happycitycolor">#e6007e</color>
 </resources>
