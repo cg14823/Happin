@@ -179,7 +179,9 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         recPassDialog.setView(dialogView);
         EditText locfield = (EditText) dialogView.findViewById(R.id.location);
         List<String> s = reverseGeo(location.latitude, location.longitude);
-        locfield.setText(s.get(1) + " " + s.get(0));
+        String locationStr = s.get(1) + " " + s.get(0);
+        locationStr = locationStr.replace("null","");
+        locfield.setText(locationStr);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
