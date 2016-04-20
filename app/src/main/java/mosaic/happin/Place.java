@@ -37,6 +37,14 @@ public class Place{
     }
     public Place(){}
 
+    @Override
+    public boolean equals(Object o) {
+        if(this.lat==((Place) o).getLat() &&this.lon==((Place) o).getLon())return true;
+        else return false;
+    }
+
+
+
     public Place(Place p){
         this.lat = p.getLat();
         this.lon =p.getLon();

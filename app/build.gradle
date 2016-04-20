@@ -43,4 +43,5 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0' // animator library for spinners
     compile 'com.commit451:PhotoView:1.2.5' //PhotoView library for scrolling and zooming images
     compile 'com.android.support:multidex:1.0.0'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
 }
