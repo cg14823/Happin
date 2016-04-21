@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -44,6 +45,7 @@ public class GameInfoWindow extends AppCompatActivity {
     private User user;
     private Firebase uref;
     private Button button;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,7 @@ public class GameInfoWindow extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Intent i = getIntent();
-        String url = i.getStringExtra("ref");
+        url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
         distance = i.getIntExtra("distance",-1);
         Firebase.setAndroidContext(this);
@@ -94,7 +96,8 @@ public class GameInfoWindow extends AppCompatActivity {
                             mMap.getUiSettings().setAllGesturesEnabled(false);
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(place.getLat(), place.getLon()), 17));
                             mMap.addMarker(new MarkerOptions().position(new LatLng(place.getLat(), place.getLon()))
-                                    .title(place.getName()).snippet(place.getDescription()));
+                                    .title(place.getName()).snippet(place.getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.happy_marker)));
                         }
                     });
                 }
@@ -130,12 +133,19 @@ public class GameInfoWindow extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
+                final int pointsGained = data.getIntExtra("points",1);
+                if (pointsGained == 1){
+                    showToast("You earned 1 point!");
+                }
+                else {
+                    showToast("You earned "+pointsGained+" points!");
+                }
                 button.setEnabled(false);
                 button.setText("VISITED");
                 uref.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        user.incrementPoints(1);
+                        user.incrementPoints(pointsGained);
                         java.util.Map<String, Object> points = new HashMap<>();
                         points.put("points", user.getPoints());
                         uref.updateChildren(points);
@@ -171,23 +181,8 @@ public class GameInfoWindow extends AppCompatActivity {
     public void visited(View view){
         Intent simonSays = new Intent(this, SimonSaysGame.class);
         simonSays.putExtra("userId",userId);
+        simonSays.putExtra("place",url);
         startActivityForResult(simonSays, 1);
-        /*button.setEnabled(false);
-        button.setText("VISITED");
-        uref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user.incrementPoints(1);
-                java.util.Map<String, Object> points = new HashMap<>();
-                points.put("points", user.getPoints());
-                uref.updateChildren(points);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError error) {
-                showToast(error.getMessage());
-            }
-        });*/
     }
 
     @Override

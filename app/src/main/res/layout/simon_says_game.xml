@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="@drawable/round_button_red"
+                android:background="@drawable/round_button_red_dark"
                 android:layout_width="100dp"
                 android:layout_height="110dp"
                 android:layout_weight="1"
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="@drawable/round_button_yellow"
+                android:background="@drawable/round_button_yellow_dark"
                 android:layout_width="100dp"
                 android:layout_height="110dp"
                 android:layout_weight="1"
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"/>
             <Button
-                android:background="@drawable/round_button_blue"
+                android:background="@drawable/round_button_blue_dark"
                 android:layout_width="100dp"
                 android:layout_height="110dp"
                 android:layout_weight="1"
@@ -135,54 +135,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <Space
-                android:layout_width="wrap_content"
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"/>
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:id="@+id/oneButton"
-                android:enabled="false" />
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"/>
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:id="@+id/twoButton"
-                android:enabled="false"/>
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"/>
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:id="@+id/threeButton"
-                android:enabled="false"/>
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"/>
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="#ffffff"
-                android:id="@+id/fourButton"
-                android:enabled="false"/>
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"/>
+                android:id="@+id/progressBar"
+                android:progress="0"
+                android:max="4" />
+
         </LinearLayout>
     <Space
         android:layout_width="wrap_content"
