@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
 
     }
-    
+
     private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);

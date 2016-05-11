@@ -41,11 +41,7 @@ public class Profile extends Fragment {
     private ArrayList<Bitmap> imagesOfAddedPlaces = new ArrayList<>();
     ImageAdapter imageAdapter;
     //the images to display
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,9 +62,7 @@ public class Profile extends Fragment {
                     userPoints.setText(user.getPoints() + " Points");
                     ImageView profile_picture = (ImageView) profileView.findViewById(R.id.profile_picture);
                     String profileImage = user.getProfileImage();
-                    if (profileImage.equals("null Image")) {
-                        profile_picture.setImageResource(R.drawable.empty_profile);
-                    } else {
+                    if (!profileImage.equals("null Image")) {
                         profile_picture.setImageBitmap(StringToBitMap(profileImage));
                     }
                 }

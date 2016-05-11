@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        app:indicator="BallScale"
+        app:indicator="BallSpinFadeLoader"
         app:indicator_color="#e6007e"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"

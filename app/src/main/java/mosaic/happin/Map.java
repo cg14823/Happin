@@ -62,8 +62,6 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
     public Map() {
     }
 
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         markerCount = 0;
