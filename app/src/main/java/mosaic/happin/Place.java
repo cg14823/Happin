@@ -96,14 +96,6 @@ public class Place{
 
     }
 
-    public LatLng id2LatLng (String location){
-        String decodeLoc = location.replace("p", ".");
-        String [] parts = location.split("");
-        double lat = Double.parseDouble(parts[0]);
-        double lon = Double.parseDouble(parts[1]);
-        return new LatLng(lat,lon);
-    }
-
     public void addLike (){likes +=1;}
 
     @Override

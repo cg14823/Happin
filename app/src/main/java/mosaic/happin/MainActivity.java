@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showToast(String message) {
+    public void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -437,34 +437,6 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.start(client, viewAction);
     }
 
-    public void viewProfPic(View view) {
-        String ref = "https://flickering-torch-2192.firebaseio.com/users/" +
-                userId + "/profileImage";
-        Firebase reference = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" +
-                userId + "/");
-
-        final Intent showImagebig = new Intent(this, showImage.class);
-        showImagebig.putExtra("REF", ref);
-
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-                String image = user.getProfileImage();
-                if (image.equals("null Image")) {
-                    showToast("This user has no profile picture");
-                } else {
-                    showImagebig.putExtra("TITLE", user.getName());
-                    startActivity(showImagebig);
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                showToast(firebaseError.getMessage());
-            }
-        });
-    }
 
     public void showDetails(View view) {
         TextView placeid = (TextView) view.findViewById(R.id.previewId);

@@ -41,7 +41,7 @@ public class Profile extends Fragment {
     private ArrayList<Bitmap> imagesOfAddedPlaces = new ArrayList<>();
     ImageAdapter imageAdapter;
     //the images to display
-    
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
