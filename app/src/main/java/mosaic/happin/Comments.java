@@ -16,13 +16,16 @@ public class Comments {
         this.user = user;
         this.timestamp = timestamp;
     }
-    public String getComment(){
+
+    public String getComment() {
         return comment;
     }
-    public String getUser(){
+
+    public String getUser() {
         return user;
     }
-    public Long getTimestamp(){
+
+    public Long getTimestamp() {
         return timestamp;
     }
 }

@@ -1,14 +1,10 @@
 package mosaic.happin;
 
-import android.app.SearchManager;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import android.Manifest;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,7 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-//import android.widget.SearchView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +49,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static android.content.pm.PackageManager.*;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+//import android.widget.SearchView;
 
 /*Things that need to be worked in next iteration 2:
  *Password recovery email
@@ -234,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             TextView locfield = (TextView) dialogView.findViewById(R.id.location);
             List<String> s = reverseGeo(location.getLatitude(), location.getLongitude());
             String locationStr = s.get(1) + " " + s.get(0);
-            locationStr = locationStr.replace("null","");
+            locationStr = locationStr.replace("null", "");
             locfield.setText(locationStr);
 
             recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {

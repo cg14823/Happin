@@ -12,11 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,12 +26,9 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.maps.model.LatLng;
 
-import android.widget.AdapterView.OnItemSelectedListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -116,15 +113,15 @@ public class Ranking extends Fragment {
 
     }
 
-    private void getRankedTesting(){
+    private void getRankedTesting() {
         /* To avoid server delay this function is used instead of the server retrieval one
          *which has already been tested and proven to work.*/
         poru = new ArrayList<>();
-        if (current_filter == 0){
-            Place p0 = new Place(2,5,"Test 1","Test 1 description","null Image", "some user");
-            Place p1 = new Place(2.2,5.1,"Test 2","Test 2 description","null Image", "some user");
-            Place p2 = new Place(2.5,5.5,"Test 3","Test 3 description","null Image", "some user");
-            Place p3 = new Place(2.0,5.1,"Test 4","Test 4 description","null Image", "some user");
+        if (current_filter == 0) {
+            Place p0 = new Place(2, 5, "Test 1", "Test 1 description", "null Image", "some user");
+            Place p1 = new Place(2.2, 5.1, "Test 2", "Test 2 description", "null Image", "some user");
+            Place p2 = new Place(2.5, 5.5, "Test 3", "Test 3 description", "null Image", "some user");
+            Place p3 = new Place(2.0, 5.1, "Test 4", "Test 4 description", "null Image", "some user");
             p0.addLike();
             p0.addLike();
             p1.addLike();
@@ -137,12 +134,11 @@ public class Ranking extends Fragment {
             poru.add(new PlaceorUser(p2));
             poru.add(new PlaceorUser(p3));
 
-        }
-        else{
-            User u0 = new User ("U0","u@g.com","password","null Image");
-            User u1 = new User ("U1","u@g.com","password","null Image");
-            User u2 = new User ("U2","u@g.com","password","null Image");
-            User u3 = new User ("U3","u@g.com","password","null Image");
+        } else {
+            User u0 = new User("U0", "u@g.com", "password", "null Image");
+            User u1 = new User("U1", "u@g.com", "password", "null Image");
+            User u2 = new User("U2", "u@g.com", "password", "null Image");
+            User u3 = new User("U3", "u@g.com", "password", "null Image");
             u0.incrementPoints(100);
             u1.incrementPoints(1000);
             u2.incrementPoints(700);
@@ -208,14 +204,14 @@ public class Ranking extends Fragment {
 
     private void setList() {
         Collections.reverse(poru);
-        adapter = new MyCustomAdapter(getContext(),poru);
+        adapter = new MyCustomAdapter(getContext(), poru);
         rankingView.findViewById(R.id.progressBar1).setVisibility(View.GONE);
         ListView rankingList = (ListView) rankingView.findViewById(R.id.rankingList);
         rankingList.setAdapter(adapter);
     }
 
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -262,11 +258,10 @@ public class Ranking extends Fragment {
         }
 
         @Override
-        public Object getItem(int position){
-            if (placeorUsers.size()> position){
+        public Object getItem(int position) {
+            if (placeorUsers.size() > position) {
                 return placeorUsers.get(position);
-            }
-            else return null;
+            } else return null;
         }
 
         @Override
@@ -283,10 +278,10 @@ public class Ranking extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View slotView = convertView;
-            if (convertView == null){
+            if (convertView == null) {
                 PlaceorUser p = placeorUsers.get(position);
-                if (p.poru == PERSON){
-                    slotView = mInflater.inflate(R.layout.ranking_user,null);
+                if (p.poru == PERSON) {
+                    slotView = mInflater.inflate(R.layout.ranking_user, null);
                     TextView rankNum = (TextView) slotView.findViewById(R.id.rank_num_user);
                     TextView userName = (TextView) slotView.findViewById(R.id.user_name_rank);
                     TextView userPoints = (TextView) slotView.findViewById(R.id.user_points);
@@ -296,15 +291,13 @@ public class Ranking extends Fragment {
                     userName.setText(p.u.getName());
                     userPoints.setText(String.valueOf(p.u.getPoints()));
 
-                    if (p.u.getProfileImage().equals("null Image")){
+                    if (p.u.getProfileImage().equals("null Image")) {
                         profileImage.setImageResource(R.drawable.empty_profile);
-                    }
-                    else{
+                    } else {
                         profileImage.setImageBitmap(String2Image(p.u.getProfileImage()));
                     }
-                }
-                else{
-                    slotView = mInflater.inflate(R.layout.ranking_item_view,null);
+                } else {
+                    slotView = mInflater.inflate(R.layout.ranking_item_view, null);
                     TextView rankNum = (TextView) slotView.findViewById(R.id.place_ranking);
                     TextView placeName = (TextView) slotView.findViewById(R.id.item_place_name_rank);
                     TextView placeLikes = (TextView) slotView.findViewById(R.id.item_likes_rank);
@@ -313,10 +306,9 @@ public class Ranking extends Fragment {
                     rankNum.setText(String.valueOf(position + 1));
                     placeName.setText(p.p.getName());
                     placeLikes.setText(String.valueOf(p.p.getLikes()));
-                    if (p.p.getImg().equals("null Image")){
+                    if (p.p.getImg().equals("null Image")) {
                         placeImage.setImageResource(R.mipmap.emptyplace);
-                    }
-                    else placeImage.setImageBitmap(String2Image(p.p.getImg()));
+                    } else placeImage.setImageBitmap(String2Image(p.p.getImg()));
 
                 }
                 return slotView;
@@ -325,7 +317,7 @@ public class Ranking extends Fragment {
             return convertView;
         }
 
-        private Bitmap String2Image (String image){
+        private Bitmap String2Image(String image) {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         }

@@ -1,21 +1,25 @@
 package mosaic.happin;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -30,19 +34,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import android.support.v4.app.Fragment;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.List;
-
-import android.location.Geocoder;
+import java.util.Locale;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -179,7 +175,7 @@ public class Map extends Fragment implements GoogleMap.OnMarkerClickListener {
         TextView locfield = (TextView) dialogView.findViewById(R.id.location);
         List<String> s = reverseGeo(location.latitude, location.longitude);
         String locationStr = s.get(1) + " " + s.get(0);
-        locationStr = locationStr.replace("null","");
+        locationStr = locationStr.replace("null", "");
         locfield.setText(locationStr);
 
         recPassDialog.setPositiveButton("Done", new DialogInterface.OnClickListener() {

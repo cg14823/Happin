@@ -2,27 +2,19 @@ package mosaic.happin;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
-import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -31,7 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.*;
+import java.util.HashMap;
 
 /**
  * Created by Tom on 02/03/2016.
@@ -65,7 +57,7 @@ public class GameInfoWindow extends AppCompatActivity {
         Intent i = getIntent();
         url = i.getStringExtra("ref");
         userId = i.getStringExtra("USER_ID");
-        distance = i.getIntExtra("distance",-1);
+        distance = i.getIntExtra("distance", -1);
         Firebase.setAndroidContext(this);
         Firebase ref = new Firebase(url);
         uref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + userId);
@@ -74,8 +66,7 @@ public class GameInfoWindow extends AppCompatActivity {
         button = (Button) findViewById(R.id.visitButton);
         if (distance < 0) {
             showToast("Error getting distance");
-        }
-        else {
+        } else {
             if (distance <= 50) {
                 button.setEnabled(true);
             } else {
@@ -87,7 +78,7 @@ public class GameInfoWindow extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 place = dataSnapshot.getValue(Place.class);
-                if ((place != null)){
+                if ((place != null)) {
                     addDetails();
                     mapView.getMapAsync(new OnMapReadyCallback() {
                         @Override
@@ -122,23 +113,22 @@ public class GameInfoWindow extends AppCompatActivity {
         });
 
 
-
     }
-    private void addDetails(){
-        TextView text = (TextView)findViewById(R.id.placeText);
-        text.setText(place.getName() + "\nDistance: "+ distance + "m");
+
+    private void addDetails() {
+        TextView text = (TextView) findViewById(R.id.placeText);
+        text.setText(place.getName() + "\nDistance: " + distance + "m");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                final int pointsGained = data.getIntExtra("points",1);
-                if (pointsGained == 1){
+            if (resultCode == Activity.RESULT_OK) {
+                final int pointsGained = data.getIntExtra("points", 1);
+                if (pointsGained == 1) {
                     showToast("You earned 1 point!");
-                }
-                else {
-                    showToast("You earned "+pointsGained+" points!");
+                } else {
+                    showToast("You earned " + pointsGained + " points!");
                 }
                 button.setEnabled(false);
                 button.setText("VISITED");
@@ -156,8 +146,7 @@ public class GameInfoWindow extends AppCompatActivity {
                         showToast(error.getMessage());
                     }
                 });
-            }
-            else {
+            } else {
                 userId = data.getStringExtra("userId");
                 uref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + userId);
                 showToast(uref.toString());
@@ -178,10 +167,10 @@ public class GameInfoWindow extends AppCompatActivity {
         }
     }
 
-    public void visited(View view){
+    public void visited(View view) {
         Intent simonSays = new Intent(this, SimonSaysGame.class);
-        simonSays.putExtra("userId",userId);
-        simonSays.putExtra("place",url);
+        simonSays.putExtra("userId", userId);
+        simonSays.putExtra("place", url);
         startActivityForResult(simonSays, 1);
     }
 
@@ -204,12 +193,11 @@ public class GameInfoWindow extends AppCompatActivity {
     }
 
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
 
 
 }

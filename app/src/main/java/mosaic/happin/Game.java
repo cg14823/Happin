@@ -4,20 +4,14 @@ package mosaic.happin;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
@@ -34,7 +28,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -43,7 +36,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 
@@ -59,6 +51,7 @@ public class Game extends Fragment implements
     public Game() {
         // Required empty public constructor
     }
+
     private Circle circle;
     private GoogleMap mMap;
     private MapView mapView;
@@ -102,19 +95,19 @@ public class Game extends Fragment implements
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                if (cameraPosition.zoom != zoomLevel){
+                if (cameraPosition.zoom != zoomLevel) {
                     zoomLevel = cameraPosition.zoom;
                 }
             }
         });
         try {
             mMap.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
         }
-        catch (SecurityException e) {}
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(),mLocation.getLongitude()), zoomLevel));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), zoomLevel));
             }
         });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -125,7 +118,7 @@ public class Game extends Fragment implements
                 Intent detailShow = new Intent(getActivity(), GameInfoWindow.class);
                 detailShow.putExtra("ref", "https://flickering-torch-2192.firebaseio.com/places/" + latLng2Id(latlng));
                 detailShow.putExtra("USER_ID", MainActivity.userId);
-                detailShow.putExtra("distance",(int) distanceFromCurrent(latlng));
+                detailShow.putExtra("distance", (int) distanceFromCurrent(latlng));
                 startActivity(detailShow);
                 return true;
             }
@@ -135,7 +128,6 @@ public class Game extends Fragment implements
                 .visible(false)
                 .strokeWidth(2)
                 .radius(50));
-
 
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
@@ -155,10 +147,10 @@ public class Game extends Fragment implements
         return view;
     }
 
-    private String latLng2Id(LatLng location){
+    private String latLng2Id(LatLng location) {
         String lat = String.valueOf(location.latitude);
         String lon = String.valueOf(location.longitude);
-        String strLoc = (lat+"L"+lon).replace(".", "p");
+        String strLoc = (lat + "L" + lon).replace(".", "p");
         return strLoc;
     }
 
@@ -185,7 +177,7 @@ public class Game extends Fragment implements
                     alertDialogBuilder.setMessage("Location is disabled in your device. Would you like to enable it?")
                             // Have to respond to this message not cancelable
                             .setCancelable(false)
-                                    // If yes open setting page to enable location
+                            // If yes open setting page to enable location
                             .setPositiveButton("Yes",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
@@ -213,7 +205,7 @@ public class Game extends Fragment implements
 
 
     /* This function should ge the top rated places from the server*/
-    private void getPlaces(){
+    private void getPlaces() {
         places = new ArrayList<Place>();
         ref = new Firebase("https://flickering-torch-2192.firebaseio.com/places");
         Query likeQuery = ref.orderByChild("likes").limitToLast(10);
@@ -258,7 +250,7 @@ public class Game extends Fragment implements
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
-        if (mLocation == null){
+        if (mLocation == null) {
             mLocation = new Location(LocationManager.GPS_PROVIDER);
             mLocation.setLatitude(51.4556676);
             mLocation.setLongitude(-2.6266423);
@@ -281,7 +273,7 @@ public class Game extends Fragment implements
         mapView.onLowMemory();
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(getContext(),
                 message, Toast.LENGTH_SHORT);
         toast.show();
@@ -291,9 +283,9 @@ public class Game extends Fragment implements
     public void onConnected(Bundle connectionHint) {
         try {
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient,mLocationRequest,this);
+                    mGoogleApiClient, mLocationRequest, this);
+        } catch (SecurityException e) {
         }
-        catch (SecurityException e){}
     }
 
     @Override
@@ -302,6 +294,7 @@ public class Game extends Fragment implements
         // Disable any UI components that depend on Google APIs
         // until onConnected() is called.
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // This callback is important for handling errors that
@@ -315,7 +308,8 @@ public class Game extends Fragment implements
         super.onStart();
         mGoogleApiClient.connect();
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -323,7 +317,7 @@ public class Game extends Fragment implements
     @Override
     public void onLocationChanged(Location l) {
         mLocation = l;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(),l.getLongitude()), zoomLevel));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), zoomLevel));
         circle.setCenter(new LatLng(l.getLatitude(), l.getLongitude()));
         if (!(circle.isVisible())) {
             circle.setVisible(true);

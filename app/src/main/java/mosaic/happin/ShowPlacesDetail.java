@@ -5,16 +5,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Base64;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,31 +18,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TextView;
-import android.app.Activity;
-import android.util.Log;
-import android.view.View.OnKeyListener;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.firebase.client.Query;
 import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.*;
+import java.util.HashMap;
 
 public class ShowPlacesDetail extends AppCompatActivity {
     private Place place;
     private String userId;
     private String referencePlace;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,29 +101,28 @@ public class ShowPlacesDetail extends AppCompatActivity {
         });
     }
 
-    private void addDetails(){
-        TextView text = (TextView)findViewById(R.id.placeText);
+    private void addDetails() {
+        TextView text = (TextView) findViewById(R.id.placeText);
         ImageView imgView = (ImageView) findViewById(R.id.placeImgview);
-        if(place.getLikes()==1){
-            String description = "<font color=#00000><b>"+place.getName()+"</b></font><br> <font color=#2088ca>"+ place.getLikes() + " like" + "</font><br> <i>" + place.getDescription() +"</i>";
+        if (place.getLikes() == 1) {
+            String description = "<font color=#00000><b>" + place.getName() + "</b></font><br> <font color=#2088ca>" + place.getLikes() + " like" + "</font><br> <i>" + place.getDescription() + "</i>";
             text.setText(Html.fromHtml(description));
-        }
-        else {
+        } else {
             String description = "<font color=#00000><b>" + place.getName() + "</b></font><br> <font color=#2088ca>" + place.getLikes() + " likes" + "</font><br> <i>" + place.getDescription() + "</i>";
             text.setText(Html.fromHtml(description));
         }
         byte[] decodedString = Base64.decode(place.getImg(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imgView.setImageBitmap(decodedByte);
-        Firebase ref = new Firebase( "https://flickering-torch-2192.firebaseio.com/comments/"
-                +place.latLng2Id(place.getLat(), place.getLon()));
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/comments/"
+                + place.latLng2Id(place.getLat(), place.getLon()));
         final TextView vcomments = (TextView) findViewById(R.id.commentSection);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     final Comments post = postSnapshot.getValue(Comments.class);
-                    Firebase usernameref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/"+post.getUser()+"/name");
+                    Firebase usernameref = new Firebase("https://flickering-torch-2192.firebaseio.com/users/" + post.getUser() + "/name");
                     usernameref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -157,6 +141,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
                 }
             }
+
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 System.out.println("The read failed: " + firebaseError.getMessage());
@@ -165,9 +150,9 @@ public class ShowPlacesDetail extends AppCompatActivity {
 
     }
 
-    public void liked (View view){
-        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"+userId+"/"
-                +place.latLng2Id(place.getLat(), place.getLon()));
+    public void liked(View view) {
+        Firebase ref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/" + userId + "/"
+                + place.latLng2Id(place.getLat(), place.getLon()));
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -175,7 +160,7 @@ public class ShowPlacesDetail extends AppCompatActivity {
                     showToast("<3");
                     place.addLike();
                     TextView text = (TextView) findViewById(R.id.placeText);
-                    String description = "<font color=#00000><b>"+place.getName()+"</b></font><br> <font color=#2088ca>"+ place.getLikes() + " likes" + "</font><br> <i>" + place.getDescription() +"</i><br>";
+                    String description = "<font color=#00000><b>" + place.getName() + "</b></font><br> <font color=#2088ca>" + place.getLikes() + " likes" + "</font><br> <i>" + place.getDescription() + "</i><br>";
                     text.setText(Html.fromHtml(description));
                     Firebase fref = new Firebase("https://flickering-torch-2192.firebaseio.com/likes/"
                             + userId);
@@ -197,18 +182,18 @@ public class ShowPlacesDetail extends AppCompatActivity {
         });
     }
 
-    public void viewimage(View view){
-        String ref = referencePlace+"/img";
+    public void viewimage(View view) {
+        String ref = referencePlace + "/img";
         String name = "NULL_NAME";
         if (place != null) name = place.getName();
         Intent showImagebig = new Intent(this, showImage.class);
-        showImagebig.putExtra("REF",ref);
-        showImagebig.putExtra("TITLE",name);
+        showImagebig.putExtra("REF", ref);
+        showImagebig.putExtra("TITLE", name);
         startActivity(showImagebig);
 
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();

@@ -2,17 +2,17 @@ package mosaic.happin;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Map;
-
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+
+import java.util.Map;
 
 
 public class SignUp extends AppCompatActivity {
@@ -31,17 +31,17 @@ public class SignUp extends AppCompatActivity {
         logo.setTypeface(custom_font);
         Intent intent = getIntent();
         if (intent.hasExtra("email")) {
-                String email = intent.getExtras().getString("email");
-                EditText emailField = (EditText) findViewById(R.id.emailField);
-                emailField.setText(email);
-            }
+            String email = intent.getExtras().getString("email");
+            EditText emailField = (EditText) findViewById(R.id.emailField);
+            emailField.setText(email);
         }
+    }
 
     public void signUp(View view) {
         EditText nameField = (EditText) findViewById(R.id.nameField);
         EditText passwordField = (EditText) findViewById(R.id.passwordField);
         EditText emailField = (EditText) findViewById(R.id.emailField);
-        if (passwordConditions() && isValidEmail(emailField.getText().toString())){
+        if (passwordConditions() && isValidEmail(emailField.getText().toString())) {
             final String name = nameField.getText().toString();
             String password = passwordField.getText().toString();
             final String email = emailField.getText().toString();
@@ -50,7 +50,7 @@ public class SignUp extends AppCompatActivity {
                 @Override
                 public void onSuccess(Map<String, Object> result) {
                     showToast("Successfully created new user");
-                    User newUser = new User(name, email, "password","null Image");
+                    User newUser = new User(name, email, "password", "null Image");
                     myFirebaseRef.child("users").child(result.get("uid").toString()).setValue(newUser);
                     finish();
                 }
@@ -75,7 +75,8 @@ public class SignUp extends AppCompatActivity {
                     return true;
                 } else showToast("The passwords must contain at least one digit");
             } else showToast("The passwords must be at least 8 characters long");
-        } showToast("Passwords do not match");
+        }
+        showToast("Passwords do not match");
         return false;
     }
 
@@ -87,7 +88,7 @@ public class SignUp extends AppCompatActivity {
         }
     }
 
-    private void showToast(String message){
+    private void showToast(String message) {
         Toast toast = Toast.makeText(this,
                 message, Toast.LENGTH_SHORT);
         toast.show();

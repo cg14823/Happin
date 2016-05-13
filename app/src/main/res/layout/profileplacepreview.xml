@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="150dp"
-    android:padding="5dp">
-    <ImageView android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:scaleType="centerCrop"
-    android:id="@+id/placePreviewImage"/>
-    <TextView android:layout_height="wrap_content"
+    android:layout_height="150dp"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/placePreviewImage"
         android:layout_width="match_parent"
-        android:textColor="@color/tabTitleColor"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <TextView
         android:id="@+id/placePreviewName"
-        android:layout_alignStart="@id/placePreviewImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@id/placePreviewImage"
-        android:textAlignment="center"
-        android:onClick="showDetails"
+        android:layout_alignStart="@id/placePreviewImage"
         android:background="@color/nearlyTransparent"
-        />
-    <TextView android:layout_height="wrap_content"
+        android:onClick="showDetails"
+        android:textAlignment="center"
+        android:textColor="@color/tabTitleColor" />
+
+    <TextView
+        android:id="@+id/previewId"
         android:layout_width="wrap_content"
-        android:visibility="invisible"
-        android:id="@+id/previewId"/>
+        android:layout_height="wrap_content"
+        android:visibility="invisible" />
 </RelativeLayout>

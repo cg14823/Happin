@@ -1,47 +1,46 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:id="@+id/filterBy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/PorPFilter"
-        android:textStyle="normal"
         android:layout_marginBottom="5dp"
-        android:textSize="15sp"
-        android:id ="@+id/filterBy"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/PorPFilter"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000"
-        android:layout_marginStart="@dimen/activity_horizontal_margin" />
+        android:textSize="15sp"
+        android:textStyle="normal" />
 
     <Spinner
-        android:layout_alignBottom="@id/filterBy"
-        android:layout_toEndOf="@id/filterBy"
+        android:id="@+id/spinnerRanking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/spinnerRanking"
+        android:layout_alignBottom="@id/filterBy"
         android:layout_marginStart="5dp"
+        android:layout_toEndOf="@id/filterBy"
         android:spinnerMode="dropdown" />
 
     <ListView
-        android:layout_below="@id/spinnerRanking"
         android:id="@+id/rankingList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerRanking" />
 
     <com.wang.avi.AVLoadingIndicatorView
         android:id="@+id/progressBar1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/filterBy"
+        android:layout_centerHorizontal="true"
         android:visibility="invisible"
         app:indicator="BallSpinFadeLoader"
-        app:indicator_color="#e6007e"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/filterBy"
-    />
+        app:indicator_color="#e6007e" />
 
 
 </RelativeLayout>

@@ -3,14 +3,13 @@ package mosaic.happin;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,22 +47,22 @@ public class Login extends AppCompatActivity {
             }
         });
     }
-    private void loadingSwitch (boolean on){
-        TextView forgotP = (TextView)findViewById(R.id.forgot);
-        Button sign = (Button)findViewById(R.id.signUpButton);
-        Button log = (Button)findViewById(R.id.loginButton);
+
+    private void loadingSwitch(boolean on) {
+        TextView forgotP = (TextView) findViewById(R.id.forgot);
+        Button sign = (Button) findViewById(R.id.signUpButton);
+        Button log = (Button) findViewById(R.id.loginButton);
         EditText emailField = (EditText) findViewById(R.id.email);
         EditText passwordField = (EditText) findViewById(R.id.password);
         com.wang.avi.AVLoadingIndicatorView loading = (com.wang.avi.AVLoadingIndicatorView) findViewById(R.id.progressBarLogIn);
-        if (on){
+        if (on) {
             emailField.setVisibility(View.INVISIBLE);
             passwordField.setVisibility(View.INVISIBLE);
             forgotP.setVisibility(View.INVISIBLE);
             sign.setVisibility(View.INVISIBLE);
             log.setVisibility(View.INVISIBLE);
             loading.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             emailField.setVisibility(View.VISIBLE);
             passwordField.setVisibility(View.VISIBLE);
             forgotP.setVisibility(View.VISIBLE);
@@ -122,7 +121,9 @@ public class Login extends AppCompatActivity {
                 }
             });
         } else {
-            showToast("Enter a valid email"); loadingSwitch(false);}
+            showToast("Enter a valid email");
+            loadingSwitch(false);
+        }
     }
 
     public void signUp(View view) {
